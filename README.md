@@ -1,58 +1,318 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# LMS - Learning Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+LMS (Learning Management System) is a Laravel-based academic management system designed to manage teachers, students, classes, schedules, and other academic activities from one centralized platform.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🚀 Project Setup
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Follow these steps after cloning the project.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 1. Clone the Repository
 
-## Learning Laravel
+git bash open
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+git clone https://github.com/Future-Developer295/LMS.git
+cd LMS
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+2. Install Composer Dependencies
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+The vendor folder is not included in the repository.
 
-## Agentic Development
+After cloning the project, run:
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+composer install
 
-```bash
-composer require laravel/boost --dev
+This will install all required Laravel and PHP dependencies.
 
-php artisan boost:install
-```
+3. Create Environment File
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Create a .env file from .env.example.
 
-## Contributing
+Windows:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+copy .env.example .env
 
-## Code of Conduct
+Linux / macOS:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+cp .env.example .env
+4. Generate Application Key
 
-## Security Vulnerabilities
+Run:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+php artisan key:generate
+🗄️ Database Setup
 
-## License
+The project contains a SQL database file inside the database folder.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+You can set up the database using either the provided SQL file or Laravel migrations.
+
+Option 1 — Import SQL File
+Open phpMyAdmin.
+Create a database named:
+lms
+Select the lms database.
+Click the Import tab.
+Select the SQL file from the project's database folder.
+Click Import.
+
+Then configure your .env file:
+
+DB_DATABASE=lms
+DB_USERNAME=root
+DB_PASSWORD=
+
+Make sure MySQL is running before importing the database.
+
+Option 2 — Use Laravel Migrations
+
+If you want to create the database tables using Laravel migrations, run:
+
+php artisan migrate
+
+For a completely fresh development database:
+
+php artisan migrate:fresh
+
+Do not use migrate:fresh if you have important existing database data because it will delete all tables.
+
+▶️ Run the Project
+
+After completing the setup, start the Laravel development server:
+
+php artisan serve
+
+The project will normally be available at:
+
+http://127.0.0.1:8000
+🌿 Git & Branch Rules
+⚠️ Important
+
+Do NOT work directly on the main branch.
+
+Every team member must create their own branch before starting development.
+
+Before Starting Work
+
+First get the latest changes:
+
+git checkout main
+git pull origin main
+
+Then create your own branch:
+
+git checkout -b feature/your-feature-name
+
+Example:
+
+git checkout -b feature/teacher-management
+Branch Naming
+
+Use clear and meaningful branch names.
+
+Features
+feature/teacher-management
+feature/student-management
+feature/class-management
+feature/dashboard
+feature/authentication
+Bug Fixes
+fix/login-error
+fix/database-error
+fix/teacher-validation
+👨‍💻 Team Development Rules
+
+Each team member should work only on their assigned task.
+
+✅ DO
+Create your own branch.
+Work only on your assigned feature.
+Keep your code clean and organized.
+Follow the existing project structure.
+Test your work before pushing.
+Use meaningful commit messages.
+Push your branch to GitHub.
+Create a Pull Request after completing your task.
+❌ DON'T
+Do not work directly on main.
+Do not modify another team member's assigned feature.
+Do not delete unrelated code.
+Do not change unrelated files.
+Do not make unnecessary database changes.
+Do not change the project structure without discussing it with the team.
+Do not commit the .env file.
+Do not commit the vendor folder.
+Do not push unrelated changes.
+📌 Work Only On Your Assigned Task
+
+For example, if your assigned task is:
+
+Teacher Management
+
+Then work only on Teacher Management.
+
+Do not modify other features such as:
+
+Student Management
+Class Management
+Dashboard
+Authentication
+
+unless that task is specifically assigned to you.
+
+This helps prevent conflicts and keeps the project organized.
+
+💾 Commit Your Changes
+
+After completing your task, check your changes:
+
+git status
+
+Add your changes:
+
+git add .
+
+Create a meaningful commit:
+
+git commit -m "Add teacher management"
+📤 Push Your Branch
+
+Push your branch to GitHub:
+
+git push origin feature/teacher-management
+
+Replace the branch name with your own branch.
+
+🔄 Pull Request
+
+After pushing your branch:
+
+Open the GitHub repository.
+Create a Pull Request.
+Select your branch as the source.
+Select main as the target branch.
+Explain what you changed.
+Wait for the team/project lead to review your code.
+Fix any requested changes.
+After approval, the Pull Request can be merged into main.
+🔐 Important Files
+
+Do not push sensitive or unnecessary files to GitHub.
+
+The following should remain outside the repository:
+
+.env
+/vendor
+
+The .env file may contain:
+
+Database credentials
+API keys
+Secret tokens
+Application configuration
+
+The vendor folder is generated by Composer.
+
+Every developer should run:
+
+composer install
+
+after cloning the project.
+
+📂 Project Structure
+LMS/
+│
+├── app/
+├── bootstrap/
+├── config/
+├── database/
+│   ├── migrations/
+│   ├── seeders/
+│   └── SQL File
+├── public/
+├── resources/
+├── routes/
+├── storage/
+├── tests/
+│
+├── .env.example
+├── artisan
+├── composer.json
+└── README.md
+🗄️ Database Rules
+
+When changing database structure:
+
+Create a Laravel migration for the change.
+Do not manually modify existing database tables without discussing it with the team.
+Make sure foreign keys are correctly configured.
+Test migrations before pushing.
+If the database SQL file needs to be updated, inform the team.
+🔄 Recommended Development Workflow
+
+Use this workflow every time you start working:
+
+Clone Project
+      ↓
+composer install
+      ↓
+Create .env
+      ↓
+php artisan key:generate
+      ↓
+Setup Database
+      ↓
+php artisan migrate
+      ↓
+Create Your Branch
+      ↓
+Work Only On Your Assigned Task
+      ↓
+Test Your Work
+      ↓
+git status
+      ↓
+git add .
+      ↓
+git commit
+      ↓
+git push
+      ↓
+Create Pull Request
+      ↓
+Team Review
+      ↓
+Merge into main
+⚡ Quick Setup
+
+For developers who already understand the setup:
+
+git clone <repository-url>
+cd LMS
+composer install
+copy .env.example .env
+php artisan key:generate
+php artisan migrate
+php artisan serve
+
+For Windows, make sure XAMPP Apache and MySQL are running.
+
+🤝 Team Collaboration
+
+Before making major changes, discuss them with the team.
+
+Keep your work limited to your assigned task.
+
+Team Rule
+
+One Developer = One Task = One Branch
+
+Do not mix multiple team members' tasks in the same branch.
+
+Keep the main branch stable and only merge tested and reviewed work.
+
+📢 Important Reminder
+
+Clone → Install Dependencies → Setup Environment → Setup Database → Create Branch → Work Only On Your Task → Test → Commit → Push → Pull Request → Review → Merge
+
+Happy Coding! 🚀
