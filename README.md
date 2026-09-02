@@ -1,39 +1,42 @@
 # LMS - Learning Management System
 
-LMS (Learning Management System) is a Laravel-based academic management system designed to manage teachers, students, classes, schedules, and other academic activities from one centralized platform.
+This is a Laravel-based Learning Management System project.
+
+The project is being developed by a team, so please follow the setup and GitHub workflow below before starting your work.
 
 ---
 
-## 🚀 Project Setup
+## 1. Clone the Project
 
-Follow these steps after cloning the project.
+First, clone the GitHub repository:
 
-### 1. Clone the Repository
-
-git bash open
-
+bash
 git clone https://github.com/Future-Developer295/LMS.git
+
+Then go inside the project folder:
+
 cd LMS
+2. Install Laravel Dependencies
 
-2. Install Composer Dependencies
+After cloning the project, you need to install the Laravel dependencies.
 
-The vendor folder is not included in the repository.
-
-After cloning the project, run:
+Run:
 
 composer install
 
-This will install all required Laravel and PHP dependencies.
+This will create the vendor folder and install all required Laravel packages.
 
-3. Create Environment File
+If you get an error related to Laravel dependencies or vendor/autoload.php, run composer install.
 
-Create a .env file from .env.example.
+3. Create the .env File
 
-Windows:
+The .env file is not included in GitHub because it contains local configuration.
+
+Copy the example environment file:
 
 copy .env.example .env
 
-Linux / macOS:
+If you are using Git Bash, you can also use:
 
 cp .env.example .env
 4. Generate Application Key
@@ -41,278 +44,78 @@ cp .env.example .env
 Run:
 
 php artisan key:generate
-🗄️ Database Setup
 
-The project contains a SQL database file inside the database folder.
+This will generate the Laravel application key inside the .env file.
 
-You can set up the database using either the provided SQL file or Laravel migrations.
+5. Configure Database
 
-Option 1 — Import SQL File
-Open phpMyAdmin.
-Create a database named:
-lms
-Select the lms database.
-Click the Import tab.
-Select the SQL file from the project's database folder.
-Click Import.
+Open the .env file:
 
-Then configure your .env file:
-
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
 DB_DATABASE=lms
 DB_USERNAME=root
 DB_PASSWORD=
 
-Make sure MySQL is running before importing the database.
+Make sure MySQL is running in XAMPP.
 
-Option 2 — Use Laravel Migrations
+Then create a database named:
 
-If you want to create the database tables using Laravel migrations, run:
+lms
 
-php artisan migrate
+You can create it from phpMyAdmin.
 
-For a completely fresh development database:
+The database name in .env must match the database you created.
 
-php artisan migrate:fresh
+6. Run Migrations and Seeders
 
-Do not use migrate:fresh if you have important existing database data because it will delete all tables.
+After creating the database, run:
 
-▶️ Run the Project
+php artisan migrate:fresh --seed
 
-After completing the setup, start the Laravel development server:
+This command will:
+
+Remove existing tables
+Create all database tables
+Insert dummy data
+Create the admin user
+Insert teachers
+Insert classes
+Insert students
+Insert attendance records
+Insert assignments
+Insert assignment submissions
+
+If you don't want to delete existing database data, use:
+
+php artisan migrate --seed
+7. Run the Laravel Project
+
+Start the Laravel development server:
 
 php artisan serve
 
-The project will normally be available at:
+You should see something like:
+
+Server running on http://127.0.0.1:8000
+
+Open this URL in your browser:
 
 http://127.0.0.1:8000
-🌿 Git & Branch Rules
-⚠️ Important
+GitHub Team Workflow
+8. Create Your Own Branch
 
-Do NOT work directly on the main branch.
+Do not start development directly on the main branch.
 
-Every team member must create their own branch before starting development.
+First check the current branch:
 
-Before Starting Work
+git branch
 
-First get the latest changes:
+Get the latest changes:
 
-git checkout main
 git pull origin main
 
-Then create your own branch:
+Now create your own branch:
 
-git checkout -b feature/your-feature-name
-
-Example:
-
-git checkout -b feature/teacher-management
-Branch Naming
-
-Use clear and meaningful branch names.
-
-Features
-feature/teacher-management
-feature/student-management
-feature/class-management
-feature/dashboard
-feature/authentication
-Bug Fixes
-fix/login-error
-fix/database-error
-fix/teacher-validation
-👨‍💻 Team Development Rules
-
-Each team member should work only on their assigned task.
-
-✅ DO
-Create your own branch.
-Work only on your assigned feature.
-Keep your code clean and organized.
-Follow the existing project structure.
-Test your work before pushing.
-Use meaningful commit messages.
-Push your branch to GitHub.
-Create a Pull Request after completing your task.
-❌ DON'T
-Do not work directly on main.
-Do not modify another team member's assigned feature.
-Do not delete unrelated code.
-Do not change unrelated files.
-Do not make unnecessary database changes.
-Do not change the project structure without discussing it with the team.
-Do not commit the .env file.
-Do not commit the vendor folder.
-Do not push unrelated changes.
-📌 Work Only On Your Assigned Task
-
-For example, if your assigned task is:
-
-Teacher Management
-
-Then work only on Teacher Management.
-
-Do not modify other features such as:
-
-Student Management
-Class Management
-Dashboard
-Authentication
-
-unless that task is specifically assigned to you.
-
-This helps prevent conflicts and keeps the project organized.
-
-💾 Commit Your Changes
-
-After completing your task, check your changes:
-
-git status
-
-Add your changes:
-
-git add .
-
-Create a meaningful commit:
-
-git commit -m "Add teacher management"
-📤 Push Your Branch
-
-Push your branch to GitHub:
-
-git push origin feature/teacher-management
-
-Replace the branch name with your own branch.
-
-🔄 Pull Request
-
-After pushing your branch:
-
-Open the GitHub repository.
-Create a Pull Request.
-Select your branch as the source.
-Select main as the target branch.
-Explain what you changed.
-Wait for the team/project lead to review your code.
-Fix any requested changes.
-After approval, the Pull Request can be merged into main.
-🔐 Important Files
-
-Do not push sensitive or unnecessary files to GitHub.
-
-The following should remain outside the repository:
-
-.env
-/vendor
-
-The .env file may contain:
-
-Database credentials
-API keys
-Secret tokens
-Application configuration
-
-The vendor folder is generated by Composer.
-
-Every developer should run:
-
-composer install
-
-after cloning the project.
-
-📂 Project Structure
-LMS/
-│
-├── app/
-├── bootstrap/
-├── config/
-├── database/
-│   ├── migrations/
-│   ├── seeders/
-│   └── SQL File
-├── public/
-├── resources/
-├── routes/
-├── storage/
-├── tests/
-│
-├── .env.example
-├── artisan
-├── composer.json
-└── README.md
-🗄️ Database Rules
-
-When changing database structure:
-
-Create a Laravel migration for the change.
-Do not manually modify existing database tables without discussing it with the team.
-Make sure foreign keys are correctly configured.
-Test migrations before pushing.
-If the database SQL file needs to be updated, inform the team.
-🔄 Recommended Development Workflow
-
-Use this workflow every time you start working:
-
-Clone Project
-      ↓
-composer install
-      ↓
-Create .env
-      ↓
-php artisan key:generate
-      ↓
-Setup Database
-      ↓
-php artisan migrate
-      ↓
-Create Your Branch
-      ↓
-Work Only On Your Assigned Task
-      ↓
-Test Your Work
-      ↓
-git status
-      ↓
-git add .
-      ↓
-git commit
-      ↓
-git push
-      ↓
-Create Pull Request
-      ↓
-Team Review
-      ↓
-Merge into main
-⚡ Quick Setup
-
-For developers who already understand the setup:
-
-git clone <repository-url>
-cd LMS
-composer install
-copy .env.example .env
-php artisan key:generate
-php artisan migrate
-php artisan serve
-
-For Windows, make sure XAMPP Apache and MySQL are running.
-
-🤝 Team Collaboration
-
-Before making major changes, discuss them with the team.
-
-Keep your work limited to your assigned task.
-
-Team Rule
-
-One Developer = One Task = One Branch
-
-Do not mix multiple team members' tasks in the same branch.
-
-Keep the main branch stable and only merge tested and reviewed work.
-
-📢 Important Reminder
-
-Clone → Install Dependencies → Setup Environment → Setup Database → Create Branch → Work Only On Your Task → Test → Commit → Push → Pull Request → Review → Merge
-
-Happy Coding! 🚀
+git checkout -b your-branch-name
