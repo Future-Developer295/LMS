@@ -24,8 +24,7 @@
                         <option value="">All Grades</option>
                         <option>Grade 9</option>
                         <option>Grade 10</option>
-                        <option>Grade 11</option>
-                        <option>Grade 12</option>
+                    
                     </select>
                 </div>
                 <div class="filter-select-w">
