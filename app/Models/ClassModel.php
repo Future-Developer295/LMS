@@ -15,6 +15,7 @@ class ClassModel extends Model
 
     protected $fillable = [
         'class_name',
+        'class_code',
         'teacher_id',
         'class_timing',
         'class_days',
@@ -39,4 +40,13 @@ class ClassModel extends Model
     {
         return $this->hasMany(Student::class, 'class_id');
     }
+    public function enrolledStudents()
+{
+    return $this->belongsToMany(
+        Student::class,
+        'class_student',
+        'class_id',
+        'student_id'
+    )->withPivot('joined_at');
+}
 }

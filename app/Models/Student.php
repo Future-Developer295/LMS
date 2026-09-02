@@ -16,6 +16,7 @@ class Student extends Model
     protected $fillable = [
         'full_name',
         'last_name',
+        'user_id',
         'class_id',
         'batch_code',
         'father_name',
@@ -46,4 +47,17 @@ class Student extends Model
     {
         return $this->hasMany(AssignmentHasSubmit::class, 'student_id');
     }
+    public function user()
+{
+    return $this->belongsTo(User::class, 'user_id');
+}
+public function enrolledClasses()
+{
+    return $this->belongsToMany(
+        ClassModel::class,
+        'class_student',
+        'student_id',
+        'class_id'
+    )->withPivot('joined_at');
+}
 }
