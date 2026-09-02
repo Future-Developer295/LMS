@@ -13,75 +13,101 @@
 @section('body')
     <main class="page">
         <div class="breadcrumb">
-            <a href="classes.html">Classes</a><i class="fa-solid fa-chevron-right"></i><span class="current">Create New
-                Class</span>
+            <a href="{{ route('class') }}">Classes</a><i class="fa-solid fa-chevron-right"></i><span class="current">Create New Class</span>
         </div>
 
-        <div class="page-header">
-            <div>
-                <h1>Create New Class</h1>
-                <p>Configure details, assign personnel, and set the schedule for a new academic class.</p>
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
             </div>
-            <div class="page-header-actions">
-                <a class="btn btn-secondary" href="classes.html">Cancel</a>
-                <button class="btn btn-primary" id="saveClassBtn"><i class="fa-solid fa-floppy-disk"></i> Save Class</button>
-            </div>
-        </div>
+        @endif
 
-        <div class="card">
-            <div class="section-row">
+        <form action="{{ route('class_store') }}" method="POST" id="classForm">
+            @csrf
 
-
-                <div class="field">
-                    <label for="classTitle">Class Title *</label>
-                    <input type="text" class="input" id="classTitle" placeholder="e.g. Advanced Physics 101" required>
-                </div>
-
+            <div class="page-header">
                 <div>
-                    <div class="field mb-0">
-                        <label for="assignedTeacher">Assigned Teacher *</label>
-                        <select class="select" id="assignedTeacher">
-                            <option value="">Search Teachers...</option>
-                            <option>Dr. Reynolds</option>
-                            <option>Ms. Simmons</option>
-                            <option>Mr. Kim</option>
-                            <option>Eleanor Shellstrop</option>
-                            <option>Chidi Anagonye</option>
+                    <h1>Create New Class</h1>
+                    <p>Configure details, assign personnel, and set the schedule for a new academic class.</p>
+                </div>
+                <div class="page-header-actions">
+                    <a class="btn btn-secondary" href="{{ route('class') }}">Cancel</a>
+                    <button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i> Save Class</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="section-row">
+
+            
+<div class="field">
+    <label for="class_name">Course Name *</label>
+
+    <select class="select" name="class_name" id="class_name">
+        <option value="">Select Course...</option>
+
+        @foreach($courses as $course)
+            <option value="{{ $course->class_name }}"
+                {{ old('class_name') == $course->class_name ? 'selected' : '' }}>
+                {{ $course->class_name }}
+            </option>
+        @endforeach
+    </select>
+</div>
+
+                    <div class="field">
+                        <label for="teacher_id">Assigned Teacher *</label>
+                        <select class="select" id="teacher_id" name="teacher_id">
+                            <option value="">Select Teacher...</option>
+                            @foreach($teachers as $teacher)
+                                <option value="{{ $teacher->id }}" {{ old('teacher_id') == $teacher->id ? 'selected' : '' }}>
+                                    {{ $teacher->full_name }}
+                                </option>
+                            @endforeach
                         </select>
                     </div>
 
-
+                    <div class="field-row mt-3">
+                        <div class="field">
+                            <label for="class_days">Class Days *</label>
+                            <select class="select" id="class_days" name="class_days">
+                                <option value="">Select Days...</option>
+                                @foreach($classDays as $day)
+                                    <option value="{{ $day->id }}" {{ old('class_days') == $day->id ? 'selected' : '' }}>
+                                        {{ $day->class_days }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                       <div class="field mb-0">
+    <label for="class_timing">Class Timing *</label>
+    <select class="select" id="class_timing" name="class_timing">
+        <option value="">Select Timing...</option>
+        @foreach($classTimings as $timing)
+            <option value="{{ $timing->id }}" {{ old('class_timing') == $timing->id ? 'selected' : '' }}>
+                {{ $timing->class_timing }}
+            </option>
+        @endforeach
+    </select>
+</div>
+                    </div>
                 </div>
-                <div class="field-row mt-3">
-                    <div class="field">
-                        <label>Meeting Days *</label>
-                        <div class="day-toggle-row" id="dayToggleRow">
-                            <button type="button" class="day-toggle" data-day="M">M</button>
-                            <button type="button" class="day-toggle" data-day="T">T</button>
-                            <button type="button" class="day-toggle" data-day="W">W</button>
-                            <button type="button" class="day-toggle" data-day="Th">Th</button>
-                            <button type="button" class="day-toggle" data-day="F">F</button>
+
+                <div class="section-row"
+                    style="border-top:1px solid var(--border);background:var(--bg);border-radius:0 0 var(--radius-lg) var(--radius-lg);grid-template-columns:1fr;">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <span class="text-secondary" style="font-size:13px;">Fields marked with <span style="color:var(--danger);">*</span> are required.</span>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-ghost" type="reset">Reset Form</button>
+                            <button class="btn btn-primary" type="submit">Create Class</button>
                         </div>
                     </div>
-                    <div class="field mb-0">
-                        <label for="startTime">Start Time *</label>
-                        <input type="time" class="input" id="startTime" value="09:00">
-                    </div>
                 </div>
             </div>
-
-
-            <div class="section-row"
-                style="border-top:1px solid var(--border);background:var(--bg);border-radius:0 0 var(--radius-lg) var(--radius-lg);grid-template-columns:1fr;">
-                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-                    <span class="text-secondary" style="font-size:13px;">Fields marked with <span
-                            style="color:var(--danger);">*</span> are required.</span>
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-ghost" type="button" id="resetFormBtn">Reset Form</button>
-                        <button class="btn btn-primary" type="button" id="createClassBtn">Create Class</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        </form>
     </main>
 @endsection
