@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('student', function (Blueprint $table) {
             $table->id();
-             $table->string('full_name');
+            $table->string('full_name');
             $table->string('last_name');
 
             $table->foreignId('class_id')
@@ -34,6 +34,7 @@ return new class extends Migration
             $table->string('email_address')->nullable();
 
             $table->text('address')->nullable();
+            $table->string('emergency_contact');
             $table->timestamps();
         });
     }
