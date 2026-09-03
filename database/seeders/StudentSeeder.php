@@ -5,14 +5,15 @@ namespace Database\Seeders;
 use App\Models\Student;
 use App\Models\ClassModel;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class StudentSeeder extends Seeder
 {
     public function run(): void
     {
-        $web = ClassModel::where('class_name', 'Web Development')->first();
-        $graphic = ClassModel::where('class_name', 'Graphic Designing')->first();
-        $laravel = ClassModel::where('class_name', 'Laravel Development')->first();
+        $web = ClassModel::where('class_name', 'Web Development')->firstOrFail();
+        $graphic = ClassModel::where('class_name', 'Graphic Designing')->firstOrFail();
+        $laravel = ClassModel::where('class_name', 'Laravel Development')->firstOrFail();
 
         Student::create([
             'full_name' => 'Hamza',
@@ -26,6 +27,7 @@ class StudentSeeder extends Seeder
             'contact_number' => '03001239876',
             'email_address' => 'hamza@lms.com',
             'address' => 'Lahore, Pakistan',
+            'password' => Hash::make('12345678'),
             'emergency_contact' => '03001112233',
         ]);
 
@@ -41,6 +43,7 @@ class StudentSeeder extends Seeder
             'contact_number' => '03111239876',
             'email_address' => 'sara@lms.com',
             'address' => 'Lahore, Pakistan',
+            'password' => Hash::make('12345678'),
             'emergency_contact' => '03112223344',
         ]);
 
@@ -56,6 +59,7 @@ class StudentSeeder extends Seeder
             'contact_number' => '03221239876',
             'email_address' => 'ahmed@lms.com',
             'address' => 'Gujranwala, Pakistan',
+            'password' => Hash::make('12345678'),
             'emergency_contact' => '03223334455',
         ]);
 
@@ -71,6 +75,7 @@ class StudentSeeder extends Seeder
             'contact_number' => '03331239876',
             'email_address' => 'zainab@lms.com',
             'address' => 'Lahore, Pakistan',
+            'password' => Hash::make('12345678'),
             'emergency_contact' => '03334445566',
         ]);
 
@@ -86,6 +91,7 @@ class StudentSeeder extends Seeder
             'contact_number' => '03451239876',
             'email_address' => 'bilal@lms.com',
             'address' => 'Lahore, Pakistan',
+            'password' => Hash::make('12345678'),
             'emergency_contact' => '03445556677',
         ]);
     }
