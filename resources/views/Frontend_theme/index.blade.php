@@ -3,6 +3,7 @@
 active
 @endsection
 @section("body")
+
   <main class="flex-grow-1 p-3 p-md-4 index-main">
     <div class="row g-4">
       <div class="col-12 col-sm-6 col-md-4 col-lg-3">
