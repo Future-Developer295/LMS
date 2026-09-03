@@ -8,6 +8,7 @@ use App\Http\Controllers\StudentRegisterController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\AttendanceController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ClassController;
 
 Route::middleware('auth')->group(function () {
 

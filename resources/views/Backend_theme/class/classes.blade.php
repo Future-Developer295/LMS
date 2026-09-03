@@ -13,32 +13,40 @@
                 <p>Manage current academic classes, assignments, and statuses.</p>
             </div>
             <div class="page-header-actions">
-                <a class="btn btn-primary" href="class-add.html"><i class="fa-solid fa-plus"></i> New Class</a>
+                <a class="btn btn-primary" href="{{ route('class_add') }}"><i class="fa-solid fa-plus"></i> New Class</a>
             </div>
         </div>
 
         <div class="card">
             <div class="filter-bar">
-                <div class="filter-select-w">
-                    <select class="select" id="gradeFilter">
-                        <option value="">All Grades</option>
-                        <option>Grade 9</option>
-                        <option>Grade 10</option>
-                        <option>Grade 11</option>
-                        <option>Grade 12</option>
-                    </select>
-                </div>
-                <div class="filter-select-w">
-                    <select class="select" id="statusFilter">
-                        <option value="">Status: All</option>
-                        <option>Active</option>
-                        <option>Upcoming</option>
-                    </select>
-                </div>
+       
+<div class="filter-select-w">
+    <select class="select" id="dayFilter"
+        onchange="window.location.href='{{ route('class') }}?day=' + this.value + '&teacher_id=' + document.getElementById('teacherFilter').value">
+        <option value="">Select Days...</option>
+        @foreach($classDays as $day)
+            <option value="{{ $day->id }}" {{ request('day') == $day->id ? 'selected' : '' }}>
+                {{ $day->class_days }}
+            </option>
+        @endforeach
+    </select>
+</div>
+
+<div class="filter-select-w">
+    <select class="select" id="teacherFilter"
+        onchange="window.location.href='{{ route('class') }}?teacher_id=' + this.value + '&day=' + document.getElementById('dayFilter').value">
+        <option value="">All Teachers</option>
+        @foreach($teachers as $teacher)
+            <option value="{{ $teacher->id }}" {{ request('teacher_id') == $teacher->id ? 'selected' : '' }}>
+                {{ $teacher->full_name }}
+            </option>
+        @endforeach
+    </select>
+</div>
+
+
                 <div class="filter-bar-spacer"></div>
-                <button class="icon-btn"
-                    style="border:1px solid var(--border);border-radius:var(--radius-sm);width:44px;height:44px;"
-                    title="Grid view"><i class="fa-solid fa-table-cells-large"></i></button>
+ 
                 <button class="icon-btn"
                     style="border:1px solid var(--border);border-radius:var(--radius-sm);width:44px;height:44px;"
                     id="exportClassesBtn" title="Export"><i class="fa-solid fa-download"></i></button>
@@ -49,48 +57,48 @@
                     <thead>
                         <tr>
                             <th>Class Name</th>
-                            <th>Grade</th>
                             <th>Teacher</th>
-                            <th>Room</th>
-                            <th>Status</th>
+                            <th>Class Timing</th>
+                            <th>Class Days</th>
                             <th style="text-align:right;">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="classesBody">
-                        <tr>
-                            <td>dummy</td>
-                            <td>dummy</td>
-                            <td>dummy</td>
-                            <td>dummy</td>
-                            <td>dummy</td>
-                            <td class="text-end">
-                                <a href="" class="btn btn-sm btn-primary rounded-2 me-1" title="View">
-                                    <i class="fa-solid fa-eye"></i>
-                                </a>
+                        @forelse($classes as $class)
+                            <tr>
+                                <td>{{ $class->class_name }}</td>
+                                <td>{{ $class->teacher_name ?? '—' }}</td>
+                             <td>{{ $class->timing_name }}</td>
+<td>{{ $class->day_name }}</td>
+                               <td class="text-end">
+<a href="{{ route('class_view', $class->id) }}" class="btn btn-sm btn-primary rounded-2 me-1" title="View">
+    <i class="fa-solid fa-eye"></i>
+</a>
 
-                                <a href="" class="btn btn-sm btn-warning rounded-2 me-1" title="Edit">
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </a>
+    <a href="{{ route('class_edit', $class->id) }}" class="btn btn-sm btn-warning rounded-2 me-1" title="Edit">
+        <i class="fa-solid fa-pen-to-square"></i>
+    </a>
 
-                                <a href="" class="btn btn-sm btn-danger rounded-2" title="Delete">
-                                    <i class="fa-solid fa-trash"></i>
-                                </a>
-                            </td>
-                        </tr>
+    <form action="{{ route('class_destroy', $class->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this class?');">
+        @csrf
+        @method('DELETE')
+        <button type="submit" class="btn btn-sm btn-danger rounded-2" title="Delete">
+            <i class="fa-solid fa-trash"></i>
+        </button>
+    </form>
+</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="text-center">No classes found.</td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
+                
             </div>
 
-            <div class="pagination-bar">
-                <span class="pagination-info" id="classResultsCount">Showing 1 to 6 of 24 entries</span>
-                <div class="pagination">
-                    <button class="page-btn"><i class="fa-solid fa-chevron-left"></i></button>
-                    <button class="page-btn active">1</button>
-                    <button class="page-btn">2</button>
-                    <button class="page-btn">3</button>
-                    <button class="page-btn"><i class="fa-solid fa-chevron-right"></i></button>
-                </div>
-            </div>
+      
         </div>
     </main>
 @endsection
