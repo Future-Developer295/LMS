@@ -6,42 +6,45 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('student', function (Blueprint $table) {
             $table->id();
-            $table->string('full_name');
-            $table->string('last_name');
 
+            $table->string('full_name');
+
+
+            $table->string('last_name')->nullable();
+
+            // Student baad mein class join karega
             $table->foreignId('class_id')
+                ->nullable()
                 ->constrained('class')
                 ->cascadeOnUpdate()
-                ->restrictOnDelete();
+                ->nullOnDelete();
 
-            $table->string('batch_code');
+            $table->string('batch_code')->nullable();
 
-            $table->string('father_name');
-            $table->string('cnic')->unique();
+            $table->string('father_name')->nullable();
 
-            $table->enum('gender', ['male', 'female', 'other']);
+            $table->string('cnic')->nullable()->unique();
 
-            $table->date('dob');
+            $table->enum('gender', ['male', 'female', 'other'])->nullable();
 
-            $table->string('contact_number');
+            $table->date('dob')->nullable();
+
+            $table->string('contact_number')->nullable();
+
             $table->string('email_address')->nullable();
 
             $table->text('address')->nullable();
-            $table->string('emergency_contact');
+
+            $table->string('password');
+
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('student');

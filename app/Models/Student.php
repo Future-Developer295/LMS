@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\ClassStudent;
 
-class Student extends Model
+class Student extends Authenticatable
 {
     use HasFactory;
 
@@ -25,12 +26,26 @@ class Student extends Model
         'contact_number',
         'email_address',
         'address',
-        'emergency_contact',
+        'password',
+    ];
+
+    protected $hidden = [
+        'password',
     ];
 
     protected $casts = [
         'dob' => 'date',
     ];
+
+    public function getAuthPassword()
+    {
+        return $this->password;
+    }
+
+    public function getEmailForPasswordReset()
+    {
+        return $this->email_address;
+    }
 
     public function class()
     {
@@ -45,5 +60,10 @@ class Student extends Model
     public function assignmentSubmissions()
     {
         return $this->hasMany(AssignmentHasSubmit::class, 'student_id');
+    }
+
+    public function classEnrollments()
+    {
+        return $this->hasMany(ClassStudent::class, 'student_id');
     }
 }
