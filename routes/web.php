@@ -7,6 +7,9 @@ use App\Http\Controllers\StudentClassController;
 use App\Http\Controllers\StudentAuthController;
 use App\Http\Controllers\StudentRegisterController;
 use App\Http\Controllers\FrontendController;
+use App\Http\Controllers\AttendanceController;
+
+
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -31,9 +34,29 @@ Route::delete('/dashboard/class/delete/{id}', [ClassController::class, 'destroy'
     ->name('class_destroy');
 Route::get('/class/view/{id}', [ClassController::class, 'view'])->name('class_view');
 
-    Route::get('/dashboard/attendance', [DashboardController::class, 'attendance'])->name('attendance');
-    Route::get('/dashboard/attendance/edit', [DashboardController::class, 'attendance_edit'])->name('attendance_edit');
-    Route::get('/dashboard/attendance/add', [DashboardController::class, 'attendance_add'])->name('attendance_add');
+ Route::get('/dashboard/attendance', [AttendanceController::class, 'index'])
+    ->name('attendance');
+
+Route::get('/dashboard/attendance/add', [AttendanceController::class, 'create'])
+    ->name('attendance_add');
+
+Route::get('/dashboard/attendance/view/{attendance}', [AttendanceController::class, 'show'])
+    ->name('attendance_view');
+
+Route::get('/dashboard/attendance/edit/{attendance}', [AttendanceController::class, 'edit'])
+    ->name('attendance_edit');
+
+Route::get('/dashboard/attendance/students/{batch_code}', [AttendanceController::class, 'studentsByBatch'])
+    ->name('attendance_students');
+
+Route::post('/dashboard/attendance/store', [AttendanceController::class, 'store'])
+    ->name('attendance_store');
+
+Route::put('/dashboard/attendance/update/{attendance}', [AttendanceController::class, 'update'])
+    ->name('attendance_update');
+
+Route::delete('/dashboard/attendance/delete/{attendance}', [AttendanceController::class, 'destroy'])
+    ->name('attendance_destroy');
 
     Route::get('/dashboard/assignment', [DashboardController::class, 'assignment'])->name('assignment');
     Route::get('/dashboard/assignment/edit', [DashboardController::class, 'assignment_edit'])->name('assignment_edit');
