@@ -51,20 +51,24 @@
                 </div>
 
                 <div class="view-field">
-                    <label>Assigned Teacher</label>
-                    <div class="value">{{ $class->teacher_name ?? '—' }}</div>
-                </div>
+    <label>Assigned Teacher</label>
+    <div class="value">
+        {{ $class->teacher?->full_name ?? '—' }}
+    </div>
+</div>
 
-                <div class="field-row mt-3">
-                    <div class="view-field">
-                        <label>Class Days</label>
-                        <div class="value">{{ $class->day_name ?? '—' }}</div>
-                    </div>
-                    <div class="view-field mb-0">
-                        <label>Class Timing</label>
-                        <div class="value">{{ $class->timing_name ?? '—' }}</div>
-                    </div>
-                </div>
+               <div class="view-field">
+    <label>Class Days</label>
+    <div class="value">
+        {{ $class->day?->class_days ?? '—' }}
+    </div>
+</div>
+                 <div class="view-field mb-0">
+    <label>Class Timing</label>
+    <div class="value">
+        {{ $class->timing?->class_timing ?? '—' }}
+    </div>
+</div>
 
             </div>
 
