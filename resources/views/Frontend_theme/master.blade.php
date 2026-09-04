@@ -20,9 +20,7 @@ if (!isset($activeNav)) {
   <link rel="stylesheet" href="{{ asset('Frontend_theme/css/style.css') }}">
 </head>
 <style>
-  /* ================================
-   PREMIUM PROFILE MENU
-================================ */
+
 
   .profile-dropdown {
     position: relative;
@@ -30,7 +28,7 @@ if (!isset($activeNav)) {
   }
 
 
-  /* Avatar */
+
 
   .profile-avatar {
     width: 42px;
@@ -377,84 +375,6 @@ if (!isset($activeNav)) {
 
       </button>
 
-      <div class="profile-menu" id="profileMenu">
-
-        <!-- User Header -->
-        <div class="profile-header">
-          <div class="profile-big-avatar">
-
-            @if(auth()->user()?->profile_image)
-            <img src="{{ asset('storage/' . auth()->user()->profile_image) }}"
-              alt="{{ auth()->user()->full_name }}"
-              class="profile-big-avatar-image">
-            @else
-            {{ strtoupper(substr(auth()->user()?->full_name ?? 'U', 0, 1)) }}
-            @endif
-
-          </div>
-
-          <div class="profile-user-info">
-            <div class="profile-user-name">
-              {{ auth()->user()?->full_name ?? 'User' }}
-            </div>
-
-            <div class="profile-user-email">
-              {{ auth()->user()?->email_address ?? '' }}
-            </div>
-          </div>
-
-        </div>
-
-
-        <div class="profile-divider"></div>
-
-
-        <!-- Profile -->
-        <a href="{{ route('student.profile') }}" class="profile-item">
-
-          <span class="profile-item-icon">
-            <svg viewBox="0 0 24 24">
-              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 
-                    1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 
-                    4v2h16v-2c0-2.66-5.33-4-8-4z" />
-            </svg>
-          </span>
-
-          <span>
-            <strong>My Profile</strong>
-            <small>View your profile</small>
-          </span>
-
-          <span class="profile-arrow">›</span>
-
-        </a>
-
-
-        <!-- Logout -->
-        <form method="POST" action="{{ route('student.logout') }}">
-
-          @csrf
-
-          <button type="submit" class="profile-item logout-item">
-
-            <span class="profile-item-icon">
-              <svg viewBox="0 0 24 24">
-                <path d="M10 17l5-5-5-5v3H3v4h7v3zm9-14h-8c-1.1 
-                        0-2 .9-2 2v3h2V5h8v14h-8v-3H9v3c0 1.1.9 
-                        2 2 2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z" />
-              </svg>
-            </span>
-
-            <span>
-              <strong>Logout</strong>
-              <small>Sign out of your account</small>
-            </span>
-
-          </button>
-
-        </form>
-
-      </div>
 
     </div>
   </header>
@@ -498,12 +418,11 @@ if (!isset($activeNav)) {
             Join class
         </div>
 
-        <form method="POST" action="{{ route('student.join.class') }}">
+        <form method="POST" >
             @csrf
 
             <div class="join-class-body">
 
-                {{-- Signed in account --}}
                 <div class="join-class-account-box">
 
                     <div class="join-class-signedin-label">
@@ -512,7 +431,6 @@ if (!isset($activeNav)) {
 
                     <div class="join-class-account-row">
 
-                        {{-- First Letter Avatar --}}
                         <div class="join-class-avatar d-flex align-items-center justify-content-center">
                             {{ strtoupper(substr(trim($student->full_name ?? 'U'), 0, 1)) }}
                         </div>
