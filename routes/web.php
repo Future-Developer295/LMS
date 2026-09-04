@@ -1,11 +1,8 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ClassController;
-use App\Http\Controllers\StudentClassController;
-use App\Http\Controllers\StudentAuthController;
-use App\Http\Controllers\StudentRegisterController;
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\AttendanceController;
 
@@ -30,33 +27,17 @@ Route::middleware('auth')->group(function () {
     Route::post('/dashboard/class/store', [ClassController::class, 'class_store'])->name('class_store');
     Route::get('/dashboard/class/edit/{id}', [ClassController::class, 'class_edit'])->name('class_edit');
     Route::put('/dashboard/class/update/{id}', [ClassController::class, 'class_update'])->name('class_update');
-    Route::delete('/dashboard/class/delete/{id}', [ClassController::class, 'destroy'])
-        ->name('class_destroy');
+    Route::delete('/dashboard/class/delete/{id}', [ClassController::class, 'destroy'])->name('class_destroy');
     Route::get('/class/view/{id}', [ClassController::class, 'view'])->name('class_view');
 
-    Route::get('/dashboard/attendance', [AttendanceController::class, 'index'])
-        ->name('attendance');
-
-    Route::get('/dashboard/attendance/add', [AttendanceController::class, 'create'])
-        ->name('attendance_add');
-
-    Route::get('/dashboard/attendance/view/{attendance}', [AttendanceController::class, 'show'])
-        ->name('attendance_view');
-
-    Route::get('/dashboard/attendance/edit/{attendance}', [AttendanceController::class, 'edit'])
-        ->name('attendance_edit');
-
-    Route::get('/dashboard/attendance/students/{batch_code}', [AttendanceController::class, 'studentsByBatch'])
-        ->name('attendance_students');
-
-    Route::post('/dashboard/attendance/store', [AttendanceController::class, 'store'])
-        ->name('attendance_store');
-
-    Route::put('/dashboard/attendance/update/{attendance}', [AttendanceController::class, 'update'])
-        ->name('attendance_update');
-
-    Route::delete('/dashboard/attendance/delete/{attendance}', [AttendanceController::class, 'destroy'])
-        ->name('attendance_destroy');
+    Route::get('/dashboard/attendance', [AttendanceController::class, 'index'])->name('attendance');
+    Route::get('/dashboard/attendance/add', [AttendanceController::class, 'create'])->name('attendance_add');
+    Route::get('/dashboard/attendance/students/{batch_code}', [AttendanceController::class, 'studentsByBatch'])->name('attendance_students');
+    Route::post('/dashboard/attendance/store', [AttendanceController::class, 'store'])->name('attendance_store');
+    Route::get('/dashboard/attendance/{attendance}', [AttendanceController::class, 'show'])->name('attendance_view');
+    Route::get('/dashboard/attendance/{attendance}/edit', [AttendanceController::class, 'edit'])->name('attendance_edit');
+    Route::put('/dashboard/attendance/{attendance}', [AttendanceController::class, 'update'])->name('attendance_update');
+    Route::delete('/dashboard/attendance/{attendance}', [AttendanceController::class, 'destroy'])->name('attendance_destroy');
 
     Route::get('/dashboard/assignment', [DashboardController::class, 'assignment'])->name('assignment');
     Route::get('/dashboard/assignment/edit', [DashboardController::class, 'assignment_edit'])->name('assignment_edit');
@@ -173,5 +154,6 @@ Route::middleware('guest')->group(function () {
 Route::get('/student/dashboard', function () {
     return view('frontend_theme.index');
 })->middleware('auth')->name('student.dashboard');
+
 
 require __DIR__ . '/auth.php';

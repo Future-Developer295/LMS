@@ -67,6 +67,7 @@ class ClassController extends Controller
         ]);
 
         ClassModel::create([
+             'class_code'   => 'CLS-' . strtoupper(uniqid()),
             'class_name'   => $request->class_name,
             'teacher_id'   => $request->teacher_id,
             'class_timing' => $request->class_timing,
