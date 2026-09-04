@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\ClassModel;
+use App\Models\ClassTiming;
 
 class DashboardController extends Controller
 {
@@ -51,10 +53,16 @@ class DashboardController extends Controller
     function assignment_edit (){
         return view('backend_theme.assignment.assignment-edit');
     }
-    function assignment_add (){
-        return view('backend_theme.assignment.assignment-add');
-    }
+function assignment_add()
+{
+    $classes = ClassModel::orderBy('class_name')
+        ->get();
 
+    return view(
+        'backend_theme.assignment.assignment-add',
+        compact('classes')
+    );
+}
     function submission (){
         return view('backend_theme.submission.submissions');
     }

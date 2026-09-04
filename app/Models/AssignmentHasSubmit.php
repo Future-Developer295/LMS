@@ -11,16 +11,17 @@ class AssignmentHasSubmit extends Model
 
     protected $table = 'assignment_has_submit';
 
-    public $timestamps = false;
+    
 
-    protected $fillable = [
-        'assignment_id',
-        'student_id',
-        'assignment_file',
-        'assignment_remark',
-        'assignment_remarks_comments',
-    ];
-
+   protected $fillable = [
+    'assignment_id',
+    'student_id',
+    'assignment_file',
+    'assignment_remark',
+    'assignment_remarks_comments',
+    'grade',
+    'published',
+];
     public function assignment()
     {
         return $this->belongsTo(
