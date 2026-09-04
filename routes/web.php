@@ -26,37 +26,37 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/student/add', [DashboardController::class, 'student_add'])->name('student_add');
 
     Route::get('/dashboard/class', [ClassController::class, 'class'])->name('class');
-Route::get('/dashboard/class/add', [ClassController::class, 'class_add'])->name('class_add');
-Route::post('/dashboard/class/store', [ClassController::class, 'class_store'])->name('class_store');
-Route::get('/dashboard/class/edit/{id}', [ClassController::class, 'class_edit'])->name('class_edit');
-Route::put('/dashboard/class/update/{id}', [ClassController::class, 'class_update'])->name('class_update');
-Route::delete('/dashboard/class/delete/{id}', [ClassController::class, 'destroy'])
-    ->name('class_destroy');
-Route::get('/class/view/{id}', [ClassController::class, 'view'])->name('class_view');
+    Route::get('/dashboard/class/add', [ClassController::class, 'class_add'])->name('class_add');
+    Route::post('/dashboard/class/store', [ClassController::class, 'class_store'])->name('class_store');
+    Route::get('/dashboard/class/edit/{id}', [ClassController::class, 'class_edit'])->name('class_edit');
+    Route::put('/dashboard/class/update/{id}', [ClassController::class, 'class_update'])->name('class_update');
+    Route::delete('/dashboard/class/delete/{id}', [ClassController::class, 'destroy'])
+        ->name('class_destroy');
+    Route::get('/class/view/{id}', [ClassController::class, 'view'])->name('class_view');
 
- Route::get('/dashboard/attendance', [AttendanceController::class, 'index'])
-    ->name('attendance');
+    Route::get('/dashboard/attendance', [AttendanceController::class, 'index'])
+        ->name('attendance');
 
-Route::get('/dashboard/attendance/add', [AttendanceController::class, 'create'])
-    ->name('attendance_add');
+    Route::get('/dashboard/attendance/add', [AttendanceController::class, 'create'])
+        ->name('attendance_add');
 
-Route::get('/dashboard/attendance/view/{attendance}', [AttendanceController::class, 'show'])
-    ->name('attendance_view');
+    Route::get('/dashboard/attendance/view/{attendance}', [AttendanceController::class, 'show'])
+        ->name('attendance_view');
 
-Route::get('/dashboard/attendance/edit/{attendance}', [AttendanceController::class, 'edit'])
-    ->name('attendance_edit');
+    Route::get('/dashboard/attendance/edit/{attendance}', [AttendanceController::class, 'edit'])
+        ->name('attendance_edit');
 
-Route::get('/dashboard/attendance/students/{batch_code}', [AttendanceController::class, 'studentsByBatch'])
-    ->name('attendance_students');
+    Route::get('/dashboard/attendance/students/{batch_code}', [AttendanceController::class, 'studentsByBatch'])
+        ->name('attendance_students');
 
-Route::post('/dashboard/attendance/store', [AttendanceController::class, 'store'])
-    ->name('attendance_store');
+    Route::post('/dashboard/attendance/store', [AttendanceController::class, 'store'])
+        ->name('attendance_store');
 
-Route::put('/dashboard/attendance/update/{attendance}', [AttendanceController::class, 'update'])
-    ->name('attendance_update');
+    Route::put('/dashboard/attendance/update/{attendance}', [AttendanceController::class, 'update'])
+        ->name('attendance_update');
 
-Route::delete('/dashboard/attendance/delete/{attendance}', [AttendanceController::class, 'destroy'])
-    ->name('attendance_destroy');
+    Route::delete('/dashboard/attendance/delete/{attendance}', [AttendanceController::class, 'destroy'])
+        ->name('attendance_destroy');
 
     Route::get('/dashboard/assignment', [DashboardController::class, 'assignment'])->name('assignment');
     Route::get('/dashboard/assignment/edit', [DashboardController::class, 'assignment_edit'])->name('assignment_edit');
@@ -101,7 +101,7 @@ Route::post('/student/logout', [StudentAuthController::class, 'logout'])
 
 Route::get('/student/profile', function () {
 
-   $user = Auth::user();
+    $user = Auth::user();
 
 
     $student = \App\Models\Student::where(
@@ -110,12 +110,11 @@ Route::get('/student/profile', function () {
     )->first();
 
     return view('frontend_theme.student-profile', compact('student'));
-
 })->middleware('auth')->name('student.profile');
 
 Route::get('/student/profile/complete', function () {
 
-$user = Auth::user();
+    $user = Auth::user();
 
 
     $student = \App\Models\Student::where(
@@ -124,7 +123,6 @@ $user = Auth::user();
     )->first();
 
     return view('frontend_theme.complete-profile', compact('student'));
-
 })->middleware('auth')->name('student.profile.complete');
 
 Route::post('/student/profile/complete', function (Illuminate\Http\Request $request) {
@@ -161,7 +159,6 @@ Route::post('/student/profile/complete', function (Illuminate\Http\Request $requ
     return redirect()
         ->route('student.profile')
         ->with('success', 'Profile completed successfully.');
-
 })->middleware('auth')->name('student.profile.complete.store');
 
 Route::middleware('guest')->group(function () {
