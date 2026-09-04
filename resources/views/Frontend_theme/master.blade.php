@@ -1963,7 +1963,7 @@ margin-top: 20px !important;
 
 
         <!-- My Profile -->
-        <a href="{{ route('student.profile') }}"
+        <a href=""
           class="profile-item">
 
           <span class="profile-item-icon">
@@ -1996,8 +1996,7 @@ margin-top: 20px !important;
 
 
         <!-- Logout -->
-        <form method="POST"
-          action="{{ route('student.logout') }}">
+        <form method="POST">
 
           @csrf
 
@@ -2109,7 +2108,7 @@ margin-top: 20px !important;
           Join class
         </div>
 
-        <form method="POST" action="{{ route('student.join.class') }}">
+        <form method="POST" >
           @csrf
 
           <div class="join-class-body">
