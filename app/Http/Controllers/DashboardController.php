@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ClassModel;
+use App\Models\Student;
+use App\Models\Teacher;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -9,23 +12,139 @@ class DashboardController extends Controller
     function index (){
         return view('Backend_theme.dashboard');
     }
+
     function teacher (){
-        return view('backend_theme.teacher.teachers');
+        $teachers = Teacher::latest()->get();
+        return view('backend_theme.teacher.teachers', compact('teachers'));
     }
-    function teacher_edit (){
-        return view('backend_theme.teacher.teacher-edit');
+
+    function teacher_edit ($id){
+        $teacher = Teacher::findOrFail($id);
+        return view('backend_theme.teacher.teacher-edit', compact('teacher'));
     }
+
     function teacher_add (){
         return view('backend_theme.teacher.teacher-add');
     }
+
+    function teacher_store (Request $request){
+        $data = $request->validate([
+            'full_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|unique:teacher,email',
+            'contact_number' => 'required|string|max:50',
+            'address' => 'nullable|string',
+            'cnic' => 'required|string|unique:teacher,cnic',
+            'gender' => 'required|in:male,female,other',
+            'salary' => 'required|numeric',
+            'profile_img' => 'nullable|image|max:2048',
+        ]);
+
+        if ($request->hasFile('profile_img')) {
+            $data['profile_img'] = $request->file('profile_img')->store('teachers', 'public');
+        }
+
+        Teacher::create($data);
+
+        return redirect()->route('teacher')->with('success', 'Teacher added successfully.');
+    }
+
+    function teacher_update (Request $request, $id){
+        $teacher = Teacher::findOrFail($id);
+
+        $data = $request->validate([
+            'full_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|unique:teacher,email,' . $teacher->id,
+            'contact_number' => 'required|string|max:50',
+            'address' => 'nullable|string',
+            'cnic' => 'required|string|unique:teacher,cnic,' . $teacher->id,
+            'gender' => 'required|in:male,female,other',
+            'salary' => 'required|numeric',
+            'profile_img' => 'nullable|image|max:2048',
+        ]);
+
+        if ($request->hasFile('profile_img')) {
+            $data['profile_img'] = $request->file('profile_img')->store('teachers', 'public');
+        }
+
+        $teacher->update($data);
+
+        return redirect()->route('teacher')->with('success', 'Teacher updated successfully.');
+    }
+
+    function teacher_destroy ($id){
+        $teacher = Teacher::findOrFail($id);
+        $teacher->delete();
+
+        return redirect()->route('teacher')->with('success', 'Teacher deleted successfully.');
+    }
+
     function student (){
-        return view('backend_theme.student.students');
+        $students = Student::with('class')->latest()->get();
+        return view('backend_theme.student.students', compact('students'));
     }
-    function student_edit (){
-        return view('backend_theme.student.student-edit');
+
+    function student_edit ($id){
+        $student = Student::findOrFail($id);
+        $classes = ClassModel::all();
+        return view('backend_theme.student.student-edit', compact('student', 'classes'));
     }
+
     function student_add (){
-        return view('backend_theme.student.student-add');
+        $classes = ClassModel::all();
+        return view('backend_theme.student.student-add', compact('classes'));
+    }
+
+    function student_store (Request $request){
+        $data = $request->validate([
+            'full_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'class_id' => 'required|exists:class,id',
+            'batch_code' => 'required|string|max:50',
+            'father_name' => 'required|string|max:255',
+            'cnic' => 'required|string|unique:student,cnic',
+            'gender' => 'required|in:male,female,other',
+            'dob' => 'required|date',
+            'contact_number' => 'required|string|max:50',
+            'email_address' => 'nullable|email',
+            'address' => 'nullable|string',
+            'emergency_contact' => 'required|string|max:50',
+        ]);
+
+        Student::create($data);
+
+        return redirect()->route('student')->with('success', 'Student added successfully.');
+    }
+
+    function student_update (Request $request, $id){
+        $student = Student::findOrFail($id);
+
+        $data = $request->validate([
+            'full_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'class_id' => 'required|exists:class,id',
+            'batch_code' => 'required|string|max:50',
+            'father_name' => 'required|string|max:255',
+            'cnic' => 'required|string|unique:student,cnic,' . $student->id,
+            'gender' => 'required|in:male,female,other',
+            'dob' => 'required|date',
+            'contact_number' => 'required|string|max:50',
+            'email_address' => 'nullable|email',
+            'address' => 'nullable|string',
+            'emergency_contact' => 'required|string|max:50',
+        ]);
+
+        $student->update($data);
+
+        return redirect()->route('student')->with('success', 'Student updated successfully.');
+    }
+
+    function student_destroy ($id){
+        $student = Student::findOrFail($id);
+        $student->delete();
+
+        return redirect()->route('student')->with('success', 'Student deleted successfully.');
     }
     function class (){
         return view('backend_theme.class.classes');
