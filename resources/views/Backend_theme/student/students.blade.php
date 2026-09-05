@@ -13,9 +13,13 @@ active
           <p>Manage and view all enrolled student records.</p>
         </div>
         <div class="page-header-actions">
-          <a class="btn btn-primary" href="student-add.html"><i class="fa-solid fa-plus"></i> Add Student</a>
+          <a class="btn btn-primary" href="{{ route('student_add') }}"><i class="fa-solid fa-plus"></i> Add Student</a>
         </div>
       </div>
+
+      @if (session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+      @endif
 
       <div class="card">
         <div class="filter-bar">
@@ -44,34 +48,44 @@ active
             <thead>
               <tr>
                 <th>Student Name</th>
-                <th>Roll Number</th>
-                <th>Grade/Year</th>
-                <th>Enrollment Date</th>
-                <th>Status</th>
+                <th>Batch Code</th>
+                <th>Class</th>
+                <th>DOB</th>
+                <th>Contact</th>
                 <th style="text-align:right;">Actions</th>
               </tr>
             </thead>
             <tbody id="studentsBody">
+              @forelse ($students as $student)
               <tr>
-                            <td>dummy</td>
-                            <td>dummy</td>
-                            <td>dummy</td>
-                            <td>dummy</td>
-                            <td>dummy</td>
+                            <td>{{ $student->full_name }} {{ $student->last_name }}</td>
+                            <td>{{ $student->batch_code }}</td>
+                            <td>{{ $student->class->class_name ?? '-' }}</td>
+                            <td>{{ $student->dob }}</td>
+                            <td>{{ $student->contact_number }}</td>
                             <td class="text-end">
-                                <a href="" class="btn btn-sm btn-primary rounded-2 me-1" title="View">
+                                <a href="{{ route('student_view', $student->id) }}" class="btn btn-sm btn-primary rounded-2 me-1" title="View">
                                     <i class="fa-solid fa-eye"></i>
                                 </a>
 
-                                <a href="" class="btn btn-sm btn-warning rounded-2 me-1" title="Edit">
+                                <a href="{{ route('student_edit', $student->id) }}" class="btn btn-sm btn-warning rounded-2 me-1" title="Edit">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </a>
 
-                                <a href="" class="btn btn-sm btn-danger rounded-2" title="Delete">
-                                    <i class="fa-solid fa-trash"></i>
-                                </a>
+                                <form action="{{ route('student_destroy', $student->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this student?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-danger rounded-2" title="Delete">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </form>
                             </td> 
                         </tr>
+              @empty
+              <tr>
+                <td colspan="6" class="text-center">No students found.</td>
+              </tr>
+              @endforelse
             </tbody>
           </table>
         </div>
