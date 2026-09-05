@@ -54,6 +54,10 @@
                             <td>{{ $teacher->email }}</td>
                             <td>{{ $teacher->contact_number }}</td>
                             <td class="text-end">
+                                <a href="{{ route('teacher_view', $teacher->id) }}" class="btn btn-sm btn-primary rounded-2 me-1" title="View">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+
                                 <a href="{{ route('teacher_edit', $teacher->id) }}" class="btn btn-sm btn-warning rounded-2 me-1" title="Edit">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </a>

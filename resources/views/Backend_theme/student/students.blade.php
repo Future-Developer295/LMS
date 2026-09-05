@@ -64,6 +64,10 @@ active
                             <td>{{ $student->dob }}</td>
                             <td>{{ $student->contact_number }}</td>
                             <td class="text-end">
+                                <a href="{{ route('student_view', $student->id) }}" class="btn btn-sm btn-primary rounded-2 me-1" title="View">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+
                                 <a href="{{ route('student_edit', $student->id) }}" class="btn btn-sm btn-warning rounded-2 me-1" title="Edit">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </a>

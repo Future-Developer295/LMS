@@ -41,16 +41,11 @@ class ClassController extends Controller
 
   public function class_add()
 {
-    $courses = ClassModel::select('id', 'class_name')
-        ->distinct()
-        ->get();
-
     $teachers = Teacher::all();
     $classDays = ClassDay::all();
     $classTimings = ClassTiming::all();
 
     return view('backend_theme.class.class-add', compact(
-        'courses',
         'teachers',
         'classDays',
         'classTimings'
@@ -84,17 +79,12 @@ class ClassController extends Controller
 {
     $class = ClassModel::findOrFail($id);
 
-    $courses = ClassModel::select('id', 'class_name')
-        ->distinct()
-        ->get();
-
     $teachers = Teacher::all();
     $classDays = ClassDay::all();
     $classTimings = ClassTiming::all();
 
     return view('backend_theme.class.class-edit', compact(
         'class',
-        'courses',
         'teachers',
         'classDays',
         'classTimings'

@@ -6,6 +6,7 @@ use App\Models\ClassModel;
 use App\Models\Student;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class DashboardController extends Controller
 {
@@ -21,6 +22,11 @@ class DashboardController extends Controller
     function teacher_edit ($id){
         $teacher = Teacher::findOrFail($id);
         return view('backend_theme.teacher.teacher-edit', compact('teacher'));
+    }
+
+    function teacher_view ($id){
+        $teacher = Teacher::findOrFail($id);
+        return view('backend_theme.teacher.teacher-view', compact('teacher'));
     }
 
     function teacher_add (){
@@ -91,6 +97,11 @@ class DashboardController extends Controller
         return view('backend_theme.student.student-edit', compact('student', 'classes'));
     }
 
+    function student_view ($id){
+        $student = Student::with('class')->findOrFail($id);
+        return view('backend_theme.student.student-view', compact('student'));
+    }
+
     function student_add (){
         $classes = ClassModel::all();
         return view('backend_theme.student.student-add', compact('classes'));
@@ -111,6 +122,8 @@ class DashboardController extends Controller
             'address' => 'nullable|string',
             'emergency_contact' => 'required|string|max:50',
         ]);
+
+        $data['password'] = Hash::make($request->cnic);
 
         Student::create($data);
 
@@ -145,15 +158,6 @@ class DashboardController extends Controller
         $student->delete();
 
         return redirect()->route('student')->with('success', 'Student deleted successfully.');
-    }
-    function class (){
-        return view('backend_theme.class.classes');
-    }
-    function class_edit (){
-        return view('backend_theme.class.class-edit');
-    }
-    function class_add (){
-        return view('backend_theme.class.class-add');
     }
     function attendance (){
         return view('backend_theme.attendance.attendance');

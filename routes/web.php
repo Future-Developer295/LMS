@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\ClassController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth')->group(function () {
@@ -13,6 +14,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/dashboard/teacher', [DashboardController::class, 'teacher'])->name('teacher');
+    Route::get('/dashboard/teacher/view/{id}', [DashboardController::class, 'teacher_view'])->name('teacher_view');
     Route::get('/dashboard/teacher/edit/{id}', [DashboardController::class, 'teacher_edit'])->name('teacher_edit');
     Route::get('/dashboard/teacher/add', [DashboardController::class, 'teacher_add'])->name('teacher_add');
     Route::post('/dashboard/teacher/store', [DashboardController::class, 'teacher_store'])->name('teacher_store');
@@ -20,15 +22,20 @@ Route::middleware('auth')->group(function () {
     Route::delete('/dashboard/teacher/delete/{id}', [DashboardController::class, 'teacher_destroy'])->name('teacher_destroy');
 
     Route::get('/dashboard/student', [DashboardController::class, 'student'])->name('student');
+    Route::get('/dashboard/student/view/{id}', [DashboardController::class, 'student_view'])->name('student_view');
     Route::get('/dashboard/student/edit/{id}', [DashboardController::class, 'student_edit'])->name('student_edit');
     Route::get('/dashboard/student/add', [DashboardController::class, 'student_add'])->name('student_add');
     Route::post('/dashboard/student/store', [DashboardController::class, 'student_store'])->name('student_store');
     Route::put('/dashboard/student/update/{id}', [DashboardController::class, 'student_update'])->name('student_update');
     Route::delete('/dashboard/student/delete/{id}', [DashboardController::class, 'student_destroy'])->name('student_destroy');
 
-    Route::get('/dashboard/class', [DashboardController::class, 'class'])->name('class');
-    Route::get('/dashboard/class/edit', [DashboardController::class, 'class_edit'])->name('class_edit');
-    Route::get('/dashboard/class/add', [DashboardController::class, 'class_add'])->name('class_add');
+    Route::get('/dashboard/class', [ClassController::class, 'class'])->name('class');
+    Route::get('/dashboard/class/add', [ClassController::class, 'class_add'])->name('class_add');
+    Route::post('/dashboard/class/store', [ClassController::class, 'class_store'])->name('class_store');
+    Route::get('/dashboard/class/edit/{id}', [ClassController::class, 'class_edit'])->name('class_edit');
+    Route::put('/dashboard/class/update/{id}', [ClassController::class, 'class_update'])->name('class_update');
+    Route::delete('/dashboard/class/delete/{id}', [ClassController::class, 'destroy'])->name('class_destroy');
+    Route::get('/dashboard/class/view/{id}', [ClassController::class, 'view'])->name('class_view');
 
 
 
@@ -86,7 +93,7 @@ Route::delete('/dashboard/attendance/delete/{attendance}', [AttendanceController
 // Frontend Theme
 
 Route::get('/', [FrontendController::class, 'index'])->name('index');
-Route::get('/class', [FrontendController::class, 'class'])->name('class');
+Route::get('/class', [FrontendController::class, 'class'])->name('frontend_class');
 Route::get('/calendar', [FrontendController::class, 'calendar'])->name('calendar');
 Route::get('/classwork', [FrontendController::class, 'classwork'])->name('classwork');
 Route::get('/classwork/detail', [FrontendController::class, 'detail'])->name('detail');
