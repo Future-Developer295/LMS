@@ -1,84 +1,161 @@
 @extends("Backend_theme.master")
+
 @section('assignment')
-open
+    open active
 @endsection
+
 @section('edit_assignment')
-active
+    active
 @endsection
-   @section("body")
-    <main class="page">
-      <div class="breadcrumb">
-        <a href="assignments.html">Assignments</a><i class="fa-solid fa-chevron-right"></i><span class="current">Edit</span>
-      </div>
 
-      <div class="page-header">
-        <div><h1>Edit Assignment</h1></div>
+@section("body")
+
+<main class="page">
+
+    {{-- Breadcrumb --}}
+    <div class="breadcrumb">
+
+        <a href="{{ route('assignment') }}">
+            Assignments
+        </a>
+
+        <i class="fa-solid fa-chevron-right"></i>
+
+        <span class="current">
+            Edit
+        </span>
+
+    </div>
+
+
+    {{-- Page Header --}}
+    <div class="page-header">
+
+        <div>
+            <h1>Edit Assignment</h1>
+        </div>
+
         <div class="page-header-actions">
-          <a class="btn btn-secondary" href="assignments.html">Discard</a>
-          <button class="btn btn-danger" id="deleteAssignmentBtn"><i class="fa-solid fa-trash-can"></i> Delete</button>
-          <button class="btn btn-primary" id="updateAssignmentBtn"><i class="fa-solid fa-floppy-disk"></i> Update</button>
-        </div>
-      </div>
 
-      <div class="form-grid" style="grid-template-columns: 1fr 360px;">
-        <div class="stack">
-          <div class="card card-pad">
-            <div class="field mb-0">
-              <label for="assignmentTitle"><i class="fa-solid fa-t" style="margin-right:6px;"></i>Assignment Title *</label>
-              <input type="text" class="input" id="assignmentTitle" value="Midterm Essay: Causes of WW1">
-            </div>
-          </div>
+            <a class="btn btn-secondary"
+               href="{{ route('assignment') }}">
+                Discard
+            </a>
 
-             <div class="card">
-            <div class="rte-toolbar">
-              <button type="button" data-cmd="bold" title="Bold"><i class="fa-solid fa-bold"></i></button>
-              <button type="button" data-cmd="italic" title="Italic"><i class="fa-solid fa-italic"></i></button>
-              <button type="button" data-cmd="underline" title="Underline"><i class="fa-solid fa-underline"></i></button>
-              <div class="divider"></div>
-              <button type="button" data-cmd="insertUnorderedList" title="Bullet list"><i class="fa-solid fa-list-ul"></i></button>
-              <button type="button" data-cmd="insertOrderedList" title="Numbered list"><i class="fa-solid fa-list-ol"></i></button>
-              <div class="divider"></div>
-              <button type="button" data-cmd="createLink" title="Insert link"><i class="fa-solid fa-link"></i></button>
-            </div>
-            <div class="rte-body" id="instructionsBody" contenteditable="true" data-placeholder="Provide clear instructions for the assignment here..."></div>
-          </div>
+            <button class="btn btn-primary"
+                    type="submit"
+                    form="editAssignmentForm">
 
-          
+                <i class="fa-solid fa-floppy-disk"></i>
+                Update
+
+            </button>
+
         </div>
 
-        <div class="stack">
-          <div class="card card-pad">
-            <div class="card-section-title mb-md"><i class="fa-solid fa-gear" style="margin-right:6px;"></i>Assignment Settings</div>
-
-            <div class="field">
-              <label for="assignClass">Assign To</label>
-              <select class="select" id="assignClass">
-                <option value="">Select a Class</option>
-                <option>Advanced Physics - PHY-401</option>
-                <option>World History II - HIS-202</option>
-                <option>Intro to Computer Science - CS-101</option>
-                <option>Advanced Calculus - MATH-301</option>
-              </select>
-            </div>
-
-            <div class="field">
-              <label>Students</label>
-              <label class="checkbox-row"><input type="checkbox" id="allStudents" checked> All Students in Class</label>
-            </div>
-
-            <div class="field">
-              <label for="points"><i class="fa-regular fa-star" style="margin-right:4px;"></i>Points / Max Marks</label>
-              <input type="number" class="input" id="points" value="100">
-            </div>
-
-            <div class="field">
-              <label for="dueDate"><i class="fa-regular fa-calendar" style="margin-right:4px;"></i>Due Date</label>
-              <input type="date" class="input" id="dueDate">
-            </div>
+    </div>
 
 
-          </div>
-        </div>
-      </div>
-    </main>
-  @endsection
+   <form id="editAssignmentForm"
+      action="{{ route('assignment.update', $assignment->id) }}"
+      method="POST">
+    @csrf
+    @method('PUT')
+
+    <!-- Assignment Title -->
+    <div class="field">
+        <label for="assignmentTitle">Assignment Title *</label>
+
+        <input
+            type="text"
+            class="input"
+            id="assignmentTitle"
+            name="assignment_title"
+            value="{{ old('assignment_title', $assignment->assignment_title) }}"
+            required
+        >
+    </div>
+
+    <!-- Instructions -->
+    <div class="field">
+        <label for="instructionsBody">Assignment Instructions</label>
+
+        <textarea
+            class="input"
+            id="instructionsBody"
+            name="assignment_instruction"
+            rows="8"
+        >{{ old('assignment_instruction', $assignment->assignment_instruction) }}</textarea>
+    </div>
+
+    <!-- Class -->
+    <div class="field">
+        <label for="assignClass">Assign To</label>
+
+        <select
+            class="select"
+            id="assignClass"
+            name="class_timing_id"
+            required
+        >
+            <option value="{{ $assignment->class_timing_id }}" selected>
+                Class ID: {{ $assignment->class_timing_id }}
+            </option>
+        </select>
+    </div>
+
+    <!-- Marks -->
+    <div class="field">
+        <label for="points">Points / Max Marks</label>
+
+        <input
+            type="number"
+            class="input"
+            id="points"
+            name="assignment_marks"
+            value="{{ old('assignment_marks', $assignment->assignment_marks) }}"
+            required
+        >
+    </div>
+
+    <!-- Due Date -->
+    <div class="field">
+        <label for="dueDate">Due Date</label>
+
+        <input
+            type="date"
+            class="input"
+            id="dueDate"
+            name="assignment_due_date"
+            value="{{ old('assignment_due_date', optional($assignment->assignment_due_date)->format('Y-m-d')) }}"
+            required
+        >
+    </div>
+
+    <!-- Status -->
+    <div class="field">
+        <label for="status">Status</label>
+
+        <select
+            class="select"
+            id="status"
+            name="assignment_status"
+            required
+        >
+            <option value="pending" {{ $assignment->assignment_status == 'pending' ? 'selected' : '' }}>Pending</option>
+            <option value="active" {{ $assignment->assignment_status == 'active' ? 'selected' : '' }}>Active</option>
+            <option value="completed" {{ $assignment->assignment_status == 'completed' ? 'selected' : '' }}>Completed</option>
+            <option value="closed" {{ $assignment->assignment_status == 'closed' ? 'selected' : '' }}>Closed</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        <i class="fa-solid fa-floppy-disk"></i>
+        Update
+    </button>
+
+</form>
+
+</main>
+
+@endsection

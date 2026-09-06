@@ -37,7 +37,7 @@ active
   </div>
 
         <div class="toolbar-right">
-          <a href="{{ route('class') }}" class="view-work-btn">
+          <a href="{{ route('frontend_class') }}" class="view-work-btn">
             <i class="fa-regular fa-address-card"></i> View your work
           </a>
           <button class="expand-all-link " id="expandAllBtn">

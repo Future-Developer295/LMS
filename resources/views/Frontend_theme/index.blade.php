@@ -19,7 +19,7 @@ active
           <div class="gc-card-avatar"><img src="{{ asset('Frontend_theme/images/teacher.png') }}" alt=""></div>
           <div class="gc-card-body"></div>
           <div class="gc-card-footer">
-            <a href="{{ route('class') }}" class="btn-icon" title="Your work"><i class="fa-regular fa-address-card"></i></a>
+            <a href="{{ route('frontend_class') }}" class="btn-icon" title="Your work"><i class="fa-regular fa-address-card"></i></a>
             <button class="btn-icon" title="Open folder"><i class="fa-regular fa-folder"></i></button>
             <button class="btn-icon" title="More"><i class="fa-solid fa-ellipsis-vertical"></i></button>
           </div>

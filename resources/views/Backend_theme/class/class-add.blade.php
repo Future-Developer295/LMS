@@ -46,17 +46,7 @@
             
 <div class="field">
     <label for="class_name">Course Name *</label>
-
-    <select class="select" name="class_name" id="class_name">
-        <option value="">Select Course...</option>
-
-        @foreach($courses as $course)
-            <option value="{{ $course->class_name }}"
-                {{ old('class_name') == $course->class_name ? 'selected' : '' }}>
-                {{ $course->class_name }}
-            </option>
-        @endforeach
-    </select>
+    <input type="text" class="input" name="class_name" id="class_name" placeholder="e.g. Grade 10 - Mathematics" value="{{ old('class_name') }}">
 </div>
 
                     <div class="field">
