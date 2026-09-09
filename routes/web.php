@@ -297,19 +297,19 @@ Route::middleware('auth')->group(function () {
 });
 
 
-Route::get('/', [FrontendController::class, 'index'])->name('index');//khdija;
+Route::get('/', [FrontendController::class, 'index'])->name('index'); //khdija;
 
 Route::get('/class', [FrontendController::class, 'class'])->name('frontend_class'); //Hana;
 
-Route::get('/calendar', [FrontendController::class, 'calendar'])->name('calendar'); 
+Route::get('/calendar', [FrontendController::class, 'calendar'])->name('calendar');
 
-Route::get('/classwork', [FrontendController::class, 'classwork'])->name('classwork');  
+Route::get('/classwork', [FrontendController::class, 'classwork'])->name('classwork');
 
 Route::get('/classwork/detail', [FrontendController::class, 'detail'])->name('detail'); //dua
 
 Route::get('/archived', [FrontendController::class, 'archived'])->name('archived');
 
-Route::get('/steam', [FrontendController::class, 'steam'])->name('steam'); 
+Route::get('/steam', [FrontendController::class, 'steam'])->name('steam');
 
 Route::get('/people', [FrontendController::class, 'people'])->name('people'); //aleena;
 
@@ -329,5 +329,8 @@ Route::post('/student/register', [StudentAuthController::class, 'register'])
 
 Route::post('/student/logout', [StudentAuthController::class, 'logout'])
     ->name('student.logout');
+
+Route::post('/student/join-class', [StudentAuthController::class, 'join'])
+    ->name('student.join.class');
 
 require __DIR__ . '/auth.php';

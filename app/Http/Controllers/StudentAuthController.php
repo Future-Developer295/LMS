@@ -3,23 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Student;
+use App\Models\ClassModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class StudentAuthController extends Controller
 {
-    /**
-     * Show Student Login Page
-     */
+
     public function showLogin()
     {
         return view('Frontend_theme.login');
     }
 
-    /**
-     * Student Login
-     */
     public function login(Request $request)
     {
         $request->validate([
@@ -46,17 +43,12 @@ class StudentAuthController extends Controller
         return redirect()->route('index');
     }
 
-    /**
-     * Show Student Register Page
-     */
     public function showRegister()
     {
         return view('Frontend_theme.register');
     }
 
-    /**
-     * Student Registration
-     */
+
     public function register(Request $request)
     {
         $request->validate([
@@ -76,12 +68,39 @@ class StudentAuthController extends Controller
 
         $request->session()->regenerate();
 
-        return view('Frontend_theme.index');
+        return redirect()->route('index');
     }
 
-    /**
-     * Student Logout
-     */
+public function join(Request $request)
+{
+    $request->validate([
+        'class_code' => 'required|string|max:8',
+    ]);
+
+    if (!Auth::check()) {
+        return redirect()->route('student.login');
+    }
+
+    $classCode = strtoupper(trim($request->class_code));
+
+    $class = ClassModel::with('teacher')
+        ->where('class_code', $classCode)
+        ->first();
+
+    if (!$class) {
+        return back()
+            ->withErrors([
+                'class_code' => 'Invalid class code. Please check the code and try again.',
+            ])
+            ->withInput();
+    }
+
+    $request->session()->put('joined_class_code', $class->class_code);
+    $request->session()->save();
+
+    return redirect()->route('index');
+}
+
     public function logout(Request $request)
     {
         Auth::logout();

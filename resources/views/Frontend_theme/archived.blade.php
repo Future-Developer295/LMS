@@ -1,11 +1,17 @@
 @extends("Frontend_theme.master")
+
 @section('archived')
 active
 @endsection
+
 @section("body")
 
+@if(Auth::check() && Auth::user()->role === 'user')
+
 <main class="flex-grow-1 p-3 p-md-4 detail-main">
+
     <div class="archive-empty-wrap">
+
         <div class="archive-empty-illustration">
             <svg width="187" height="219" viewBox="0 0 187 219" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M171.921 112.679C173.1 112.174 174.446 111.922 175.877 111.922C181.43 111.922 185.975 116.466 185.975 122.02C185.975 127.574 181.43 132.118 175.877 132.118C174.698 132.118 173.604 131.95 172.51 131.529" stroke="#5F6368" stroke-width="2" stroke-miterlimit="10"/>
@@ -37,13 +43,59 @@ active
                 <path d="M14.3057 106.872L15.9887 124.123" stroke="#5F6368" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
         </div>
-        <p class="archive-empty-title">None of your classes have been archived</p>
-        <a href="#" class="archive-empty-link">What does this mean?</a>
+
+        <p class="archive-empty-title">
+            None of your classes have been archived
+        </p>
+
+        <a href="#" class="archive-empty-link">
+            What does this mean?
+        </a>
+
     </div>
 
     <button class="help-fab" type="button">
         <i class="fa-regular fa-circle-question"></i>
     </button>
+
 </main>
+
+@else
+
+<main class="flex-grow-1 d-flex align-items-center justify-content-center p-4">
+
+    <div class="text-center">
+
+        <div class="mb-3">
+            <i class="fa-solid fa-graduation-cap"
+               style="font-size: 55px; color: #0F9D58;">
+            </i>
+        </div>
+
+        <h4 class="fw-semibold mb-2">
+            Welcome to Classroom
+        </h4>
+
+        <p class="text-muted mb-4">
+            Please login or create an account to view your classes.
+        </p>
+
+        <a href="{{ route('student.login') }}"
+           class="btn btn-success me-2">
+            <i class="fa-solid fa-right-to-bracket me-1"></i>
+            Login
+        </a>
+
+        <a href="{{ route('student.register') }}"
+           class="btn btn-warning">
+            <i class="fa-solid fa-user-plus me-1"></i>
+            Sign Up
+        </a>
+
+    </div>
+
+</main>
+
+@endif
 
 @endsection
