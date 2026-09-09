@@ -1,0 +1,200 @@
+/* ==========================================================================
+   ADD-ON CLASSES — merge these into your existing admin.css
+   Everything here reuses your existing tokens (--primary, --border, etc.)
+   Nothing here redefines classes you already have.
+   ========================================================================== */
+
+/* Sidebar layout for the role form: permissions (wide) + role details (narrow) */
+.form-sidebar-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: var(--space-lg);
+  align-items: start;
+}
+
+@media (max-width: 1200px) {
+  .form-sidebar-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Permission module groups (role-form page) */
+.permission-group {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  margin-bottom: var(--space-md);
+  overflow: hidden;
+}
+
+.permission-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-soft);
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.permission-group-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.permission-group-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  background: var(--primary-container);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.permission-group-title .name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: block;
+}
+
+.permission-group-title .count {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.select-all-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.permission-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding: 16px;
+}
+
+@media (max-width: 768px) {
+  .permission-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.permission-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.permission-check:hover {
+  border-color: var(--primary-container);
+  background: var(--surface-hover);
+}
+
+.permission-check:has(input:checked) {
+  background: var(--primary-container);
+  border-color: var(--primary);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* Role Details modal rows */
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--border-soft);
+  font-size: 13px;
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-row .label {
+  color: var(--text-muted);
+}
+
+.detail-row .value {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* Wider modal variant (used for Role Details) */
+.modal-wide {
+  max-width: 460px;
+  text-align: left;
+}
+
+.modal-wide .modal-icon.blue {
+  background: var(--primary-container);
+  color: var(--primary);
+}
+
+/* Status switch row (Active toggle on forms) */
+.status-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+}
+
+.status-toggle-row .title {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.status-toggle-row .hint {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.form-actions-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-lg);
+  border-top: 1px solid var(--border-soft);
+}
+.role-details-sticky {
+    position: sticky;
+    top: 80px;
+    align-self: start;
+}
+@media (max-width: 768px) {
+  .form-actions-bar {
+    flex-direction: column-reverse;
+  }
+  .form-actions-bar .btn {
+    width: 100%;
+  }
+}
