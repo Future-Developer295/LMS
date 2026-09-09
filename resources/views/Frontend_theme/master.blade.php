@@ -618,52 +618,119 @@ if (!isset($activeNav)) {
                 </svg> <span class="nav-label">Settings</span>
             </a>
         </nav>
-        <div class="join-class-overlay" id="joinClassOverlay">
-            <div class="join-class-modal">
-                <div class="join-class-head">Join class</div>
+        <form action="{{ route('student.join.class') }}" method="POST">
 
-                <div class="join-class-body">
-                    <div class="join-class-account-box">
-                        <div class="join-class-signedin-label">You're currently signed in as</div>
-                        <div class="join-class-account-row">
-                            <img src="{{ asset('assets/front_theme/images/avater.png') }}" alt=""
-                                class="join-class-avatar" onerror="this.style.display='none'">
-                            <div>
-                                <div class="join-class-name">
-                                    {{ Auth::user()->name }}
-                                </div>
+            @csrf
 
-                                <div class="join-class-email">
-                                    {{ Auth::user()->email }}
-                                </div>
+            <div class="join-class-overlay" id="joinClassOverlay">
+                <div class="join-class-modal">
+
+                    <div class="join-class-head">Join class</div>
+
+                    <div class="join-class-body">
+
+                        <div class="join-class-account-box">
+
+                            <div class="join-class-signedin-label">
+                                You're currently signed in as
                             </div>
+
+                            <div class="join-class-account-row">
+
+                                <img src="{{ asset('assets/front_theme/images/avater.png') }}" alt=""
+                                    class="join-class-avatar" onerror="this.style.display='none'">
+
+                                <div>
+
+                                    <div class="join-class-name">
+                                        {{ optional(Auth::user())->name ?? 'Guest User' }}
+                                    </div>
+
+                                    <div class="join-class-email">
+                                        {{ optional(Auth::user())->email ?? 'Please login to continue' }}
+                                    </div>
+
+                                </div>
+
+                            </div>
+
                         </div>
+
+
+                        <div class="join-class-code-box">
+
+                            <div class="join-class-code-label">
+                                Class code
+                            </div>
+
+                            <div class="join-class-code-sub">
+                                Ask your teacher for the class code, then enter it here.
+                            </div>
+
+                            <input type="text" class="join-class-code-input" placeholder="Class code"
+                                id="joinClassCodeInput" name="class_code" maxlength="8">
+
+                            @error('class_code')
+                                <div class="text-danger mt-2">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+
+                        </div>
+
+
+                        <div class="join-class-help-box">
+
+                            <div class="join-class-help-title">
+                                To sign in with a class code
+                            </div>
+
+                            <ul>
+
+                                <li>
+                                    Use an authorized account
+                                </li>
+
+                                <li>
+                                    Use a class code with 5-8 letters or numbers,
+                                    and no spaces or symbols
+                                </li>
+
+                            </ul>
+
+                            <div class="join-class-help-footer">
+
+                                If you have trouble joining the class, go to the
+                                <a href="#">Help Center article</a>
+
+                            </div>
+
+                        </div>
+
                     </div>
 
-                    <div class="join-class-code-box">
-                        <div class="join-class-code-label">Class code</div>
-                        <div class="join-class-code-sub">Ask your teacher for the class code, then enter it here.</div>
-                        <input type="text" class="join-class-code-input" placeholder="Class code"
-                            id="joinClassCodeInput">
+
+                    <div class="join-class-footer">
+
+                        <button type="button" class="join-class-cancel-btn" id="joinClassCancelBtn">
+
+                            Cancel
+
+                        </button>
+
+
+                        <button type="submit" class="join-class-join-btn" id="joinClassJoinBtn" disabled>
+
+                            Join
+
+                        </button>
+
                     </div>
 
-                    <div class="join-class-help-box">
-                        <div class="join-class-help-title">To sign in with a class code</div>
-                        <ul>
-                            <li>Use an authorized account</li>
-                            <li>Use a class code with 5-8 letters or numbers, and no spaces or symbols</li>
-                        </ul>
-                        <div class="join-class-help-footer">If you have trouble joining the class, go to the <a
-                                href="#">Help Center article</a></div>
-                    </div>
-                </div>
-
-                <div class="join-class-footer">
-                    <button class="join-class-cancel-btn" id="joinClassCancelBtn">Cancel</button>
-                    <button class="join-class-join-btn" id="joinClassJoinBtn" disabled>Join</button>
                 </div>
             </div>
-        </div>
+
+        </form>
         @yield('body')
         <script>
             document.addEventListener('DOMContentLoaded', function() {
