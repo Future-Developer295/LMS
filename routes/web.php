@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\StudentAuthController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\UserController;
@@ -296,20 +297,37 @@ Route::middleware('auth')->group(function () {
 });
 
 
-Route::get('/', [FrontendController::class, 'index'])->name('index');
+Route::get('/', [FrontendController::class, 'index'])->name('index');//khdija;
 
-Route::get('/class', [FrontendController::class, 'class'])->name('frontend_class');
+Route::get('/class', [FrontendController::class, 'class'])->name('frontend_class'); //Hana;
 
-Route::get('/calendar', [FrontendController::class, 'calendar'])->name('calendar');
+Route::get('/calendar', [FrontendController::class, 'calendar'])->name('calendar'); 
 
-Route::get('/classwork', [FrontendController::class, 'classwork'])->name('classwork');
+Route::get('/classwork', [FrontendController::class, 'classwork'])->name('classwork');  
 
-Route::get('/classwork/detail', [FrontendController::class, 'detail'])->name('detail');
+Route::get('/classwork/detail', [FrontendController::class, 'detail'])->name('detail'); //dua
 
 Route::get('/archived', [FrontendController::class, 'archived'])->name('archived');
 
-Route::get('/steam', [FrontendController::class, 'steam'])->name('steam');
+Route::get('/steam', [FrontendController::class, 'steam'])->name('steam'); 
 
-Route::get('/people', [FrontendController::class, 'people'])->name('people');
+Route::get('/people', [FrontendController::class, 'people'])->name('people'); //aleena;
+
+
+
+Route::get('/student/login', [StudentAuthController::class, 'showLogin'])
+    ->name('student.login');
+
+Route::post('/student/login', [StudentAuthController::class, 'login'])
+    ->name('student.login.submit');
+
+Route::get('/student/register', [StudentAuthController::class, 'showRegister'])
+    ->name('student.register');
+
+Route::post('/student/register', [StudentAuthController::class, 'register'])
+    ->name('student.register.submit');
+
+Route::post('/student/logout', [StudentAuthController::class, 'logout'])
+    ->name('student.logout');
 
 require __DIR__ . '/auth.php';
