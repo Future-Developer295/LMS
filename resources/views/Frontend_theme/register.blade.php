@@ -152,7 +152,7 @@
 
     <div class="student-register-card">
 
-        {{-- Classroom Logo --}}
+       
         <div class="register-logo">
 
             <svg class="classroom-logo"

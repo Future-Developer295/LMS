@@ -4,7 +4,7 @@ if (!isset($pageTitle)) {
     $pageTitle = 'Classroom';
 }
 if (!isset($activeNav)) {
-    $activeNav = 'home';
+    $activeNav = 'index';
 }
 ?>
 <!DOCTYPE html>
@@ -20,8 +20,6 @@ if (!isset($activeNav)) {
     <link rel="stylesheet" href="{{ asset('Frontend_theme/css/style.css') }}">
 </head>
 <style>
-
-
     .profile-dropdown {
         position: relative;
         display: inline-flex;
@@ -317,6 +315,141 @@ if (!isset($activeNav)) {
         color: #d93025;
     }
 
+    /* Profile Dropdown */
+    .profile-dropdown {
+        position: relative;
+    }
+
+    .profile-avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        border: 0;
+        background: #0f9d58;
+        color: #fff;
+        font-size: 17px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .profile-avatar:hover {
+        background: #0b8043;
+        transform: scale(1.04);
+    }
+
+    /* Dropdown Menu */
+    .profile-menu {
+        position: absolute;
+        top: 52px;
+        right: 0;
+        width: 280px;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        padding: 20px;
+        box-shadow: 0 10px 35px rgba(0, 0, 0, 0.15);
+        z-index: 9999;
+
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-8px);
+        transition: all 0.2s ease;
+    }
+
+    /* Add this class with JavaScript when opening */
+    .profile-menu.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    /* Big Avatar */
+    .profile-big-avatar {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 12px;
+        border-radius: 50%;
+        background: #0f9d58;
+        color: #fff;
+        font-size: 25px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* User Info */
+    .profile-user-info {
+        text-align: center;
+        margin-bottom: 18px;
+    }
+
+    .profile-user-info strong {
+        display: block;
+        color: #202124;
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .profile-user-info span {
+        display: block;
+        color: #6b7280;
+        font-size: 13px;
+        word-break: break-word;
+    }
+
+    /* Divider */
+    .profile-divider {
+        height: 1px;
+        background: #e5e7eb;
+        margin: 5px 0 12px;
+    }
+
+    /* Logout Form */
+    .profile-menu form {
+        margin: 0;
+    }
+
+    .profile-menu form button {
+        width: 100%;
+        border: 0;
+        background: transparent;
+        color: #374151;
+        padding: 11px 12px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        text-align: left;
+        transition: all 0.2s ease;
+    }
+
+    .profile-menu form button i {
+        width: 20px;
+        color: #dc3545;
+        font-size: 15px;
+    }
+
+    .profile-menu form button:hover {
+        background: #fef2f2;
+        color: #dc3545;
+    }
+
+    /* Mobile */
+    @media (max-width: 576px) {
+        .profile-menu {
+            width: 260px;
+            right: -8px;
+        }
+    }
 
     /* Mobile */
 
@@ -332,69 +465,118 @@ if (!isset($activeNav)) {
 
 <body>
 
-    <header class="gc-header d-flex align-items-center px-3 gap-2">
-        <button class="btn-icon" id="menuToggle"><i class="fa-solid fa-bars"></i></button>
-
-        <span class="d-flex align-items-center gap-2">
-            <svg width="30" height="30" viewBox="0 0 108 108" xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd" clip-rule="evenodd"
-                    d="M96.75 11.25h-85.5c-3.73 0-6.75 3.02-6.75 6.75v72c0 3.729 3.02 6.75 6.75 6.75h85.5c3.729 0 6.75-3.021 6.75-6.75V18c0-3.73-3.021-6.75-6.75-6.75z"
-                    fill="#F4B400" />
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M13.5 20.25h81v67.5h-81v-67.5z" fill="#0F9D58" />
-                <path fill-rule="evenodd" clip-rule="evenodd"
-                    d="M36 56.25a5.063 5.063 0 100-10.126 5.063 5.063 0 000 10.126zm41.063-5.063a5.063 5.063 0 11-10.126 0 5.063 5.063 0 0110.126 0zM60.75 66.055c0-3.555 5.828-6.429 11.25-6.429s11.25 2.874 11.25 6.43v3.695h-22.5v-3.696zm-36 0c0-3.555 5.828-6.429 11.25-6.429 5.423 0 11.25 2.874 11.25 6.43v3.695h-22.5v-3.696z"
-                    fill="#57BB8A" />
-                <path fill-rule="evenodd" clip-rule="evenodd"
-                    d="M60.75 45.001c0 3.73-3.02 6.75-6.744 6.75a6.753 6.753 0 01-6.756-6.75 6.756 6.756 0 016.756-6.75c3.723 0 6.744 3.026 6.744 6.75zm-22.5 20.25c0-4.973 8.156-9 15.75-9 7.594 0 15.75 4.027 15.75 9v4.5h-31.5v-4.5z"
-                    fill="#F7F7F7" />
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M63 83.251h20.25v4.5H63v-4.5z" fill="#F1F1F1" />
-            </svg>
-            <span class="brand-text">Classroom</span>
-        </span>
-
-        <div class="flex-grow-1"></div>
-
-        <div class="add-class-wrap">
-            <button class="btn-icon" id="addClassBtn"><i class="fa-solid fa-plus"></i></button>
-
-            <div class="add-class-menu" id="addClassMenu">
-                <a href="#" class="add-class-item" id="joinClassLink">Join class</a>
-            </div>
-        </div>
-        <div class="profile-dropdown">
-
-            <button type="button" class="profile-avatar" id="profileToggle" aria-label="Profile menu">
-
-               
+    @if (Auth::check())
+        <header class="gc-header d-flex align-items-center px-3 gap-2">
+            <button class="btn-icon" id="menuToggle">
+                <i class="fa-solid fa-bars"></i>
             </button>
 
-            <div class="profile-menu" id="profileMenu">
+            <span class="d-flex align-items-center gap-2">
+                <svg class="classroom-logo" viewBox="0 0 108 108" xmlns="http://www.w3.org/2000/svg">
 
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M96.75 11.25h-85.5c-3.73 0-6.75 3.02-6.75 6.75v72c0 3.729 3.02 6.75 6.75 6.75h85.5c3.729 0 6.75-3.021 6.75-6.75V18c0-3.73-3.021-6.75-6.75-6.75z"
+                        fill="#F4B400" />
+
+                    <path d="M13.5 20.25h81v67.5h-81v-67.5z" fill="#0F9D58" />
+
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M36 56.25a5.063 5.063 0 100-10.126 5.063 5.063 0 000 10.126zm41.063-5.063a5.063 5.063 0 11-10.126 0 5.063 5.063 0 0110.126 0zM60.75 66.055c0-3.555 5.828-6.429 11.25-6.429s11.25 2.874 11.25 6.43v3.695h-22.5v-3.696zm-36 0c0-3.555 5.828-9 11.25-9 5.423 0 11.25 2.874 11.25 6.43v3.695h-22.5v-3.696z"
+                        fill="#57BB8A" />
+
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M60.75 45.001c0 3.73-3.02 6.75-6.744 6.75a6.753 6.753 0 01-6.756-6.75 6.756 6.756 0 016.756-6.75c3.723 0 6.744 3.026 6.744 6.75zm-22.5 20.25c0-4.973 8.156-9 15.75-9 7.594 0 15.75 4.027 15.75 9v4.5h-31.5v-4.5z"
+                        fill="#F7F7F7" />
+
+                </svg>
+
+                <span class="brand-text">Classroom</span>
+            </span>
+
+            <div class="flex-grow-1"></div>
+
+            <div class="add-class-wrap">
+                <button class="btn-icon" id="addClassBtn">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+
+                <div class="add-class-menu" id="addClassMenu">
+                    <a href="#" class="add-class-item" id="joinClassLink">
+                        Join class
+                    </a>
+                </div>
+            </div>
+
+            <div class="profile-dropdown">
+
+                <button type="button" class="profile-avatar" id="profileToggle" aria-label="Profile menu">
+                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                </button>
+
+                <div class="profile-menu" id="profileMenu">
 
                     <div class="profile-big-avatar">
-
-
+                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                     </div>
 
                     <div class="profile-user-info">
-                       
+                        <strong>{{ Auth::user()->name }}</strong>
+                        <span>{{ Auth::user()->email }}</span>
                     </div>
+
+                    <div class="profile-divider"></div>
+
+                    <form action="{{ route('student.logout') }}" method="POST">
+                        @csrf
+                        <button type="submit">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                            Logout
+                        </button>
+                    </form>
 
                 </div>
 
+            </div>
+        </header>
+    @else
+        <header class="gc-header d-flex align-items-center px-3 gap-2">
 
-                <div class="profile-divider"></div>
+            <span class="d-flex align-items-center gap-2">
+                <svg width="30" height="30" viewBox="0 0 108 108" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M96.75 11.25h-85.5c-3.73 0-6.75 3.02-6.75 6.75v72c0 3.729 3.02 6.75 6.75 6.75h85.5c3.729 0 6.75-3.021 6.75-6.75V18c0-3.73-3.021-6.75-6.75-6.75z"
+                        fill="#F4B400" />
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M13.5 20.25h81v67.5h-81v-67.5z" fill="#0F9D58" />
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M36 56.25a5.063 5.063 0 100-10.126 5.063 5.063 0 000 10.126zm41.063-5.063a5.063 5.063 0 11-10.126 0 5.063 5.063 0 0110.126 0zM60.75 66.055c0-3.555 5.828-6.429 11.25-6.429s11.25 2.874 11.25 6.43v3.695h-22.5v-3.696zm-36 0c0-3.555 5.828-6.429 11.25-6.429 5.423 0 11.25 2.874 11.25 6.43v3.695h-22.5v-3.696z"
+                        fill="#57BB8A" />
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M60.75 45.001c0 3.73-3.02 6.75-6.744 6.75a6.753 6.753 0 01-6.756-6.75 6.756 6.756 0 016.756-6.75c3.723 0 6.744 3.026 6.744 6.75zm-22.5 20.25c0-4.973 8.156-9 15.75-9 7.594 0 15.75 4.027 15.75 9v4.5h-31.5v-4.5z"
+                        fill="#F7F7F7" />
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M63 83.251h20.25v4.5H63v-4.5z" fill="#F1F1F1" />
+                </svg>
 
+                <span class="brand-text">Classroom</span>
+            </span>
 
+            <div class="flex-grow-1"></div>
 
-              
+            <div class="d-flex align-items-center gap-2">
 
-                
+                <a href="{{ route('student.login') }}" class="btn btn-outline-success">
+                    Login
+                </a>
+
+                <a href="{{ route('student.register') }}" class="btn btn-warning">
+                    Sign Up
+                </a>
 
             </div>
 
-        </div>
-    </header>
+        </header>
+    @endif
+
+
 
     <div class="gc-backdrop" id="backdrop"></div>
 
@@ -412,7 +594,7 @@ if (!isset($activeNav)) {
                     </path>
                 </svg> <span class="nav-label">Calendar</span>
             </a>
-            <a href="{{ route('classwork') }}" class="gc-nav-link @yield('classwork')">
+            <a href="{{ route('steam') }}" class="gc-nav-link @yield('classwork')">
                 <svg focusable="false" width="24" height="24" viewBox="0 0 24 24" fill='#444746'>
                     <path
                         d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z">
@@ -438,13 +620,48 @@ if (!isset($activeNav)) {
         </nav>
         <div class="join-class-overlay" id="joinClassOverlay">
             <div class="join-class-modal">
+                <div class="join-class-head">Join class</div>
 
-                <div class="join-class-head">
-                    Join class
+                <div class="join-class-body">
+                    <div class="join-class-account-box">
+                        <div class="join-class-signedin-label">You're currently signed in as</div>
+                        <div class="join-class-account-row">
+                            <img src="{{ asset('assets/front_theme/images/avater.png') }}" alt=""
+                                class="join-class-avatar" onerror="this.style.display='none'">
+                            <div>
+                                <div class="join-class-name">
+                                    {{ Auth::user()->name }}
+                                </div>
+
+                                <div class="join-class-email">
+                                    {{ Auth::user()->email }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="join-class-code-box">
+                        <div class="join-class-code-label">Class code</div>
+                        <div class="join-class-code-sub">Ask your teacher for the class code, then enter it here.</div>
+                        <input type="text" class="join-class-code-input" placeholder="Class code"
+                            id="joinClassCodeInput">
+                    </div>
+
+                    <div class="join-class-help-box">
+                        <div class="join-class-help-title">To sign in with a class code</div>
+                        <ul>
+                            <li>Use an authorized account</li>
+                            <li>Use a class code with 5-8 letters or numbers, and no spaces or symbols</li>
+                        </ul>
+                        <div class="join-class-help-footer">If you have trouble joining the class, go to the <a
+                                href="#">Help Center article</a></div>
+                    </div>
                 </div>
 
-              
-
+                <div class="join-class-footer">
+                    <button class="join-class-cancel-btn" id="joinClassCancelBtn">Cancel</button>
+                    <button class="join-class-join-btn" id="joinClassJoinBtn" disabled>Join</button>
+                </div>
             </div>
         </div>
         @yield('body')

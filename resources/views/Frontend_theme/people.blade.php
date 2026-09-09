@@ -1,16 +1,13 @@
-<?php
-$pageTitle = 'People - Batch AI_2508T5 - Classroom';
-$activeNav = 'enrolled';
-include "Assets/includes/header.php";
-?>
+@extends('Frontend_theme.master')
+@section('body')
 
   <main class="flex-grow-1 stream-main index-main">
 
     <div class="class-tabbar">
       <div class="tab-links">
-        <a href="class.php" class="stream-tab">Stream</a>
-        <a href="classwork.php" class="stream-tab">Classwork</a>
-        <a href="people.php" class="stream-tab active">People</a>
+        <a href="{{route('steam')}}" class="stream-tab">Stream</a>
+        <a href="{{route('classwork')}}" class="stream-tab">Classwork</a>
+        <a href="{{route('people')}}" class="stream-tab active">People</a>
       </div>
       <div class="tab-spacer"></div>
       <div class="tab-icons">
@@ -104,7 +101,4 @@ include "Assets/includes/header.php";
     });
   });
 </script>
-
-<?php
-include "Assets/includes/footer.php";
-?>
+@endsection
