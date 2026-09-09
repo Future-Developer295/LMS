@@ -10,15 +10,17 @@ class AdminUserSeeder extends Seeder
 {
     public function run(): void
     {
-        User::updateOrCreate(
+        $adminUser = User::updateOrCreate(
             [
                 'email' => 'admin@gmail.com',
             ],
             [
                 'name' => 'Admin',
-                'password' => bcrypt('admin295'),
+                'password' => Hash::make('admin295'),
                 'role' => 'admin',
             ]
         );
+
+        $adminUser->syncRoles(['admin']);
     }
 }
