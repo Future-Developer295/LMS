@@ -12,9 +12,9 @@ return new class extends Migration
     
         public function up(): void
 {
-    Schema::table('assignment_has_submit', function (Blueprint $table) {
-        $table->boolean('published')->default(false)->after('grade');
-    });
+   Schema::table('assignment_has_submit', function (Blueprint $table) {
+    $table->boolean('published')->default(false);
+});
 }
     
 
