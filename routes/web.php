@@ -305,7 +305,7 @@ Route::get('/calendar', [FrontendController::class, 'calendar'])->name('calendar
 
 Route::get('/classwork', [FrontendController::class, 'classwork'])->name('classwork');
 
-Route::get('/classwork/detail', [FrontendController::class, 'detail'])->name('detail'); //dua
+Route::get('/classwork/detail/{id}', [FrontendController::class, 'detail'])->name('detail'); //dua
 
 Route::get('/archived', [FrontendController::class, 'archived'])->name('archived');
 

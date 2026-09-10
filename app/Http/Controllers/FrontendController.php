@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Student;
 use Illuminate\Http\Request;
-
+use App\Models\Assignment;
 class FrontendController extends Controller
 {
     function index()
@@ -38,9 +38,12 @@ class FrontendController extends Controller
         return view('frontend_theme.classwork');
     }
 
-    function detail()
+    public function detail(Request $request)
     {
-        return view('frontend_theme.classwork-detail');
+        $assignment = Assignment::with('classTiming')
+            ->findOrFail($request->id);
+
+        return view('frontend_theme.classwork-detail', compact('assignment'));
     }
 
     function archived()
