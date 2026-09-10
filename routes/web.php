@@ -8,12 +8,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\SubmissionController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\ClassController;
-<<<<<<< HEAD
-
-=======
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RoleController;
->>>>>>> 1b4730894d22f65d1912b86f3e5d5a2cfda0da89
 use Illuminate\Support\Facades\Route;
 
 
@@ -325,54 +321,6 @@ Route::get('/student/login', [StudentAuthController::class, 'showLogin'])
 Route::post('/student/login', [StudentAuthController::class, 'login'])
     ->name('student.login.submit');
 
-<<<<<<< HEAD
-    Route::get('/profile', [ProfileController::class, 'edit'])
-        ->name('profile.edit');
-
-    Route::get('/dashboard/teacher', [DashboardController::class, 'teacher'])->name('teacher');
-    Route::get('/dashboard/teacher/edit', [DashboardController::class, 'teacher_edit'])->name('teacher_edit');
-    Route::get('/dashboard/teacher/add', [DashboardController::class, 'teacher_add'])->name('teacher_add');
-
-    Route::get('/dashboard/student', [DashboardController::class, 'student'])->name('student');
-    Route::get('/dashboard/student/edit', [DashboardController::class, 'student_edit'])->name('student_edit');
-    Route::get('/dashboard/student/add', [DashboardController::class, 'student_add'])->name('student_add');
-
-    Route::get('/dashboard/class', [ClassController::class, 'class'])->name('class');
-    Route::get('/dashboard/class/add', [ClassController::class, 'class_add'])->name('class_add');
-    Route::post('/dashboard/class/store', [ClassController::class, 'class_store'])->name('class_store');
-    Route::get('/dashboard/class/edit/{id}', [ClassController::class, 'class_edit'])->name('class_edit');
-    Route::put('/dashboard/class/update/{id}', [ClassController::class, 'class_update'])->name('class_update');
-    Route::delete('/dashboard/class/delete/{id}', [ClassController::class, 'destroy'])->name('class_destroy');
-    Route::get('/class/view/{id}', [ClassController::class, 'view'])->name('class_view');
-
-    Route::get('/dashboard/attendance', [AttendanceController::class, 'index'])->name('attendance');
-    Route::get('/dashboard/attendance/add', [AttendanceController::class, 'create'])->name('attendance_add');
-    Route::get('/dashboard/attendance/students/{batch_code}', [AttendanceController::class, 'studentsByBatch'])->name('attendance_students');
-    Route::post('/dashboard/attendance/store', [AttendanceController::class, 'store'])->name('attendance_store');
-    Route::get('/dashboard/attendance/{attendance}', [AttendanceController::class, 'show'])->name('attendance_view');
-    Route::get('/dashboard/attendance/{attendance}/edit', [AttendanceController::class, 'edit'])->name('attendance_edit');
-    Route::put('/dashboard/attendance/{attendance}', [AttendanceController::class, 'update'])->name('attendance_update');
-    Route::delete('/dashboard/attendance/{attendance}', [AttendanceController::class, 'destroy'])->name('attendance_destroy');
-
-    Route::get('/dashboard/assignment', [DashboardController::class, 'assignment'])->name('assignment');
-    Route::get('/dashboard/assignment/edit', [DashboardController::class, 'assignment_edit'])->name('assignment_edit');
-    Route::get('/dashboard/assignment/add', [DashboardController::class, 'assignment_add'])->name('assignment_add');
-
-    Route::get('/dashboard/submission', [DashboardController::class, 'submission'])->name('submission');
-    Route::get('/dashboard/submission/grade', [DashboardController::class, 'submission_grade'])->name('submission_grade');
-});
-
-Route::get('/', [FrontendController::class, 'index'])->name('index');
-Route::get('/class', [FrontendController::class, 'class'])->name('class');
-Route::get('/calendar', [FrontendController::class, 'calendar'])->name('calendar');
-Route::get('/classwork', [FrontendController::class, 'classwork'])->name('classwork');
-Route::get('/classwork/detail', [FrontendController::class, 'detail'])->name('detail');
-Route::get('/archived', [FrontendController::class, 'archived'])->name('archived');
-Route::get('/steam', [FrontendController::class, 'steam'])->name('steam');
-Route::get('/people', [FrontendController::class, 'people'])->name('people');
-
-
-=======
 Route::get('/student/register', [StudentAuthController::class, 'showRegister'])
     ->name('student.register');
 
@@ -381,6 +329,5 @@ Route::post('/student/register', [StudentAuthController::class, 'register'])
 
 Route::post('/student/logout', [StudentAuthController::class, 'logout'])
     ->name('student.logout');
->>>>>>> 1b4730894d22f65d1912b86f3e5d5a2cfda0da89
 
 require __DIR__ . '/auth.php';

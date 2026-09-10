@@ -4,7 +4,7 @@
   <main class="flex-grow-1 stream-main index-main ">
 
     <div class="class-tabbar">
-      <div class="tab-links">
+      <div class="tab-links">     
       <a href="{{route('steam')}}" class="stream-tab">Stream</a>
         <a href="{{route('classwork')}}" class="stream-tab active">Classwork</a>
         <a href="{{route('people')}}" class="stream-tab ">People</a>
