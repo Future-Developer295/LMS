@@ -6,7 +6,9 @@ use App\Models\Student;
 use App\Models\ClassModel;
 use App\Models\ClassStudent;
 use App\Models\Assignment;
+use App\Models\Topic;
 use Illuminate\Http\Request;
+
 class FrontendController extends Controller
 {
     function index()
@@ -25,92 +27,120 @@ class FrontendController extends Controller
         return view('frontend_theme.index', compact('student'));
     }
 
-function class()
-{
-    $user = auth()->user();
+    function class()
+    {
+        $user = auth()->user();
 
-    $student = null;
-    $classes = collect();
-    $assignments = collect();
-    $overallGrade = 0;
+        $student = null;
+        $classes = collect();
+        $assignments = collect();
+        $overallGrade = 0;
 
-    if ($user) {
+        if ($user) {
 
-        $student = Student::where(
-            'email_address',
-            $user->email ?? $user->email_address
-        )->first();
+            $student = Student::where(
+                'email_address',
+                $user->email ?? $user->email_address
+            )->first();
 
-        if ($student && $student->class_id) {
+            if ($student && $student->class_id) {
 
-            $class = ClassModel::with(['timing', 'day'])
-                ->find($student->class_id);
+                $class = ClassModel::with(['timing', 'day'])
+                    ->find($student->class_id);
 
-            if ($class) {
+                if ($class) {
 
-                $classes = collect([$class]);
+                    $classes = collect([$class]);
 
-                $assignments = Assignment::with([
-                    'submissions' => function ($query) use ($student) {
-                        $query->where('student_id', $student->id);
-                    }
-                ])
-                ->where(
-                    'class_timing_id',
-                    $class->class_timing
-                )
-                ->get();
+                    $assignments = Assignment::with([
+                        'submissions' => function ($query) use ($student) {
+                            $query->where('student_id', $student->id);
+                        }
+                    ])
+                    ->where(
+                        'class_timing_id',
+                        $class->class_timing
+                    )
+                    ->get();
+                }
             }
         }
-    }
 
-    // Overall Grade Calculation
-    $totalMarks = 0;
-    $earnedMarks = 0;
+        // Overall Grade Calculation
+        $totalMarks = 0;
+        $earnedMarks = 0;
 
-    foreach ($assignments as $assignment) {
+        foreach ($assignments as $assignment) {
 
-        $submission = $assignment->submissions->first();
+            $submission = $assignment->submissions->first();
 
-        if ($submission && $submission->grade !== null) {
+            if ($submission && $submission->grade !== null) {
 
-            $totalMarks += $assignment->assignment_marks;
-            $earnedMarks += $submission->grade;
+                $totalMarks += $assignment->assignment_marks;
+                $earnedMarks += $submission->grade;
+            }
         }
-    }
 
-    if ($totalMarks > 0) {
+        if ($totalMarks > 0) {
 
-        $overallGrade = round(
-            ($earnedMarks / $totalMarks) * 100
+            $overallGrade = round(
+                ($earnedMarks / $totalMarks) * 100
+            );
+        }
+
+        return view(
+            'frontend_theme.class',
+            compact(
+                'classes',
+                'assignments',
+                'student',
+                'overallGrade'
+            )
         );
     }
-
-    return view(
-        'frontend_theme.class',
-        compact(
-            'classes',
-            'assignments',
-            'student',
-            'overallGrade'
-        )
-    );
-}
 
     function calendar()
     {
         return view('frontend_theme.calendar');
     }
 
+    /**
+     * Classwork stream, grouped by topic, for the logged-in student's class.
+     */
     function classwork()
     {
-        return view('frontend_theme.classwork');
+        $user = auth()->user();
+
+        $student = null;
+        $topics = collect();
+
+        if ($user) {
+
+            $student = Student::where(
+                'email_address',
+                $user->email ?? $user->email_address
+            )->first();
+
+            if ($student && $student->class_id) {
+
+                $topics = Topic::where('class_id', $student->class_id)
+                    ->orderBy('order')
+                    ->with(['assignments' => function ($query) use ($student) {
+                        $query->with(['submissions' => function ($q) use ($student) {
+                            $q->where('student_id', $student->id);
+                        }]);
+                    }])
+                    ->get();
+            }
+        }
+
+        return view('frontend_theme.classwork', compact('topics', 'student'));
     }
 
-    public function detail(Request $request)
+    public function detail(Request $request, $assignment)
     {
         $assignment = Assignment::with('classTiming')
-            ->findOrFail($request->id);
+            ->findOrFail($assignment);
 
         return view('frontend_theme.classwork-detail', compact('assignment'));
     }
@@ -154,6 +184,8 @@ function class()
             compact('classmates', 'teacher')
         );
     }
+
+}
 
     
 }

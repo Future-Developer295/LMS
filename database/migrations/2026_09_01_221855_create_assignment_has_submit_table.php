@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('assignment_has_submit', function (Blueprint $table) {
             $table->id();
-              $table->foreignId('assignment_id')
+
+            $table->foreignId('assignment_id')
                 ->constrained('assignment')
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
@@ -24,10 +25,9 @@ return new class extends Migration
                 ->cascadeOnDelete();
 
             $table->string('assignment_file')->nullable();
-
             $table->text('assignment_remark')->nullable();
-
             $table->text('assignment_remarks_comments')->nullable();
+
             $table->timestamps();
         });
     }
