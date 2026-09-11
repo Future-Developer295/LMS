@@ -6,6 +6,7 @@ use App\Models\Student;
 use App\Models\ClassModel;
 use App\Models\ClassStudent;
 use App\Models\Assignment;
+use App\Models\Announcement;
 use Illuminate\Http\Request;
 class FrontendController extends Controller
 {
@@ -122,7 +123,76 @@ function class()
 
     function steam()
     {
-        return view('frontend_theme.steam');
+        $user = auth()->user();
+
+        $student = null;
+        $joinedClass = null;
+        $feed = collect();
+        $upcoming = collect();
+
+        if ($user) {
+            $student = Student::where(
+                'email_address',
+                $user->email ?? $user->email_address
+            )->first();
+
+            $joinedClassCode = session('joined_class_code');
+
+            if ($joinedClassCode) {
+                $joinedClass = ClassModel::with('teacher')
+                    ->whereRaw('UPPER(TRIM(class_code)) = ?', [strtoupper(trim($joinedClassCode))])
+                    ->first();
+            }
+
+            if ($joinedClass) {
+                $assignments = Assignment::with([
+                    'submissions' => function ($query) use ($student) {
+                        if ($student) {
+                            $query->where('student_id', $student->id);
+                        }
+                    }
+                ])
+                ->where('class_timing_id', $joinedClass->class_timing)
+                ->latest('id')
+                ->get();
+
+                $upcoming = $assignments->filter(function ($assignment) {
+                    $notSubmitted = $assignment->submissions->isEmpty();
+                    $notPastDue = !$assignment->assignment_due_date || $assignment->assignment_due_date->isFuture();
+                    return $notSubmitted && $notPastDue;
+                })->sortBy('assignment_due_date')->take(5)->values();
+
+                $announcements = Announcement::with('user')
+                    ->where('class_id', $joinedClass->id)
+                    ->latest('created_at')
+                    ->get();
+
+                foreach ($assignments as $assignment) {
+                    $feed->push([
+                        'type' => 'assignment',
+                        'data' => $assignment,
+                        'sort_time' => $assignment->created_at,
+                    ]);
+                }
+
+                foreach ($announcements as $announcement) {
+                    $feed->push([
+                        'type' => 'announcement',
+                        'data' => $announcement,
+                        'sort_time' => $announcement->created_at,
+                    ]);
+                }
+
+                $feed = $feed->sortByDesc(function ($item) {
+                    return $item['sort_time'] ?? \Illuminate\Support\Carbon::createFromTimestamp(0);
+                })->values();
+            }
+        }
+
+        return view(
+            'frontend_theme.steam',
+            compact('joinedClass', 'feed', 'upcoming', 'user')
+        );
     }
 
     function people()

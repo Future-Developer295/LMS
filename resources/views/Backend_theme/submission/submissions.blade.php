@@ -34,42 +34,55 @@ active
         
         <div class="filter-bar">
 
-            {{-- Search --}}
-            <div class="input-icon-wrap left search-input-w">
+            <form method="GET" action="{{ route('submission') }}" style="display:flex; align-items:center; gap:12px; flex:1;">
 
-                <i class="fa-solid fa-magnifying-glass"></i>
+                {{-- Search --}}
+                <div class="input-icon-wrap left search-input-w">
 
-                <input
-                    type="text"
-                    class="input"
-                    id="submissionSearch"
-                    placeholder="Search student..."
-                >
+                    <i class="fa-solid fa-magnifying-glass"></i>
 
-            </div>
+                    <input
+                        type="text"
+                        class="input"
+                        id="submissionSearch"
+                        name="search"
+                        value="{{ request('search') }}"
+                        placeholder="Search student..."
+                    >
+
+                </div>
 
 
-            
-            <div class="filter-select-w">
+                
+                <div class="filter-select-w">
 
-                <select
-                    class="select"
-                    id="statusFilter"
-                >
+                    <select
+                        class="select"
+                        id="statusFilter"
+                        name="status"
+                        onchange="this.form.submit()"
+                    >
 
-                    <option value="">All Statuses</option>
+                        <option value="">All Statuses</option>
 
-                    <option value="submitted">
-                        Submitted
-                    </option>
+                        <option value="submitted" {{ request('status') == 'submitted' ? 'selected' : '' }}>
+                            Submitted
+                        </option>
 
-                    <option value="not submitted">
-                        Not Submitted
-                    </option>
+                        <option value="not submitted" {{ request('status') == 'not submitted' ? 'selected' : '' }}>
+                            Not Submitted
+                        </option>
 
-                </select>
+                    </select>
 
-            </div>
+                </div>
+
+                <button type="submit" class="btn btn-secondary btn-sm"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+                @if(request('search') || request('status'))
+                    <a href="{{ route('submission') }}" class="btn btn-secondary btn-sm">Clear</a>
+                @endif
+
+            </form>
 
 
             <div class="filter-bar-spacer"></div>

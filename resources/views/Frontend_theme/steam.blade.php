@@ -27,8 +27,8 @@ active
     <div class="stream-body">
 
         <div class="stream-banner">
-            <div class="stream-banner-title">Batch AI_2508T5</div>
-            <div class="stream-banner-sub">AI</div>
+            <div class="stream-banner-title">{{ $joinedClass->class_name ?? 'No class joined' }}</div>
+            <div class="stream-banner-sub">{{ $joinedClass->class_code ?? '' }}</div>
 
             <button class="stream-banner-info">
                 {{-- Your existing SVG --}}
@@ -40,10 +40,19 @@ active
             <div class="side-col">
                 <div class="upcoming-panel">
                     <h4>Upcoming</h4>
-                    <div class="empty-msg">
-                        Woohoo, no work due soon!
-                    </div>
-                    <a href="grades.php" class="view-all">
+                    @forelse($upcoming as $assignment)
+                        <a href="{{ route('detail', $assignment->id) }}" class="cell-link" style="display:block; margin-bottom:10px;">
+                            <div>{{ $assignment->assignment_title }}</div>
+                            <div class="text-muted small">
+                                Due {{ $assignment->assignment_due_date?->format('d M Y') ?? 'No due date' }}
+                            </div>
+                        </a>
+                    @empty
+                        <div class="empty-msg">
+                            Woohoo, no work due soon!
+                        </div>
+                    @endforelse
+                    <a href="{{ route('frontend_class') }}" class="view-all">
                         View all
                     </a>
                 </div>
@@ -56,9 +65,18 @@ active
                     New announcement
                 </button>
 
+                @if ($errors->any())
+                    <div class="alert alert-danger">{{ $errors->first() }}</div>
+                @endif
+
+                @if (session('success'))
+                    <div class="alert alert-success">{{ session('success') }}</div>
+                @endif
+
                 {{-- Announcement modal --}}
                 <div class="announce-overlay" id="announceOverlay">
-                    <div class="announce-modal">
+                    <form class="announce-modal" method="POST" action="{{ route('announcement.store') }}">
+                        @csrf
 
                         <div class="announce-modal-head">
                             Post
@@ -75,6 +93,8 @@ active
                                      id="announceEditable"
                                      contenteditable="true">
                                 </div>
+
+                                <textarea name="content" id="announceContentInput" style="display:none;"></textarea>
 
                                 <div class="announce-toolbar">
                                     <button type="button" title="Bold">
@@ -128,7 +148,7 @@ active
                                     Cancel
                                 </button>
 
-                                <button type="button"
+                                <button type="submit"
                                         class="announce-post-btn"
                                         id="announcePostBtn"
                                         disabled>
@@ -138,53 +158,72 @@ active
 
                         </div>
 
-                    </div>
+                    </form>
                 </div>
 
-                {{-- Existing posts --}}
-                <a href="classwork-detail.php" class="stream-post">
-                    <div class="stream-post-ic">
-                        <i class="fa-regular fa-clipboard"></i>
-                    </div>
+                @forelse($feed as $item)
 
-                    <div class="stream-post-text">
-                        <div class="stream-post-title">
-                            Despicable Dev posted a new assignment:
-                            PHP Image CRUD with Foreign Key
-                            (Category &amp; Product Management)
+                    @if($item['type'] === 'announcement')
+
+                        <div class="stream-post">
+                            <div class="stream-post-ic">
+                                <i class="fa-solid fa-bullhorn"></i>
+                            </div>
+
+                            <div class="stream-post-text">
+                                <div class="stream-post-title">
+                                    {{ $item['data']->user->name ?? 'A classmate' }}:
+                                    {{ $item['data']->content }}
+                                </div>
+
+                                <div class="stream-post-date">
+                                    {{ $item['data']->created_at?->diffForHumans() }}
+                                </div>
+                            </div>
+
+                            @if($item['data']->user_id === ($user->id ?? null))
+                                <form action="{{ route('announcement.destroy', $item['data']->id) }}"
+                                      method="POST"
+                                      onsubmit="return confirm('Delete this announcement?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="stream-post-menu" title="Delete">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </form>
+                            @endif
                         </div>
 
-                        <div class="stream-post-date">
-                            Jun 28
-                        </div>
-                    </div>
+                    @else
 
-                    <button class="stream-post-menu">
-                        <i class="fa-solid fa-ellipsis-vertical"></i>
-                    </button>
-                </a>
+                        <a href="{{ route('detail', $item['data']->id) }}" class="stream-post">
+                            <div class="stream-post-ic">
+                                <i class="fa-regular fa-clipboard"></i>
+                            </div>
 
-                <a href="classwork-detail.php" class="stream-post">
-                    <div class="stream-post-ic">
-                        <i class="fa-regular fa-clipboard"></i>
-                    </div>
+                            <div class="stream-post-text">
+                                <div class="stream-post-title">
+                                    {{ $joinedClass->teacher->name ?? 'Your teacher' }} posted a new assignment:
+                                    {{ $item['data']->assignment_title }}
+                                </div>
 
-                    <div class="stream-post-text">
-                        <div class="stream-post-title">
-                            Despicable Dev posted a new assignment:
-                            Implement (AddToCart) functionality
-                            in Ecommerce Site
-                        </div>
+                                <div class="stream-post-date">
+                                    {{ $item['data']->assignment_due_date?->format('M j') ?? 'No due date' }}
+                                </div>
+                            </div>
 
-                        <div class="stream-post-date">
-                            May 18 (Edited May 19)
-                        </div>
-                    </div>
+                            <button class="stream-post-menu">
+                                <i class="fa-solid fa-ellipsis-vertical"></i>
+                            </button>
+                        </a>
 
-                    <button class="stream-post-menu">
-                        <i class="fa-solid fa-ellipsis-vertical"></i>
-                    </button>
-                </a>
+                    @endif
+
+                @empty
+                <div class="empty-msg">
+                    No posts yet in this class.
+                </div>
+                @endforelse
 
             </div>
 
@@ -244,6 +283,8 @@ const announceCancelBtn = document.getElementById('announceCancelBtn');
 const announceEditable = document.getElementById('announceEditable');
 const announcePlaceholder = document.getElementById('announcePlaceholder');
 const announcePostBtn = document.getElementById('announcePostBtn');
+const announceContentInput = document.getElementById('announceContentInput');
+const announceForm = announceOverlay ? announceOverlay.querySelector('form') : null;
 
 if (newAnnouncementBtn) {
 
@@ -288,7 +329,24 @@ if (newAnnouncementBtn) {
             hasText
         );
     });
+
+    if (announceForm) {
+        announceForm.addEventListener('submit', function() {
+            announceContentInput.value = announceEditable.innerText.trim();
+        });
+    }
 }
 </script>
+
+@if(session('success') && str_contains(session('success'), 'Announcement posted'))
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const overlay = document.getElementById('announceOverlay');
+    if (overlay) {
+        overlay.classList.remove('open');
+    }
+});
+</script>
+@endif
 
 @endsection

@@ -8,16 +8,36 @@ use App\Models\ClassTiming;
 
 class AssignmentController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $assignments = Assignment::with('classTiming')
+        $query = Assignment::with('classTiming')
             ->withCount('submissions')
-            ->latest('id')
-            ->get();
+            ->latest('id');
+
+        if ($request->filled('status')) {
+            $query->where('assignment_status', $request->status);
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+                $q->where('assignment_title', 'LIKE', "%{$search}%")
+                    ->orWhereHas('classTiming', function ($timingQuery) use ($search) {
+                        $timingQuery->where('class_timing', 'LIKE', "%{$search}%");
+                    });
+            });
+        }
+
+        $assignments = $query->get();
+
+        $activeAssignmentsCount = Assignment::where('assignment_status', 'active')->count();
+        $totalSubmissionsCount = Assignment::withCount('submissions')->get()->sum('submissions_count');
+        $totalAssignmentsCount = Assignment::count();
 
         return view(
             'backend_theme.assignment.assignments',
-            compact('assignments')
+            compact('assignments', 'activeAssignmentsCount', 'totalSubmissionsCount', 'totalAssignmentsCount')
         );
     }
 

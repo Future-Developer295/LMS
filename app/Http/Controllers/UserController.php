@@ -11,11 +11,29 @@ use Illuminate\Support\Facades\Hash;
 class UserController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::with('roles')->latest()->paginate(10);
+        $query = User::with('roles')->latest();
 
-        return view('Backend_theme.users.index', compact('users'));
+        if ($request->filled('role')) {
+            $query->whereHas('roles', function ($roleQuery) use ($request) {
+                $roleQuery->where('name', $request->role);
+            });
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                    ->orWhere('email', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $users = $query->paginate(10)->withQueryString();
+        $roles = Role::all();
+
+        return view('Backend_theme.users.index', compact('users', 'roles'));
     }
 
 

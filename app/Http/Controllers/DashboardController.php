@@ -6,6 +6,10 @@ use App\Models\ClassModel;
 use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\ClassTiming;
+use App\Models\Assignment;
+use App\Models\AssignmentHasSubmit;
+use App\Models\Attendance;
+use App\Models\HasMarkAttendance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -14,11 +18,118 @@ use Illuminate\Support\Facades\Hash;
 class DashboardController extends Controller
 {
     function index (){
-        return view('Backend_theme.dashboard');
+        $teachersCount = Teacher::count();
+        $studentsCount = Student::count();
+        $classesCount = ClassModel::count();
+        $assignmentsCount = Assignment::count();
+        $submissionsCount = AssignmentHasSubmit::whereNotNull('assignment_file')->count();
+
+        $submissionsThisWeek = AssignmentHasSubmit::whereNotNull('assignment_file')
+            ->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])
+            ->count();
+
+        $submissionsLastWeek = AssignmentHasSubmit::whereNotNull('assignment_file')
+            ->whereBetween('created_at', [now()->subWeek()->startOfWeek(), now()->subWeek()->endOfWeek()])
+            ->count();
+
+        $submissionsTrend = $submissionsLastWeek > 0
+            ? round((($submissionsThisWeek - $submissionsLastWeek) / $submissionsLastWeek) * 100, 1)
+            : null;
+
+        $attendanceThisWeek = HasMarkAttendance::whereHas('attendance', function ($query) {
+            $query->whereBetween('mark_date', [now()->startOfWeek(), now()->endOfWeek()]);
+        });
+
+        $attendanceRateThisWeek = (clone $attendanceThisWeek)->count() > 0
+            ? round(((clone $attendanceThisWeek)->where('mark_status', 'present')->count() / (clone $attendanceThisWeek)->count()) * 100, 1)
+            : null;
+
+        $attendanceLastWeek = HasMarkAttendance::whereHas('attendance', function ($query) {
+            $query->whereBetween('mark_date', [now()->subWeek()->startOfWeek(), now()->subWeek()->endOfWeek()]);
+        });
+
+        $attendanceRateLastWeek = (clone $attendanceLastWeek)->count() > 0
+            ? round(((clone $attendanceLastWeek)->where('mark_status', 'present')->count() / (clone $attendanceLastWeek)->count()) * 100, 1)
+            : null;
+
+        $allAttendanceRecords = HasMarkAttendance::count();
+        $presentAttendanceRecords = HasMarkAttendance::where('mark_status', 'present')->count();
+        $attendanceRate = $allAttendanceRecords > 0
+            ? round(($presentAttendanceRecords / $allAttendanceRecords) * 100, 1)
+            : 0;
+
+        $attendanceTrend = ($attendanceRateThisWeek !== null && $attendanceRateLastWeek !== null)
+            ? round($attendanceRateThisWeek - $attendanceRateLastWeek, 1)
+            : null;
+
+        $recentAssignments = Assignment::with('classTiming')
+            ->latest('id')
+            ->take(4)
+            ->get();
+
+        $recentSubmissions = AssignmentHasSubmit::with(['student', 'assignment'])
+            ->latest('created_at')
+            ->take(5)
+            ->get();
+
+        $recentAttendance = Attendance::latest('mark_date')
+            ->take(5)
+            ->get();
+
+        $activityTimeline = collect();
+
+        foreach ($recentSubmissions as $submission) {
+            $activityTimeline->push([
+                'title' => trim(($submission->student->full_name ?? 'A student') . ' ' . ($submission->student->last_name ?? '')) . ' submitted ' . ($submission->assignment->assignment_title ?? 'an assignment'),
+                'time' => $submission->created_at,
+                'color' => 'green',
+            ]);
+        }
+
+        foreach ($recentAttendance as $attendance) {
+            $activityTimeline->push([
+                'title' => 'Attendance recorded for batch ' . $attendance->batch_code,
+                'time' => $attendance->mark_date,
+                'color' => 'blue',
+            ]);
+        }
+
+        $activityTimeline = $activityTimeline
+            ->sortByDesc(fn ($item) => $item['time'])
+            ->take(5)
+            ->values();
+
+        return view('Backend_theme.dashboard', compact(
+            'teachersCount',
+            'studentsCount',
+            'classesCount',
+            'assignmentsCount',
+            'submissionsCount',
+            'submissionsTrend',
+            'attendanceRate',
+            'attendanceTrend',
+            'recentAssignments',
+            'activityTimeline'
+        ));
     }
 
-    function teacher (){
-        $teachers = Teacher::latest()->get();
+    function teacher (Request $request){
+        $query = Teacher::latest();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+                $q->where('full_name', 'LIKE', "%{$search}%")
+                    ->orWhere('last_name', 'LIKE', "%{$search}%")
+                    ->orWhere('cnic', 'LIKE', "%{$search}%")
+                    ->orWhere('email', 'LIKE', "%{$search}%")
+                    ->orWhere('contact_number', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $teachers = $query->get();
+
         return view('backend_theme.teacher.teachers', compact('teachers'));
     }
 
@@ -89,9 +200,29 @@ class DashboardController extends Controller
         return redirect()->route('teacher')->with('success', 'Teacher deleted successfully.');
     }
 
-    function student (){
-        $students = Student::with('class')->latest()->get();
-        return view('backend_theme.student.students', compact('students'));
+    function student (Request $request){
+        $query = Student::with('class')->latest();
+
+        if ($request->filled('class_id')) {
+            $query->where('class_id', $request->class_id);
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+                $q->where('full_name', 'LIKE', "%{$search}%")
+                    ->orWhere('last_name', 'LIKE', "%{$search}%")
+                    ->orWhere('cnic', 'LIKE', "%{$search}%")
+                    ->orWhere('batch_code', 'LIKE', "%{$search}%")
+                    ->orWhere('contact_number', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $students = $query->get();
+        $classes = ClassModel::all();
+
+        return view('backend_theme.student.students', compact('students', 'classes'));
     }
 
     function student_edit ($id){

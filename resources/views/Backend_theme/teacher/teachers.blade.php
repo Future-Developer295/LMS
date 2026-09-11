@@ -22,16 +22,22 @@
         @endif
 
         <div class="card">
-            <div class="filter-bar">
-                <div class="input-icon-wrap left search-input-w">
-                    <i class="fa-solid fa-filter"></i>
-                    <input type="text" class="input" id="teacherSearch" placeholder="Filter teachers...">
+            <form method="GET" action="{{ route('teacher') }}">
+                <div class="filter-bar">
+                    <div class="input-icon-wrap left search-input-w">
+                        <i class="fa-solid fa-filter"></i>
+                        <input type="text" class="input" id="teacherSearch" name="search" value="{{ request('search') }}" placeholder="Filter teachers...">
+                    </div>
+                    <button type="submit" class="btn btn-secondary btn-sm"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+                    @if(request('search'))
+                        <a href="{{ route('teacher') }}" class="btn btn-secondary btn-sm">Clear</a>
+                    @endif
+                    <div class="filter-bar-spacer"></div>
+                    <span class="results-count" id="teacherResultsCount">Showing {{ $teachers->count() }} of {{ $teachers->count() }}</span>
+                    <button class="btn btn-secondary btn-sm" id="exportTeachersBtn" type="button"><i class="fa-solid fa-download"></i>
+                        Export</button>
                 </div>
-                <div class="filter-bar-spacer"></div>
-                <span class="results-count" id="teacherResultsCount">Showing {{ $teachers->count() }} of {{ $teachers->count() }}</span>
-                <button class="btn btn-secondary btn-sm" id="exportTeachersBtn"><i class="fa-solid fa-download"></i>
-                    Export</button>
-            </div>
+            </form>
 
             <div class="table-wrap">
                 <table class="data-table">

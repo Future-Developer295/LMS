@@ -10,6 +10,7 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\ClassController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\AnnouncementController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -311,6 +312,14 @@ Route::get('/classwork/detail/{id}', [FrontendController::class, 'detail'])->nam
 Route::get('/archived', [FrontendController::class, 'archived'])->name('archived');
 
 Route::get('/steam', [FrontendController::class, 'steam'])->name('steam');
+
+Route::middleware('auth')->group(function () {
+    Route::post('/announcement/store', [AnnouncementController::class, 'store'])
+        ->name('announcement.store');
+
+    Route::delete('/announcement/{id}', [AnnouncementController::class, 'destroy'])
+        ->name('announcement.destroy');
+});
 
 Route::get('/people', [FrontendController::class, 'people'])->name('people'); //aleena;
 
