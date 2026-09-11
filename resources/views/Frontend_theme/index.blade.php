@@ -79,16 +79,6 @@ active
                 </div>
 
             </div>
-<<<<<<< HEAD
-          </a>
-          <div class="gc-card-avatar"><img src="{{ asset('Frontend_theme/images/teacher.png') }}" alt=""></div>
-          <div class="gc-card-body"></div>
-          <div class="gc-card-footer">
-            {{-- <a href="{{ route('frontend_class') }}" class="btn-icon" title="Your work"><i class="fa-regular fa-address-card"></i></a> --}}
-            <button class="btn-icon" title="Open folder"><i class="fa-regular fa-folder"></i></button>
-            <button class="btn-icon" title="More"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-          </div>
-=======
         </main>
 
         <button class="gc-fab">
@@ -171,7 +161,6 @@ active
 
             </a>
 
->>>>>>> 5a1470322f48b20c891b78ccbad360b47b23349e
         </div>
 
     </main>

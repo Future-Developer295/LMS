@@ -297,22 +297,22 @@ Route::middleware('auth')->group(function () {
 });
 
 
-Route::get('/', [FrontendController::class, 'index'])->name('index'); //khdija;
+Route::get('/', [FrontendController::class, 'index'])->name('index'); 
 
-Route::get('/class', [FrontendController::class, 'class'])->name('frontend_class'); //Hana;
-
+Route::get('/class', [FrontendController::class, 'class'])->name('frontend_class'); 
 
 Route::get('/calendar', [FrontendController::class, 'calendar'])->name('calendar');
 
 Route::get('/classwork', [FrontendController::class, 'classwork'])->name('classwork');
 
-Route::get('/classwork/detail/{id}', [FrontendController::class, 'detail'])->name('detail'); //dua
+
+Route::get('/classwork/detail/{assignment}', [FrontendController::class, 'detail'])->name('detail');
 
 Route::get('/archived', [FrontendController::class, 'archived'])->name('archived');
 
 Route::get('/steam', [FrontendController::class, 'steam'])->name('steam');
 
-Route::get('/people', [FrontendController::class, 'people'])->name('people'); //aleena;
+Route::get('/people', [FrontendController::class, 'people'])->name('people'); 
 
 
 

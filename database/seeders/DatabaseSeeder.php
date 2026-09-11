@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             ClassTimingSeeder::class,
             ClassDaySeeder::class,
             ClassSeeder::class,
+             TopicSeeder::class, 
             StudentSeeder::class,
             AttendanceSeeder::class,
             HasMarkAttendanceSeeder::class,
