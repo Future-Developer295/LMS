@@ -69,6 +69,15 @@
         {{ $class->timing?->class_timing ?? '—' }}
     </div>
 </div>
+<br>
+  <div class="view-field mb-0">
+    <label>Class Code</label>
+    <div class="value">
+        {{ $class->class_code}}
+    </div>
+</div>
+</div>
+               
 
             </div>
 
