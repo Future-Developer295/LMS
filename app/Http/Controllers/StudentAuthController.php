@@ -75,7 +75,7 @@ class StudentAuthController extends Controller
     public function join(Request $request)
     {
         $request->validate([
-            'class_code' => 'required|string|max:8',
+            'class_code' => 'required',
         ]);
 
         if (!Auth::check()) {
@@ -98,7 +98,6 @@ class StudentAuthController extends Controller
 
         $user = Auth::user();
 
-        // Find the student row for this user, or create one if it doesn't exist yet
         $student = Student::firstOrNew(['email_address' => $user->email]);
         $student->full_name = $student->full_name ?: $user->name;
         $student->class_id = $class->id;
