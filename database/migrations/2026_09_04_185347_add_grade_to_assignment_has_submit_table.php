@@ -6,23 +6,19 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::table('assignment_has_submit', function (Blueprint $table) {
-            //
+            $table->decimal('grade', 8, 2)
+                ->nullable()
+                ->after('assignment_remarks_comments');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('assignment_has_submit', function (Blueprint $table) {
-            //
+            $table->dropColumn('grade');
         });
     }
 };
