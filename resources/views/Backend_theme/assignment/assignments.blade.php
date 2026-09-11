@@ -9,7 +9,7 @@
 
 <main class="page">
 
-    {{-- Page Header --}}
+    
     <div class="page-header">
 
         <div>
@@ -35,7 +35,7 @@
     </div>
 
 
-    {{-- Statistics --}}
+    
     <div class="row g-3 mb-2">
 
         {{-- Active Assignments --}}
@@ -66,7 +66,7 @@
         </div>
 
 
-        {{-- Total Submissions --}}
+        
         <div class="col-md-4">
 
             <div class="stat-card">
@@ -94,7 +94,7 @@
         </div>
 
 
-        {{-- Total Assignments --}}
+        
         <div class="col-md-4">
 
             <div class="stat-card">
@@ -124,7 +124,7 @@
     </div>
 
 
-    {{-- Assignments Table --}}
+    
 <div class="card">
 
     <div class="card-header">
@@ -152,27 +152,27 @@
 
                     <tr>
 
-                        {{-- Assignment Title --}}
+    
                         <td>
                             {{ $assignment->assignment_title }}
                         </td>
 
-                        {{-- Class --}}
+                        
                         <td>
                             {{ $assignment->class_timing_id }}
                         </td>
 
-                        {{-- Due Date --}}
+                        
                         <td>
                             {{ $assignment->assignment_due_date?->format('d M Y') ?? 'N/A' }}
                         </td>
 
-                        {{-- Submissions --}}
+                        
                         <td>
                             {{ $assignment->submissions_count }}
                         </td>
 
-                        {{-- Status --}}
+                        
                         <td>
 
                             @if($assignment->assignment_status == 'active')
@@ -209,12 +209,12 @@
 
                         </td>
 
-                        {{-- ACTION BUTTONS --}}
+                        
                         <td>
 
                             <div style="display: flex; gap: 8px; align-items: center;">
 
-                                {{-- VIEW --}}
+                                
                                 <a href="{{ route('assignment.show', $assignment->id) }}"
                                    class="btn btn-sm btn-secondary">
 
@@ -224,7 +224,7 @@
                                 </a>
 
 
-                                {{-- EDIT --}}
+                                
                                 <a href="{{ route('assignment.edit', $assignment->id) }}"
                                    class="btn btn-sm btn-primary">
 
@@ -234,7 +234,7 @@
                                 </a>
 
 
-                                {{-- DELETE --}}
+                                
                                 <form action="{{ route('assignment.destroy', $assignment->id) }}"
                                       method="POST"
                                       style="margin: 0;">

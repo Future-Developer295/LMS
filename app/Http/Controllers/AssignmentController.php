@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Assignment;
+use App\Models\ClassTiming;
 
 class AssignmentController extends Controller
 {
@@ -20,10 +21,17 @@ class AssignmentController extends Controller
         );
     }
 
-    public function create()
-    {
-        //
-    }
+    
+        public function create()
+{
+    $classTimings = ClassTiming::all();
+
+    return view(
+        'backend_theme.assignment.assignment-add',
+        compact('classTimings')
+    );
+}
+    
 
     public function store(Request $request)
     {
