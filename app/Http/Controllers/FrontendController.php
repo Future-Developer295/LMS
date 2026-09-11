@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
+use App\Models\ClassModel;
+use App\Models\ClassStudent;
 use Illuminate\Http\Request;
 
 class FrontendController extends Controller
@@ -53,9 +55,32 @@ class FrontendController extends Controller
         return view('frontend_theme.steam');
     }
 
-    function people()
-    {
-        return view('frontend_theme.people');
+     function people()
+{
+    $classmates = collect();
+
+    $classCode = session('joined_class_code');
+
+    if ($classCode) {
+
+        $class = ClassModel::where(
+            'class_code',
+            $classCode
+        )->first();
+
+        if ($class) {
+
+            $classmates = Student::where(
+                'class_id',
+                $class->id
+            )->get();
+        }
     }
+
+    return view(
+        'frontend_theme.people',
+        compact('classmates')
+    );
+}
 }
 
