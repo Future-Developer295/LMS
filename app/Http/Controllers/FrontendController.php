@@ -8,6 +8,7 @@ use App\Models\ClassStudent;
 use App\Models\Assignment;
 use App\Models\Topic;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class FrontendController extends Controller
 {
@@ -109,7 +110,7 @@ class FrontendController extends Controller
      */
     function classwork()
     {
-        $user = auth()->user();
+        $user = Auth::user();
 
         $student = null;
         $topics = collect();
