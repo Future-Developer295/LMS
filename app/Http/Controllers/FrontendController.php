@@ -6,7 +6,6 @@ use App\Models\Student;
 use App\Models\ClassModel;
 use App\Models\Assignment;
 use Illuminate\Http\Request;
-use App\Models\Assignment;
 class FrontendController extends Controller
 {
     function index()
