@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Student;
 use App\Models\ClassModel;
 use App\Models\ClassStudent;
+use App\Models\Assignment;
 use Illuminate\Http\Request;
-
 class FrontendController extends Controller
 {
     function index()
@@ -25,10 +25,77 @@ class FrontendController extends Controller
         return view('frontend_theme.index', compact('student'));
     }
 
-    function class()
-    {
-        return view('frontend_theme.class');
+function class()
+{
+    $user = auth()->user();
+
+    $student = null;
+    $classes = collect();
+    $assignments = collect();
+    $overallGrade = 0;
+
+    if ($user) {
+
+        $student = Student::where(
+            'email_address',
+            $user->email ?? $user->email_address
+        )->first();
+
+        if ($student && $student->class_id) {
+
+            $class = ClassModel::with(['timing', 'day'])
+                ->find($student->class_id);
+
+            if ($class) {
+
+                $classes = collect([$class]);
+
+                $assignments = Assignment::with([
+                    'submissions' => function ($query) use ($student) {
+                        $query->where('student_id', $student->id);
+                    }
+                ])
+                ->where(
+                    'class_timing_id',
+                    $class->class_timing
+                )
+                ->get();
+            }
+        }
     }
+
+    // Overall Grade Calculation
+    $totalMarks = 0;
+    $earnedMarks = 0;
+
+    foreach ($assignments as $assignment) {
+
+        $submission = $assignment->submissions->first();
+
+        if ($submission && $submission->grade !== null) {
+
+            $totalMarks += $assignment->assignment_marks;
+            $earnedMarks += $submission->grade;
+        }
+    }
+
+    if ($totalMarks > 0) {
+
+        $overallGrade = round(
+            ($earnedMarks / $totalMarks) * 100
+        );
+    }
+
+    return view(
+        'frontend_theme.class',
+        compact(
+            'classes',
+            'assignments',
+            'student',
+            'overallGrade'
+        )
+    );
+}
 
     function calendar()
     {
@@ -40,9 +107,12 @@ class FrontendController extends Controller
         return view('frontend_theme.classwork');
     }
 
-    function detail()
+    public function detail(Request $request)
     {
-        return view('frontend_theme.classwork-detail');
+        $assignment = Assignment::with('classTiming')
+            ->findOrFail($request->id);
+
+        return view('frontend_theme.classwork-detail', compact('assignment'));
     }
 
     function archived()
@@ -84,4 +154,6 @@ class FrontendController extends Controller
             compact('classmates', 'teacher')
         );
     }
+
+    
 }

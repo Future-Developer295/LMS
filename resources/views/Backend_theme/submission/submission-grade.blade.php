@@ -60,7 +60,7 @@ active
 
             <div class="stack">
 
-                {{-- Submitted File --}}
+                
                 <div class="card card-pad">
 
                     <div class="card-section-title mb-md">
@@ -122,7 +122,7 @@ active
                 </div>
 
 
-                {{-- Student Answer / Remark --}}
+                
                 <div class="card card-pad">
 
                     <div class="card-section-title mb-md">
@@ -143,7 +143,7 @@ active
 
             <div class="stack">
 
-                {{-- Grade & Feedback --}}
+                
                 <div class="card card-pad">
 
                     <div class="card-section-title mb-md">
