@@ -55,32 +55,33 @@ class FrontendController extends Controller
         return view('frontend_theme.steam');
     }
 
-     function people()
-{
-    $classmates = collect();
+    function people()
+    {
+        $classmates = collect();
+        $teacher = null;
 
-    $classCode = session('joined_class_code');
+        $classCode = session('joined_class_code');
 
-    if ($classCode) {
+        if ($classCode) {
 
-        $class = ClassModel::where(
-            'class_code',
-            $classCode
-        )->first();
+            $class = ClassModel::with('teacher')
+                ->where('class_code', $classCode)
+                ->first();
 
-        if ($class) {
+            if ($class) {
 
-            $classmates = Student::where(
-                'class_id',
-                $class->id
-            )->get();
+                $teacher = $class->teacher;
+
+                $classmates = Student::where(
+                    'class_id',
+                    $class->id
+                )->get();
+            }
         }
+
+        return view(
+            'frontend_theme.people',
+            compact('classmates', 'teacher')
+        );
     }
-
-    return view(
-        'frontend_theme.people',
-        compact('classmates')
-    );
 }
-}
-

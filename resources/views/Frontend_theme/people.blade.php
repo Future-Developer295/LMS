@@ -5,7 +5,7 @@
     @if (Auth::check() && Auth::user()->role === 'user')
         <main class="flex-grow-1 stream-main index-main">
 
-            
+
             <div class="class-tabbar">
 
                 <div class="tab-links">
@@ -28,7 +28,7 @@
 
                 <div class="tab-icons">
 
-                  
+
                     <button class="btn-icon" title="Calendar">
 
                         <svg focusable="false" width="24" height="24" viewBox="0 0 24 24" fill="#444746">
@@ -41,7 +41,7 @@
 
                     </button>
 
-                  
+
                     <button class="btn-icon" title="Class settings">
 
                         <svg focusable="false" height="24" viewBox="0 0 24 24" width="24" fill="#444746">
@@ -59,11 +59,11 @@
             </div>
 
 
-           
+
             <div class="stream-body">
 
 
-              
+
 
                 <div class="people-section">
 
@@ -74,18 +74,22 @@
                     </div>
 
 
+                    @php
+                        $teacherName = $teacher->full_name ?? 'Teacher';
+                        $teacherLetter = strtoupper(substr(trim($teacherName), 0, 1));
+                    @endphp
+
                     <div class="people-row">
 
                         <div class="people-avatar" style="background:linear-gradient(135deg,#e04b3f,#8e2a2a);">
 
-                            DD
+                            {{ $teacherLetter }}
 
                         </div>
 
-
                         <div class="people-name">
 
-                            Despicable Dev
+                            {{ $teacherName }}
 
                         </div>
 
@@ -95,7 +99,7 @@
 
 
 
-              
+
 
                 <div class="people-section">
 
@@ -167,9 +171,6 @@
             </div>
 
         </main>
-
-
-        
     @else
         <main class="flex-grow-1 d-flex align-items-center justify-content-center p-4">
 
@@ -221,7 +222,7 @@
 
 
 
-    
+
     <button class="help-fab">
 
         <i class="fa-regular fa-circle-question"></i>
