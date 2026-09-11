@@ -62,7 +62,7 @@
     @csrf
     @method('PUT')
 
-    <!-- Assignment Title -->
+    
     <div class="field">
         <label for="assignmentTitle">Assignment Title *</label>
 
@@ -76,7 +76,7 @@
         >
     </div>
 
-    <!-- Instructions -->
+    
     <div class="field">
         <label for="instructionsBody">Assignment Instructions</label>
 
@@ -88,7 +88,7 @@
         >{{ old('assignment_instruction', $assignment->assignment_instruction) }}</textarea>
     </div>
 
-    <!-- Class -->
+    
     <div class="field">
         <label for="assignClass">Assign To</label>
 
@@ -104,7 +104,7 @@
         </select>
     </div>
 
-    <!-- Marks -->
+    
     <div class="field">
         <label for="points">Points / Max Marks</label>
 
@@ -118,7 +118,7 @@
         >
     </div>
 
-    <!-- Due Date -->
+    
     <div class="field">
         <label for="dueDate">Due Date</label>
 
@@ -132,7 +132,7 @@
         >
     </div>
 
-    <!-- Status -->
+    
     <div class="field">
         <label for="status">Status</label>
 

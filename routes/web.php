@@ -301,6 +301,7 @@ Route::get('/', [FrontendController::class, 'index'])->name('index'); //khdija;
 
 Route::get('/class', [FrontendController::class, 'class'])->name('frontend_class'); //Hana;
 
+
 Route::get('/calendar', [FrontendController::class, 'calendar'])->name('calendar');
 
 Route::get('/classwork', [FrontendController::class, 'classwork'])->name('classwork');
