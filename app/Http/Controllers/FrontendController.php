@@ -13,7 +13,7 @@ class FrontendController extends Controller
 {
     function index()
     {
-        $user = auth()->user();
+       $user = Auth::user();
 
         $student = null;
 
@@ -29,7 +29,7 @@ class FrontendController extends Controller
 
     function class()
     {
-        $user = auth()->user();
+       $user = Auth::user();
 
         $student = null;
         $classes = collect();
@@ -125,24 +125,34 @@ class FrontendController extends Controller
 
                 $topics = Topic::where('class_id', $student->class_id)
                     ->orderBy('order')
-                    ->with(['assignments' => function ($query) use ($student) {
-                        $query->with(['submissions' => function ($q) use ($student) {
-                            $q->where('student_id', $student->id);
-                        }]);
-                    }])
+                    ->with([
+                        'assignments' => function ($query) use ($student) {
+                            $query->with([
+                                'submissions' => function ($q) use ($student) {
+                                    $q->where('student_id', $student->id);
+                                }
+                            ]);
+                        }
+                    ])
                     ->get();
             }
         }
 
-        return view('frontend_theme.classwork', compact('topics', 'student'));
+        return view(
+            'frontend_theme.classwork',
+            compact('topics', 'student')
+        );
     }
 
-    public function detail(Request $request, $assignment)
+    public function detail(Request $request, int $assignment)
     {
         $assignment = Assignment::with('classTiming')
             ->findOrFail($assignment);
 
-        return view('frontend_theme.classwork-detail', compact('assignment'));
+        return view(
+            'frontend_theme.classwork-detail',
+            compact('assignment')
+        );
     }
 
     function archived()
@@ -184,6 +194,4 @@ class FrontendController extends Controller
             compact('classmates', 'teacher')
         );
     }
-
-    
 }
