@@ -34,24 +34,24 @@
             </div>
 
             <div class="filter-bar">
-                <div class="input-icon-wrap left search-input-w">
-                    <i class="bi bi-search"></i>
-                    <input type="text" class="input" placeholder="Search permissions...">
-                </div>
-                <select class="select filter-select-w">
-                    <option>All modules</option>
-                    <option>Dashboard</option>
-                    <option>Users</option>
-                    <option>Students</option>
-                    <option>Teachers</option>
-                    <option>Classes</option>
-                    <option>Assignments</option>
-                    <option>Courses</option>
-                    <option>Reports</option>
-                    <option>Settings</option>
-                </select>
+                <form method="GET" action="{{ route('permissions.index') }}" style="display:flex; align-items:center; gap:12px; flex:1;">
+                    <div class="input-icon-wrap left search-input-w">
+                        <i class="bi bi-search"></i>
+                        <input type="text" class="input" name="search" value="{{ request('search') }}" placeholder="Search permissions...">
+                    </div>
+                    <select class="select filter-select-w" name="module" onchange="this.form.submit()">
+                        <option value="">All modules</option>
+                        @foreach($modules as $module)
+                            <option value="{{ $module }}" {{ request('module') == $module ? 'selected' : '' }}>{{ ucfirst($module) }}</option>
+                        @endforeach
+                    </select>
+                    <button type="submit" class="btn btn-secondary btn-sm">Search</button>
+                    @if(request('search') || request('module'))
+                        <a href="{{ route('permissions.index') }}" class="btn btn-secondary btn-sm">Clear</a>
+                    @endif
+                </form>
                 <div class="filter-bar-spacer"></div>
-                <span class="results-count">34 permissions</span>
+                <span class="results-count">{{ $permissions->total() }} permissions</span>
             </div>
 
             <div class="table-wrap">
@@ -95,15 +95,8 @@
             </div>
 
             <div class="pagination-bar">
-                <span class="pagination-info">Showing 1–8 of 34 permissions</span>
-                <div class="pagination">
-                    <button class="page-btn" disabled><i class="bi bi-chevron-left"></i></button>
-                    <button class="page-btn active">1</button>
-                    <button class="page-btn">2</button>
-                    <button class="page-btn">3</button>
-                    <button class="page-btn">4</button>
-                    <button class="page-btn"><i class="bi bi-chevron-right"></i></button>
-                </div>
+                <span class="pagination-info">Showing {{ $permissions->firstItem() ?? 0 }}–{{ $permissions->lastItem() ?? 0 }} of {{ $permissions->total() }} permissions</span>
+                {{ $permissions->links() }}
             </div>
         </div>
 

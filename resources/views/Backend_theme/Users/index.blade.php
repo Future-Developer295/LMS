@@ -22,26 +22,28 @@ active
       @endif
 
       <div class="card">
-        <div class="filter-bar">
-          <div class="filter-select-w">
-            <select class="select" id="gradeFilter">
-              <option value="">All Grades</option>
-              <option>9th Grade</option>
-              <option>10th Grade</option>
-              <option>11th Grade</option>
-              <option>12th Grade</option>
-            </select>
+        <form method="GET" action="{{ route('user') }}">
+          <div class="filter-bar">
+            <div class="input-icon-wrap left search-input-w">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" class="input" name="search" value="{{ request('search') }}" placeholder="Search name or email...">
+            </div>
+            <div class="filter-select-w">
+              <select class="select" name="role" onchange="this.form.submit()">
+                <option value="">All Roles</option>
+                @foreach($roles as $role)
+                  <option value="{{ $role->name }}" {{ request('role') == $role->name ? 'selected' : '' }}>{{ ucfirst($role->name) }}</option>
+                @endforeach
+              </select>
+            </div>
+            <button type="submit" class="btn btn-secondary btn-sm"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+            @if(request('search') || request('role'))
+              <a href="{{ route('user') }}" class="btn btn-secondary btn-sm">Clear</a>
+            @endif
+            <div class="filter-bar-spacer"></div>
+            <button class="btn btn-secondary" id="exportStudentsBtn" type="button"><i class="fa-solid fa-download"></i> Export CSV</button>
           </div>
-          <div class="filter-select-w">
-            <select class="select" id="statusFilter">
-              <option value="">All Statuses</option>
-              <option>Active</option>
-              <option>Inactive</option>
-            </select>
-          </div>
-          <div class="filter-bar-spacer"></div>
-          <button class="btn btn-secondary" id="exportStudentsBtn"><i class="fa-solid fa-download"></i> Export CSV</button>
-        </div>
+        </form>
 
         <div class="table-wrap">
           <table class="data-table">
@@ -59,8 +61,8 @@ active
               <tr>
                             <td>{{ $user->name }}</td>
                             <td>{{ $user->email }}</td>
-                            <td>{{ $user->role }}</td>
-                            <td>{{ $user->created_at }}</td>
+                            <td>{{ $user->roles->pluck('name')->map(fn($name) => ucfirst($name))->join(', ') ?: '—' }}</td>
+                            <td>{{ $user->created_at?->format('d M Y') }}</td>
                             <td class="text-end">
 
 
@@ -87,16 +89,8 @@ active
         </div>
 
         <div class="pagination-bar">
-          <span class="pagination-info" id="studentResultsCount">Showing 1 to 8 of 248 entries</span>
-          <div class="pagination">
-            <button class="page-btn"><i class="fa-solid fa-chevron-left"></i></button>
-            <button class="page-btn active">1</button>
-            <button class="page-btn">2</button>
-            <button class="page-btn">3</button>
-            <button class="page-btn dots">...</button>
-            <button class="page-btn">25</button>
-            <button class="page-btn"><i class="fa-solid fa-chevron-right"></i></button>
-          </div>
+          <span class="pagination-info" id="studentResultsCount">Showing {{ $users->firstItem() ?? 0 }} to {{ $users->lastItem() ?? 0 }} of {{ $users->total() }} entries</span>
+          {{ $users->links() }}
         </div>
       </div>
     </main>

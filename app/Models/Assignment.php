@@ -13,8 +13,6 @@ class Assignment extends Model
 
     protected $table = 'assignment';
 
-    public $timestamps = false;
-
     protected $fillable = [
         'class_timing_id',
         'topic_id',

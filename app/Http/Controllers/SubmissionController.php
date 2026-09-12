@@ -7,14 +7,31 @@ use Illuminate\Http\Request;
 
 class SubmissionController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $submissions = AssignmentHasSubmit::with([
+        $query = AssignmentHasSubmit::with([
             'assignment',
             'student'
-        ])
-        ->latest('id')
-        ->get();
+        ])->latest('id');
+
+        if ($request->filled('status')) {
+            if ($request->status === 'submitted') {
+                $query->whereNotNull('assignment_file');
+            } elseif ($request->status === 'not submitted') {
+                $query->whereNull('assignment_file');
+            }
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+
+            $query->whereHas('student', function ($studentQuery) use ($search) {
+                $studentQuery->where('full_name', 'LIKE', "%{$search}%")
+                    ->orWhere('last_name', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $submissions = $query->get();
 
         return view(
             'backend_theme.submission.submissions',
