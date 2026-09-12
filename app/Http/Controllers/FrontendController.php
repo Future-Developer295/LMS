@@ -9,12 +9,13 @@ use App\Models\Assignment;
 use App\Models\Announcement;
 use App\Models\Topic;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class FrontendController extends Controller
 {
     function index()
     {
-        $user = auth()->user();
+       $user = Auth::user();
 
         $student = null;
 
@@ -30,7 +31,7 @@ class FrontendController extends Controller
 
     function class()
     {
-        $user = auth()->user();
+       $user = Auth::user();
 
         $student = null;
         $classes = collect();
@@ -110,7 +111,7 @@ class FrontendController extends Controller
      */
     function classwork()
     {
-        $user = auth()->user();
+        $user = Auth::user();
 
         $student = null;
         $topics = collect();
@@ -145,7 +146,7 @@ class FrontendController extends Controller
         );
     }
 
-    public function detail(Request $request, $assignment)
+    public function detail(Request $request, int $assignment)
     {
         $assignment = Assignment::with('classTiming')
             ->findOrFail($assignment);
