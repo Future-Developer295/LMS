@@ -38,6 +38,20 @@ active
                 <h2>All Permissions</h2>
                 <a href="#" class="link">View activity log</a>
             </div>
+            <div class="filter-bar">
+                <form method="GET" action="{{ route('roles.index') }}" style="display:flex; align-items:center; gap:12px; flex:1;">
+                    <div class="input-icon-wrap left search-input-w">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" class="input" name="search" value="{{ request('search') }}" placeholder="Search roles...">
+                    </div>
+                    <button type="submit" class="btn btn-secondary btn-sm">Search</button>
+                    @if(request('search'))
+                        <a href="{{ route('roles.index') }}" class="btn btn-secondary btn-sm">Clear</a>
+                    @endif
+                </form>
+                <div class="filter-bar-spacer"></div>
+                <span class="results-count">{{ $roles->total() }} roles</span>
+            </div>
             <div class="card">
                 <table class="data-table">
                     <thead>

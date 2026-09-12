@@ -7,10 +7,31 @@ use Spatie\Permission\Models\Permission;
 
 class PermissionController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $permissions = Permission::latest()->paginate(15);
-        return view('Backend_theme.permissions.index', compact('permissions'));
+        $query = Permission::latest();
+
+        if ($request->filled('search')) {
+            $query->where('name', 'LIKE', '%' . $request->search . '%');
+        }
+
+        if ($request->filled('module')) {
+            $query->where('name', 'LIKE', '%' . $request->module . '%');
+        }
+
+        $permissions = $query->paginate(15)->withQueryString();
+
+        $modules = Permission::all()
+            ->map(function ($permission) {
+                $words = explode(' ', $permission->name);
+                array_shift($words);
+                return implode(' ', $words);
+            })
+            ->unique()
+            ->sort()
+            ->values();
+
+        return view('Backend_theme.permissions.index', compact('permissions', 'modules'));
     }
 
     public function create()

@@ -22,26 +22,28 @@ active
       @endif
 
       <div class="card">
-        <div class="filter-bar">
-          <div class="filter-select-w">
-            <select class="select" id="gradeFilter">
-              <option value="">All Grades</option>
-              <option>9th Grade</option>
-              <option>10th Grade</option>
-              <option>11th Grade</option>
-              <option>12th Grade</option>
-            </select>
+        <form method="GET" action="{{ route('student') }}">
+          <div class="filter-bar">
+            <div class="input-icon-wrap left search-input-w">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" class="input" name="search" value="{{ request('search') }}" placeholder="Search name, CNIC, batch...">
+            </div>
+            <div class="filter-select-w">
+              <select class="select" name="class_id" onchange="this.form.submit()">
+                <option value="">All Classes</option>
+                @foreach($classes as $class)
+                  <option value="{{ $class->id }}" {{ request('class_id') == $class->id ? 'selected' : '' }}>{{ $class->class_name }}</option>
+                @endforeach
+              </select>
+            </div>
+            <button type="submit" class="btn btn-secondary btn-sm"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+            @if(request('search') || request('class_id'))
+              <a href="{{ route('student') }}" class="btn btn-secondary btn-sm">Clear</a>
+            @endif
+            <div class="filter-bar-spacer"></div>
+            <button class="btn btn-secondary" id="exportStudentsBtn" type="button"><i class="fa-solid fa-download"></i> Export CSV</button>
           </div>
-          <div class="filter-select-w">
-            <select class="select" id="statusFilter">
-              <option value="">All Statuses</option>
-              <option>Active</option>
-              <option>Inactive</option>
-            </select>
-          </div>
-          <div class="filter-bar-spacer"></div>
-          <button class="btn btn-secondary" id="exportStudentsBtn"><i class="fa-solid fa-download"></i> Export CSV</button>
-        </div>
+        </form>
 
         <div class="table-wrap">
           <table class="data-table">
@@ -91,7 +93,7 @@ active
         </div>
 
         <div class="pagination-bar">
-          <span class="pagination-info" id="studentResultsCount">Showing 1 to 8 of 248 entries</span>
+          <span class="pagination-info" id="studentResultsCount">Showing {{ $students->count() }} of {{ $students->count() }} entries</span>
           <div class="pagination">
             <button class="page-btn"><i class="fa-solid fa-chevron-left"></i></button>
             <button class="page-btn active">1</button>

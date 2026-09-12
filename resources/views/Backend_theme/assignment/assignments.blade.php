@@ -19,11 +19,6 @@
 
         <div class="page-header-actions">
 
-            <button class="btn btn-secondary" type="button">
-                <i class="fa-solid fa-filter"></i>
-                Filter
-            </button>
-
             <a class="btn btn-primary"
                href="{{ route('assignment_add') }}">
                 <i class="fa-solid fa-plus"></i>
@@ -33,6 +28,28 @@
         </div>
 
     </div>
+
+    <form method="GET" action="{{ route('assignment') }}">
+        <div class="filter-bar" style="margin-bottom:16px;">
+            <div class="input-icon-wrap left search-input-w">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" class="input" name="search" value="{{ request('search') }}" placeholder="Search assignment or class timing...">
+            </div>
+            <div class="filter-select-w">
+                <select class="select" name="status" onchange="this.form.submit()">
+                    <option value="">All Statuses</option>
+                    <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
+                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                    <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
+                    <option value="closed" {{ request('status') == 'closed' ? 'selected' : '' }}>Closed</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-secondary btn-sm"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+            @if(request('search') || request('status'))
+                <a href="{{ route('assignment') }}" class="btn btn-secondary btn-sm">Clear</a>
+            @endif
+        </div>
+    </form>
 
 
     

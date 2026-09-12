@@ -26,6 +26,18 @@ class ClassController extends Controller
             $query->where('class_days', $request->day);
         }
 
+        if ($request->filled('search')) {
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+                $q->where('class_name', 'LIKE', "%{$search}%")
+                    ->orWhereHas('teacher', function ($teacherQuery) use ($search) {
+                        $teacherQuery->where('full_name', 'LIKE', "%{$search}%")
+                            ->orWhere('last_name', 'LIKE', "%{$search}%");
+                    });
+            });
+        }
+
         $classes = $query->get();
 
         $teachers = Teacher::all();

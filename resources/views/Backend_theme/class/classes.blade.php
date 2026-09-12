@@ -18,40 +18,49 @@
         </div>
 
         <div class="card">
-            <div class="filter-bar">
+            <form method="GET" action="{{ route('class') }}">
+                <div class="filter-bar">
 
-                <div class="filter-select-w">
-                    <select class="select" id="dayFilter"
-                        onchange="window.location.href='{{ route('class') }}?day=' + this.value + '&teacher_id=' + document.getElementById('teacherFilter').value">
-                        <option value="">Select Days...</option>
-                        @foreach ($classDays as $day)
-                            <option value="{{ $day->id }}" {{ request('day') == $day->id ? 'selected' : '' }}>
-                                {{ $day->class_days }}
-                            </option>
-                        @endforeach
-                    </select>
+                    <div class="input-icon-wrap left search-input-w">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" class="input" name="search" value="{{ request('search') }}" placeholder="Search class or teacher...">
+                    </div>
+
+                    <div class="filter-select-w">
+                        <select class="select" id="dayFilter" name="day" onchange="this.form.submit()">
+                            <option value="">Select Days...</option>
+                            @foreach ($classDays as $day)
+                                <option value="{{ $day->id }}" {{ request('day') == $day->id ? 'selected' : '' }}>
+                                    {{ $day->class_days }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="filter-select-w">
+                        <select class="select" id="teacherFilter" name="teacher_id" onchange="this.form.submit()">
+                            <option value="">All Teachers</option>
+                            @foreach ($teachers as $teacher)
+                                <option value="{{ $teacher->id }}"
+                                    {{ request('teacher_id') == $teacher->id ? 'selected' : '' }}>
+                                    {{ $teacher->full_name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-secondary btn-sm"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+                    @if(request('search') || request('day') || request('teacher_id'))
+                        <a href="{{ route('class') }}" class="btn btn-secondary btn-sm">Clear</a>
+                    @endif
+
+                    <div class="filter-bar-spacer"></div>
+
+                    <button class="icon-btn"
+                        style="border:1px solid var(--border);border-radius:var(--radius-sm);width:44px;height:44px;"
+                        id="exportClassesBtn" type="button" title="Export"><i class="fa-solid fa-download"></i></button>
                 </div>
-
-                <div class="filter-select-w">
-                    <select class="select" id="teacherFilter"
-                        onchange="window.location.href='{{ route('class') }}?teacher_id=' + this.value + '&day=' + document.getElementById('dayFilter').value">
-                        <option value="">All Teachers</option>
-                        @foreach ($teachers as $teacher)
-                            <option value="{{ $teacher->id }}"
-                                {{ request('teacher_id') == $teacher->id ? 'selected' : '' }}>
-                                {{ $teacher->full_name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-
-                <div class="filter-bar-spacer"></div>
-
-                <button class="icon-btn"
-                    style="border:1px solid var(--border);border-radius:var(--radius-sm);width:44px;height:44px;"
-                    id="exportClassesBtn" title="Export"><i class="fa-solid fa-download"></i></button>
-            </div>
+            </form>
 
             <div class="table-wrap">
                 <table class="data-table">
