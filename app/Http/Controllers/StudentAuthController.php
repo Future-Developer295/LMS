@@ -71,35 +71,45 @@ class StudentAuthController extends Controller
         return redirect()->route('index');
     }
 
-public function join(Request $request)
-{
-    $request->validate([
-        'class_code' => 'required|string|max:8',
-    ]);
 
-    if (!Auth::check()) {
-        return redirect()->route('student.login');
+    public function join(Request $request)
+    {
+        $request->validate([
+            'class_code' => 'required',
+        ]);
+
+        if (!Auth::check()) {
+            return redirect()->route('student.login');
+        }
+
+        $classCode = strtoupper(trim($request->class_code));
+
+        $class = ClassModel::with('teacher')
+            ->where('class_code', $classCode)
+            ->first();
+
+        if (!$class) {
+            return back()
+                ->withErrors([
+                    'class_code' => 'Invalid class code. Please check the code and try again.',
+                ])
+                ->withInput();
+        }
+
+        $user = Auth::user();
+
+        $student = Student::firstOrNew(['email_address' => $user->email]);
+        $student->full_name = $student->full_name ?: $user->name;
+        $student->class_id = $class->id;
+        $student->batch_code = $student->batch_code ?: $class->class_code;
+        $student->password = $student->password ?: $user->password;
+        $student->save();
+
+        $request->session()->put('joined_class_code', $class->class_code);
+        $request->session()->save();
+
+        return redirect()->route('index');
     }
-
-    $classCode = strtoupper(trim($request->class_code));
-
-    $class = ClassModel::with('teacher')
-        ->where('class_code', $classCode)
-        ->first();
-
-    if (!$class) {
-        return back()
-            ->withErrors([
-                'class_code' => 'Invalid class code. Please check the code and try again.',
-            ])
-            ->withInput();
-    }
-
-    $request->session()->put('joined_class_code', $class->class_code);
-    $request->session()->save();
-
-    return redirect()->route('index');
-}
 
     public function logout(Request $request)
     {
