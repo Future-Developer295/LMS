@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 class ClassModel extends Model
 {
     use HasFactory;
@@ -40,4 +40,18 @@ class ClassModel extends Model
     {
         return $this->hasMany(Student::class, 'class_id');
     }
+
+   
+
+public function assignments(): HasManyThrough
+{
+    return $this->hasManyThrough(
+        Assignment::class,
+        Topic::class,
+        'class_id',  
+        'topic_id',  
+        'id',         
+        'id'         
+    )->orderBy('assignment.assignment_due_date');
+}
 }

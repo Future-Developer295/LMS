@@ -151,6 +151,9 @@ Route::middleware('auth')->group(function () {
 
 
     // Assignment
+  Route::get('/dashboard/assignment/topics/{class_id}', [AssignmentController::class, 'topicsByClass'])
+    ->middleware('permission:create assignments')
+    ->name('assignment.topics');
 
     Route::get('/dashboard/assignment', [AssignmentController::class, 'index'])
         ->middleware('permission:view assignments')

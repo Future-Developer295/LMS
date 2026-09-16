@@ -17,7 +17,8 @@ use Illuminate\Support\Facades\Hash;
 
 class DashboardController extends Controller
 {
-    function index (){
+    function index()
+    {
         $teachersCount = Teacher::count();
         $studentsCount = Student::count();
         $classesCount = ClassModel::count();
@@ -95,7 +96,7 @@ class DashboardController extends Controller
         }
 
         $activityTimeline = $activityTimeline
-            ->sortByDesc(fn ($item) => $item['time'])
+            ->sortByDesc(fn($item) => $item['time'])
             ->take(5)
             ->values();
 
@@ -113,7 +114,8 @@ class DashboardController extends Controller
         ));
     }
 
-    function teacher (Request $request){
+    function teacher(Request $request)
+    {
         $query = Teacher::latest();
 
         if ($request->filled('search')) {
@@ -133,21 +135,25 @@ class DashboardController extends Controller
         return view('backend_theme.teacher.teachers', compact('teachers'));
     }
 
-    function teacher_edit ($id){
+    function teacher_edit($id)
+    {
         $teacher = Teacher::findOrFail($id);
         return view('backend_theme.teacher.teacher-edit', compact('teacher'));
     }
 
-    function teacher_view ($id){
+    function teacher_view($id)
+    {
         $teacher = Teacher::findOrFail($id);
         return view('backend_theme.teacher.teacher-view', compact('teacher'));
     }
 
-    function teacher_add (){
+    function teacher_add()
+    {
         return view('backend_theme.teacher.teacher-add');
     }
 
-    function teacher_store (Request $request){
+    function teacher_store(Request $request)
+    {
         $data = $request->validate([
             'full_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
@@ -169,7 +175,8 @@ class DashboardController extends Controller
         return redirect()->route('teacher')->with('success', 'Teacher added successfully.');
     }
 
-    function teacher_update (Request $request, $id){
+    function teacher_update(Request $request, $id)
+    {
         $teacher = Teacher::findOrFail($id);
 
         $data = $request->validate([
@@ -193,14 +200,16 @@ class DashboardController extends Controller
         return redirect()->route('teacher')->with('success', 'Teacher updated successfully.');
     }
 
-    function teacher_destroy ($id){
+    function teacher_destroy($id)
+    {
         $teacher = Teacher::findOrFail($id);
         $teacher->delete();
 
         return redirect()->route('teacher')->with('success', 'Teacher deleted successfully.');
     }
 
-    function student (Request $request){
+    function student(Request $request)
+    {
         $query = Student::with('class')->latest();
 
         if ($request->filled('class_id')) {
@@ -225,23 +234,27 @@ class DashboardController extends Controller
         return view('backend_theme.student.students', compact('students', 'classes'));
     }
 
-    function student_edit ($id){
+    function student_edit($id)
+    {
         $student = Student::findOrFail($id);
         $classes = ClassModel::all();
         return view('backend_theme.student.student-edit', compact('student', 'classes'));
     }
 
-    function student_view ($id){
+    function student_view($id)
+    {
         $student = Student::with('class')->findOrFail($id);
         return view('backend_theme.student.student-view', compact('student'));
     }
 
-    function student_add (){
+    function student_add()
+    {
         $classes = ClassModel::all();
         return view('backend_theme.student.student-add', compact('classes'));
     }
 
-    function student_store (Request $request){
+    function student_store(Request $request)
+    {
         $data = $request->validate([
             'full_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
@@ -264,7 +277,8 @@ class DashboardController extends Controller
         return redirect()->route('student')->with('success', 'Student added successfully.');
     }
 
-    function student_update (Request $request, $id){
+    function student_update(Request $request, $id)
+    {
         $student = Student::findOrFail($id);
 
         $data = $request->validate([
@@ -287,41 +301,49 @@ class DashboardController extends Controller
         return redirect()->route('student')->with('success', 'Student updated successfully.');
     }
 
-    function student_destroy ($id){
+    function student_destroy($id)
+    {
         $student = Student::findOrFail($id);
         $student->delete();
 
         return redirect()->route('student')->with('success', 'Student deleted successfully.');
     }
-    function attendance (){
+    function attendance()
+    {
         return view('backend_theme.attendance.attendance');
     }
-    function attendance_edit (){
+    function attendance_edit()
+    {
         return view('backend_theme.attendance.attendance-edit');
     }
-    function attendance_add (){
+    function attendance_add()
+    {
         return view('backend_theme.attendance.attendance-mark');
     }
-    function assignment (){
+    function assignment()
+    {
         return view('backend_theme.assignment.assignments');
     }
-    function assignment_edit (){
+    function assignment_edit($id)
+    {
         return view('backend_theme.assignment.assignment-edit');
     }
-function assignment_add()
-{
-    $classes = ClassModel::orderBy('class_name')
-        ->get();
+    function assignment_add()
+    {
+        $classes = ClassModel::orderBy('class_name')
+            ->get();
 
-    return view(
-        'backend_theme.assignment.assignment-add',
-        compact('classes')
-    );
-}
-    function submission (){
+        return view(
+            'backend_theme.assignment.assignment-add',
+            compact('classes')
+        );
+    }
+    function submission()
+    {
         return view('backend_theme.submission.submissions');
     }
-    function submission_grade (){
+    function submission_grade()
+    {
         return view('backend_theme.submission.submission-grade');
     }
 }
