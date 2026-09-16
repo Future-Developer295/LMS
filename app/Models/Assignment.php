@@ -37,19 +37,14 @@ class Assignment extends Model
         return $this->belongsTo(ClassTiming::class, 'class_timing_id');
     }
 
-    public function topic()
-    {
-        return $this->belongsTo(Topic::class, 'topic_id');
-    }
+   
 
     public function submissions()
     {
         return $this->hasMany(AssignmentHasSubmit::class, 'assignment_id');
     }
 
-    /**
-     * Compute a display status for a given student's submission (or lack of one).
-     */
+   
     public function statusForSubmission(?AssignmentHasSubmit $submission): string
     {
         if ($submission) {

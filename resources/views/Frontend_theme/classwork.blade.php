@@ -1,6 +1,36 @@
 @extends('Frontend_theme.master')
 
 @section('body')
+
+    <style>
+        
+        .topic-group > summary.topic-row {
+            list-style: none;
+            cursor: pointer;
+        }
+        .topic-group > summary.topic-row::-webkit-details-marker,
+        .topic-group > summary.topic-row::marker {
+            display: none;
+        }
+
+        .topic-items {
+            display: block !important;
+        }
+
+        .assignment-item-wrap > summary.topic-item {
+            list-style: none;
+            cursor: pointer;
+        }
+        .assignment-item-wrap > summary.topic-item::-webkit-details-marker,
+        .assignment-item-wrap > summary.topic-item::marker {
+            display: none;
+        }
+
+        .assignment-detail {
+            display: block !important;
+        }
+    </style>
+
     <main class="flex-grow-1 stream-main index-main ">
 
         <div class="class-tabbar">
@@ -33,178 +63,118 @@
         <div class="stream-body">
 
             <div class="classwork-toolbar">
-                <div class="task-filter-wrap">
+
+                <form method="GET" action="{{ route('classwork') }}" class="task-filter-wrap">
                     <p>Task filter</p>
                     <fieldset class="task-filter-fieldset">
-                        <select id="classworkTaskFilter">
-                            <option value="all">All</option>
-                            <option value="assigned">Assigned</option>
-                            <option value="turned-in">Turned in</option>
-                            <option value="graded">Graded</option>
-                            <option value="missing">Missing</option>
+                        <select id="classworkTaskFilter" name="status" onchange="this.form.submit()">
+                            <option value="all" {{ request('status', 'all') == 'all' ? 'selected' : '' }}>All</option>
+                            <option value="assigned" {{ request('status') == 'assigned' ? 'selected' : '' }}>Assigned</option>
+                            <option value="turned-in" {{ request('status') == 'turned-in' ? 'selected' : '' }}>Turned in</option>
+                            <option value="graded" {{ request('status') == 'graded' ? 'selected' : '' }}>Graded</option>
+                            <option value="missing" {{ request('status') == 'missing' ? 'selected' : '' }}>Missing</option>
                         </select>
                     </fieldset>
-                </div>
+                    <noscript>
+                        <button type="submit" class="btn btn-sm btn-outline-secondary">Apply</button>
+                    </noscript>
+                </form>
 
                 <div class="toolbar-right">
                     <a href="{{ route('frontend_class') }}" class="view-work-btn">
                         <i class="fa-regular fa-address-card"></i> View your work
                     </a>
-                    <button class="expand-all-link " id="expandAllBtn">
-                        <i class="fa-solid fa-angles-up-down" id="expandAllIcon"></i>
-                        <span id="expandAllText">
-                            <svg focusable="false" height="20" viewBox="0 0 24 24" width="20" fill='#0b57d0'>
-                                <path
-                                    d="M16.59 9.41L18 8l-6-6-6 6 1.41 1.41L12 4.83l4.59 4.58zM12 19.17l-4.59-4.58L6 16l6 6 6-6-1.41-1.41L12 19.17z">
-                                </path>
-                                <path d="M24 0v24H0V0h24z" fill="none"></path>
-                            </svg>Collapse all
-                        </span>
-                    </button>
                 </div>
             </div>
+
+            @php
+                $selectedStatus = request('status', 'all');
+                $anyVisible = false;
+            @endphp
 
             @forelse($topics as $topic)
-                <div class="topic-group open">
-                    <div class="topic-row expanded" data-topic-toggle>
-                        <div class="topic-row-title">{{ $topic->topic_name }}</div>
-                        <div class="topic-row-actions">
-                            <button class="btn-icon chevron"><i class="fa-solid fa-chevron-down"></i></button>
-                            <button class="btn-icon"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-                        </div>
-                    </div>
-                    <div class="topic-items">
-                        @forelse($topic->assignments as $assignment)
-                            @php
-                                $submission = $assignment->submissions->first();
-                                $statusLabel = $assignment->statusForSubmission($submission);
-                                $statusKey = strtolower(str_replace(' ', '-', $statusLabel));
-                            @endphp
-                            <div class="topic-item" data-item-toggle data-status="{{ $statusKey }}">
-                                <div class="topic-item-ic"><i class="fa-regular fa-file-lines"></i></div>
-                                <div class="topic-item-title">{{ $assignment->assignment_title }}</div>
-                                <div class="topic-item-due">
-                                    Due {{ $assignment->assignment_due_date?->format('M d, g:i A') }}
-                                </div>
-                                <button class="topic-item-menu" data-stop-toggle><i
-                                        class="fa-solid fa-ellipsis-vertical"></i></button>
-                            </div>
 
-                            <div class="assignment-detail" data-status-detail="{{ $statusKey }}">
-                                <div class="assignment-detail-head">
-                                    <span class="posted">Posted {{ $assignment->posted_at?->format('M d') }}</span>
-                                    <span class="status">{{ $statusLabel }}</span>
-                                </div>
-                                <div class="assignment-detail-body">
-                                    @if ($assignment->resource_link)
-                                        <strong>{{ $assignment->resource_label }}</strong>
-                                        <a href="{{ $assignment->resource_link }}"
-                                            target="_blank">{{ $assignment->resource_link }}</a>
-                                    @endif
-                                    <div class="assignment-instruction-text">
-                                        {!! $assignment->assignment_instruction !!}
+                @php
+                    $visibleAssignments = $topic->assignments->filter(function ($assignment) use ($selectedStatus) {
+                        if ($selectedStatus === 'all') {
+                            return true;
+                        }
+                        $submission = $assignment->submissions->first();
+                        $statusKey = strtolower(str_replace(' ', '-', $assignment->statusForSubmission($submission)));
+                        return $statusKey === $selectedStatus;
+                    });
+                @endphp
+
+                @if($visibleAssignments->isNotEmpty())
+                    @php $anyVisible = true; @endphp
+
+                    <details class="topic-group" open>
+                        <summary class="topic-row">
+                            <span class="topic-row-title">{{ $topic->topic_name }}</span>
+                        </summary>
+
+                        <div class="topic-items">
+                            @foreach($visibleAssignments as $assignment)
+                                @php
+                                    $submission = $assignment->submissions->first();
+                                    $statusLabel = $assignment->statusForSubmission($submission);
+                                @endphp
+
+                                <details class="assignment-item-wrap">
+                                    <summary class="topic-item">
+                                        <span class="topic-item-ic"><i class="fa-regular fa-file-lines"></i></span>
+                                        <span class="topic-item-title">{{ $assignment->assignment_title }}</span>
+                                        <span class="topic-item-due">
+                                            Due {{ $assignment->assignment_due_date?->format('M d, g:i A') }}
+                                        </span>
+                                    </summary>
+
+                                    <div class="assignment-detail open">
+                                        <div class="assignment-detail-head">
+                                            <span class="posted">Posted {{ $assignment->posted_at?->format('M d') }}</span>
+                                            <span class="status">{{ $statusLabel }}</span>
+                                        </div>
+                                        <div class="assignment-detail-body">
+                                            @if ($assignment->resource_link)
+                                                <strong>{{ $assignment->resource_label }}</strong>
+                                                <a href="{{ $assignment->resource_link }}"
+                                                    target="_blank">{{ $assignment->resource_link }}</a>
+                                            @endif
+                                            <div class="assignment-instruction-text">
+                                                {!! $assignment->assignment_instruction !!}
+                                            </div>
+                                        </div>
+                                        <div class="assignment-detail-footer">
+                                            <a href="{{ route('detail', $assignment->id) }}" class="view-instructions-link">
+                                                View instructions
+                                            </a>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="assignment-detail-footer">
-                                    <a href="{{ route('detail', $assignment->id) }}" class="view-instructions-link">View
-                                        instructions</a>
-                                </div>
-                            </div>
-                        @empty
-                            <p class="text-muted p-3">No classwork posted in this topic yet.</p>
-                        @endforelse
-                    </div>
-                </div>
+                                </details>
+                            @endforeach
+                        </div>
+                    </details>
+                @endif
+
             @empty
-                <p class="text-muted p-3">No classwork posted yet.</p>
             @endforelse
 
-            <div id="classworkNoRecords" class="text-center py-4" style="display: none;">
-                <p class="text-muted">No records found.</p>
-            </div>
+            @if(!$anyVisible)
+                <div class="text-center py-4">
+                    <p class="text-muted">
+                        @if($topics->isEmpty())
+                            No classwork posted yet.
+                        @else
+                            No records found.
+                        @endif
+                    </p>
+                </div>
+            @endif
 
         </div>
 
     </main>
-    </div>
 
     <button class="help-fab"><i class="fa-regular fa-circle-question"></i></button>
-
-    <script>
-        document.querySelectorAll('[data-topic-toggle]').forEach(row => {
-            row.addEventListener('click', () => {
-                const group = row.closest('.topic-group');
-                group.classList.toggle('open');
-                row.classList.toggle('expanded');
-            });
-        });
-
-        let allExpanded = true;
-        const expandAllBtn = document.getElementById('expandAllBtn');
-        const expandAllText = document.getElementById('expandAllText');
-
-        expandAllBtn.addEventListener('click', () => {
-            allExpanded = !allExpanded;
-            document.querySelectorAll('.topic-group').forEach(group => {
-                group.classList.toggle('open', allExpanded);
-                group.querySelector('.topic-row').classList.toggle('expanded', allExpanded);
-            });
-            expandAllText.textContent = allExpanded ? 'Collapse all' : 'Expand all';
-        });
-
-        document.querySelectorAll('[data-item-toggle]').forEach(item => {
-            item.addEventListener('click', function(e) {
-                if (e.target.closest('[data-stop-toggle]')) return;
-
-                const detail = this.nextElementSibling;
-                if (detail && detail.classList.contains('assignment-detail')) {
-                    detail.classList.toggle('open');
-                }
-            });
-        });
-
-        const classworkFilter = document.getElementById('classworkTaskFilter');
-        const classworkNoRecords = document.getElementById('classworkNoRecords');
-
-        if (classworkFilter) {
-
-            classworkFilter.addEventListener('change', function() {
-
-                const selected = this.value;
-                let totalVisible = 0;
-
-                document.querySelectorAll('.topic-group').forEach(function(group) {
-
-                    let visibleInGroup = 0;
-
-                    group.querySelectorAll('[data-item-toggle]').forEach(function(item) {
-
-                        const detail = item.nextElementSibling;
-                        const isMatch = selected === 'all' || item.dataset.status === selected;
-
-                        item.style.display = isMatch ? '' : 'none';
-
-                        if (detail && detail.classList.contains('assignment-detail')) {
-                            detail.style.display = isMatch ? '' : 'none';
-                            if (!isMatch) {
-                                detail.classList.remove('open');
-                            }
-                        }
-
-                        if (isMatch) {
-                            visibleInGroup++;
-                        }
-                    });
-
-                    group.style.display = visibleInGroup > 0 ? '' : 'none';
-                    totalVisible += visibleInGroup;
-                });
-
-                if (classworkNoRecords) {
-                    classworkNoRecords.style.display = totalVisible === 0 ? 'block' : 'none';
-                }
-            });
-        }
-    </script>
 
 @endsection

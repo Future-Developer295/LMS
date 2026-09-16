@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Assignment;
 use App\Models\ClassTiming;
+use App\Models\Topic;
+
 
 class AssignmentController extends Controller
 {
@@ -53,23 +55,24 @@ class AssignmentController extends Controller
 }
     
 
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'class_timing_id' => ['required', 'exists:class_timing,id'],
-            'assignment_title' => ['required', 'string', 'max:255'],
-            'assignment_instruction' => ['nullable', 'string'],
-            'assignment_status' => ['required', 'in:pending,active,completed,closed'],
-            'assignment_due_date' => ['required', 'date'],
-            'assignment_marks' => ['required', 'integer', 'min:0'],
-        ]);
+   public function store(Request $request)
+{
+    $validated = $request->validate([
+        'class_timing_id' => ['required', 'exists:class_timing,id'],
+        'topic_id' => ['required', 'exists:topics,id'],
+        'assignment_title' => ['required', 'string', 'max:255'],
+        'assignment_instruction' => ['nullable', 'string'],
+        'assignment_status' => ['required', 'in:pending,active,completed,closed'],
+        'assignment_due_date' => ['required', 'date'],
+        'assignment_marks' => ['required', 'integer', 'min:0'],
+    ]);
 
-        Assignment::create($validated);
+    Assignment::create($validated);
 
-        return redirect()
-            ->route('assignment')
-            ->with('success', 'Assignment created successfully.');
-    }
+    return redirect()
+        ->route('assignment')
+        ->with('success', 'Assignment created successfully.');
+}
 
     public function show(string $id)
     {
@@ -97,14 +100,15 @@ class AssignmentController extends Controller
     {
         $assignment = Assignment::findOrFail($id);
 
-        $validated = $request->validate([
-            'class_timing_id' => ['required', 'exists:class_timing,id'],
-            'assignment_title' => ['required', 'string', 'max:255'],
-            'assignment_instruction' => ['nullable', 'string'],
-            'assignment_status' => ['required', 'in:pending,active,completed,closed'],
-            'assignment_due_date' => ['required', 'date'],
-            'assignment_marks' => ['required', 'integer', 'min:0'],
-        ]);
+      $validated = $request->validate([
+    'class_timing_id' => ['required', 'exists:class_timing,id'],
+    'topic_id' => ['required', 'exists:topics,id'],
+    'assignment_title' => ['required', 'string', 'max:255'],
+    'assignment_instruction' => ['nullable', 'string'],
+    'assignment_status' => ['required', 'in:pending,active,completed,closed'],
+    'assignment_due_date' => ['required', 'date'],
+    'assignment_marks' => ['required', 'integer', 'min:0'],
+]);
 
         $assignment->update($validated);
 
@@ -123,4 +127,13 @@ class AssignmentController extends Controller
             ->route('assignment')
             ->with('success', 'Assignment deleted successfully.');
     }
+public function topicsByClass(string $class_id)
+{
+    $topics = Topic::where('class_id', $class_id)
+        ->orderBy('order')
+        ->select('id', 'topic_name')
+        ->get();
+
+    return response()->json($topics);
+}
 }

@@ -1,274 +1,291 @@
-@extends("Backend_theme.master")
+@extends('Backend_theme.master')
 
 @section('assignment')
-open
+    open
 @endsection
 
 @section('add_assignment')
-active
+    active
 @endsection
 
-@section("body")
+@section('body')
 
-<main class="page">
+    <main class="page">
 
-    <div class="breadcrumb">
-        <a href="{{ route('assignment') }}">Assignments</a>
-        <i class="fa-solid fa-chevron-right"></i>
-        <span class="current">Create New</span>
-    </div>
-
-
-    
-    <form action="{{ route('assignment.store') }}" method="POST">
-        @csrf
-        @if ($errors->any())
-    <div style="background:#fee2e2; color:#991b1b; padding:15px; margin-bottom:20px; border-radius:8px;">
-        <strong>Please fix these errors:</strong>
-
-        <ul style="margin-top:8px;">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
-
-        <div class="page-header">
-
-            <div>
-                <h1>Assignment Details</h1>
-            </div>
-
-            <div class="page-header-actions">
-
-                <a class="btn btn-secondary" href="{{ route('assignment') }}">
-                    Discard
-                </a>
-
-                <button type="submit" class="btn btn-primary">
-                    <i class="fa-solid fa-paper-plane"></i>
-                    Assign
-                </button>
-
-            </div>
-
+        <div class="breadcrumb">
+            <a href="{{ route('assignment') }}">Assignments</a>
+            <i class="fa-solid fa-chevron-right"></i>
+            <span class="current">Create New</span>
         </div>
 
 
-        <div class="form-grid" style="grid-template-columns: 1fr 360px;">
 
-            
-            <div class="stack">
+        <form action="{{ route('assignment.store') }}" method="POST">
+            @csrf
+            @if ($errors->any())
+                <div style="background:#fee2e2; color:#991b1b; padding:15px; margin-bottom:20px; border-radius:8px;">
+                    <strong>Please fix these errors:</strong>
 
-                
-                <div class="card card-pad">
+                    <ul style="margin-top:8px;">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-                    <div class="field mb-0">
+            <div class="page-header">
 
-                        <label for="assignmentTitle">
-                            <i class="fa-solid fa-t" style="margin-right:6px;"></i>
-                            Assignment Title *
-                        </label>
-
-                        <input
-                            type="text"
-                            class="input"
-                            id="assignmentTitle"
-                            name="assignment_title"
-                            placeholder="e.g., Chapter 4 Reading Reflection"
-                            value="{{ old('assignment_title') }}"
-                            required
-                        >
-
-                    </div>
-
+                <div>
+                    <h1>Assignment Details</h1>
                 </div>
 
+                <div class="page-header-actions">
 
-                
-                <div class="card">
+                    <a class="btn btn-secondary" href="{{ route('assignment') }}">
+                        Discard
+                    </a>
 
-                    <div class="rte-toolbar">
-
-                        <button type="button" data-cmd="bold" title="Bold">
-                            <i class="fa-solid fa-bold"></i>
-                        </button>
-
-                        <button type="button" data-cmd="italic" title="Italic">
-                            <i class="fa-solid fa-italic"></i>
-                        </button>
-
-                        <button type="button" data-cmd="underline" title="Underline">
-                            <i class="fa-solid fa-underline"></i>
-                        </button>
-
-                        <div class="divider"></div>
-
-                        <button type="button" data-cmd="insertUnorderedList" title="Bullet list">
-                            <i class="fa-solid fa-list-ul"></i>
-                        </button>
-
-                        <button type="button" data-cmd="insertOrderedList" title="Numbered list">
-                            <i class="fa-solid fa-list-ol"></i>
-                        </button>
-
-                        <div class="divider"></div>
-
-                        <button type="button" data-cmd="createLink" title="Insert link">
-                            <i class="fa-solid fa-link"></i>
-                        </button>
-
-                    </div>
-
-
-                    
-                    <textarea
-                        class="input"
-                        name="assignment_instruction"
-                        rows="8"
-                        placeholder="Provide clear instructions for the assignment here..."
-                        style="width:100%; border:none; resize:vertical;"
-                    >{{ old('assignment_instruction') }}</textarea>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        Assign
+                    </button>
 
                 </div>
 
             </div>
 
 
-            
-            <div class="stack">
-
-                <div class="card card-pad">
-
-                    <div class="card-section-title mb-md">
-
-                        <i class="fa-solid fa-gear" style="margin-right:6px;"></i>
-
-                        Assignment Settings
-
-                    </div>
+            <div class="form-grid" style="grid-template-columns: 1fr 360px;">
 
 
-                
-                    <div class="field">
-
-                        <label for="assignClass">
-                            Assign To
-                        </label>
-
-                       <select
-    class="select"
-    id="assignClass"
-    name="class_timing_id"
-    required
->
-    <option value="">Select a Class</option>
-
-    @foreach($classes as $class)
-        <option
-            value="{{ $class->class_timing }}"
-            {{ old('class_timing_id') == $class->class_timing ? 'selected' : '' }}
-        >
-            {{ $class->class_name }}
-           
-        </option>
-    @endforeach
-</select>
-                    </div>
+                <div class="stack">
 
 
-                    
-                    <div class="field">
+                    <div class="card card-pad">
 
-                        <label>
-                            Students
-                        </label>
+                        <div class="field mb-0">
 
-                        <label class="checkbox-row">
+                            <label for="assignmentTitle">
+                                <i class="fa-solid fa-t" style="margin-right:6px;"></i>
+                                Assignment Title *
+                            </label>
 
-                            <input
-                                type="checkbox"
-                                id="allStudents"
-                                checked
-                            >
+                            <input type="text" class="input" id="assignmentTitle" name="assignment_title"
+                                placeholder="e.g., Chapter 4 Reading Reflection" value="{{ old('assignment_title') }}"
+                                required>
 
-                            All Students in Class
-
-                        </label>
+                        </div>
 
                     </div>
 
 
-                    
-                    <div class="field">
 
-                        <label for="points">
+                    <div class="card">
 
-                            <i
-                                class="fa-regular fa-star"
-                                style="margin-right:4px;"
-                            ></i>
+                        <div class="rte-toolbar">
 
-                            Points / Max Marks
+                            <button type="button" data-cmd="bold" title="Bold">
+                                <i class="fa-solid fa-bold"></i>
+                            </button>
 
-                        </label>
+                            <button type="button" data-cmd="italic" title="Italic">
+                                <i class="fa-solid fa-italic"></i>
+                            </button>
 
-                        <input
-                            type="number"
-                            class="input"
-                            id="points"
-                            name="assignment_marks"
-                            value="{{ old('assignment_marks', 100) }}"
-                            min="0"
-                            required
-                        >
+                            <button type="button" data-cmd="underline" title="Underline">
+                                <i class="fa-solid fa-underline"></i>
+                            </button>
 
-                    </div>
+                            <div class="divider"></div>
+
+                            <button type="button" data-cmd="insertUnorderedList" title="Bullet list">
+                                <i class="fa-solid fa-list-ul"></i>
+                            </button>
+
+                            <button type="button" data-cmd="insertOrderedList" title="Numbered list">
+                                <i class="fa-solid fa-list-ol"></i>
+                            </button>
+
+                            <div class="divider"></div>
+
+                            <button type="button" data-cmd="createLink" title="Insert link">
+                                <i class="fa-solid fa-link"></i>
+                            </button>
+
+                        </div>
 
 
-                    
-                    <div class="field">
 
-                        <label for="dueDate">
-
-                            <i
-                                class="fa-regular fa-calendar"
-                                style="margin-right:4px;"
-                            ></i>
-
-                            Due Date
-
-                        </label>
-
-                        <input
-                            type="date"
-                            class="input"
-                            id="dueDate"
-                            name="assignment_due_date"
-                            value="{{ old('assignment_due_date') }}"
-                            required
-                        >
+                        <textarea class="input" name="assignment_instruction" rows="8"
+                            placeholder="Provide clear instructions for the assignment here..."
+                            style="width:100%; border:none; resize:vertical;">{{ old('assignment_instruction') }}</textarea>
 
                     </div>
 
+                </div>
 
-                    
-                    <input
-                        type="hidden"
-                        name="assignment_status"
-                        value="active"
-                    >
+
+
+                <div class="stack">
+
+                    <div class="card card-pad">
+
+                        <div class="card-section-title mb-md">
+
+                            <i class="fa-solid fa-gear" style="margin-right:6px;"></i>
+
+                            Assignment Settings
+
+                        </div>
+
+
+
+                        <div class="field">
+
+                            <label for="assignClass">
+                                Assign To (Class)
+                            </label>
+
+                            <select class="select" id="assignClass" required>
+                                <option value="">Select a Class</option>
+
+                                @foreach ($classes as $class)
+                                    <option value="{{ $class->id }}" data-timing="{{ $class->class_timing }}"
+                                        {{ old('assign_class_id') == $class->id ? 'selected' : '' }}>
+                                        {{ $class->class_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+
+                        
+                            <input type="hidden" name="class_timing_id" id="classTimingHidden"
+                                value="{{ old('class_timing_id') }}">
+                        </div>
+
+                        <div class="field">
+
+                            <label for="topicSelect">
+                                Topic
+                            </label>
+
+                            <select class="select" id="topicSelect" name="topic_id" required>
+                                <option value="">Select class first</option>
+                            </select>
+
+                        </div>
+
+
+
+                        <div class="field">
+
+                            <label>
+                                Students
+                            </label>
+
+                            <label class="checkbox-row">
+
+                                <input type="checkbox" id="allStudents" checked>
+
+                                All Students in Class
+
+                            </label>
+
+                        </div>
+
+
+
+                        <div class="field">
+
+                            <label for="points">
+
+                                <i class="fa-regular fa-star" style="margin-right:4px;"></i>
+
+                                Points / Max Marks
+
+                            </label>
+
+                            <input type="number" class="input" id="points" name="assignment_marks"
+                                value="{{ old('assignment_marks', 100) }}" min="0" required>
+
+                        </div>
+
+
+
+                        <div class="field">
+
+                            <label for="dueDate">
+
+                                <i class="fa-regular fa-calendar" style="margin-right:4px;"></i>
+
+                                Due Date
+
+                            </label>
+
+                            <input type="date" class="input" id="dueDate" name="assignment_due_date"
+                                value="{{ old('assignment_due_date') }}" required>
+
+                        </div>
+
+
+
+                        <input type="hidden" name="assignment_status" value="active">
+
+                    </div>
 
                 </div>
 
             </div>
 
-        </div>
+        </form>
 
-    </form>
-    
 
-</main>
+    </main>
 
 @endsection
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const classSelect = document.getElementById('assignClass');
+    const timingHidden = document.getElementById('classTimingHidden');
+    const topicSelect = document.getElementById('topicSelect');
+
+    const oldTopicId = @json(old('topic_id'));
+
+    function loadTopics(classId, preselect = null) {
+        if (!classId) {
+            topicSelect.innerHTML = '<option value="">Select class first</option>';
+            return;
+        }
+
+        fetch(`/dashboard/assignment/topics/${classId}`)
+            .then(res => res.json())
+            .then(topics => {
+                topicSelect.innerHTML = '<option value="">Select a Topic</option>';
+                topics.forEach(topic => {
+                    const opt = document.createElement('option');
+                    opt.value = topic.id;
+                    opt.textContent = topic.topic_name;
+                    if (preselect && topic.id == preselect) {
+                        opt.selected = true;
+                    }
+                    topicSelect.appendChild(opt);
+                });
+            });
+    }
+
+    classSelect.addEventListener('change', function () {
+        const selectedOption = this.options[this.selectedIndex];
+        timingHidden.value = selectedOption.dataset.timing || '';
+        loadTopics(this.value);
+    });
+
+   
+    const oldClassId = @json(old('assign_class_id'));
+    if (oldClassId) {
+        classSelect.value = oldClassId;
+        const selectedOption = classSelect.options[classSelect.selectedIndex];
+        timingHidden.value = selectedOption ? selectedOption.dataset.timing : '';
+        loadTopics(oldClassId, oldTopicId);
+    }
+});
+</script>
