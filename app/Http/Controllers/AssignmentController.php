@@ -12,6 +12,14 @@ class AssignmentController extends Controller
 {
     public function index(Request $request)
     {
+
+        Assignment::where('assignment_status', 'active')
+            ->whereNotNull('assignment_due_date')
+            ->where('assignment_due_date', '<=', now())
+            ->update([
+                'assignment_status' => 'completed'
+            ]);
+
         $query = Assignment::with('classTiming')
             ->withCount('submissions')
             ->latest('id');
@@ -43,36 +51,42 @@ class AssignmentController extends Controller
         );
     }
 
-    
-        public function create()
-{
-    $classTimings = ClassTiming::all();
 
-    return view(
-        'backend_theme.assignment.assignment-add',
-        compact('classTimings')
-    );
-}
-    
+    public function create()
+    {
+        $classTimings = ClassTiming::all();
 
-   public function store(Request $request)
-{
-    $validated = $request->validate([
-        'class_timing_id' => ['required', 'exists:class_timing,id'],
-        'topic_id' => ['required', 'exists:topics,id'],
-        'assignment_title' => ['required', 'string', 'max:255'],
-        'assignment_instruction' => ['nullable', 'string'],
-        'assignment_status' => ['required', 'in:pending,active,completed,closed'],
-        'assignment_due_date' => ['required', 'date'],
-        'assignment_marks' => ['required', 'integer', 'min:0'],
-    ]);
+        return view(
+            'backend_theme.assignment.assignment-add',
+            compact('classTimings')
+        );
+    }
 
-    Assignment::create($validated);
 
-    return redirect()
-        ->route('assignment')
-        ->with('success', 'Assignment created successfully.');
-}
+    public function store(Request $request)
+    {
+
+
+
+
+        $validated = $request->validate([
+            'class_timing_id' => ['required', 'exists:class_timing,id'],
+            'topic_id' => ['required', 'exists:topics,id'],
+            'assignment_title' => ['required', 'string', 'max:255'],
+            'assignment_instruction' => ['nullable', 'string'],
+            'assignment_status' => ['required', 'in:pending,active,completed,closed'],
+            'assignment_due_date' => ['required', 'date'],
+            'assignment_due_time' => ['required', 'date_format:H:i'],
+            'assignment_marks' => ['required', 'integer', 'min:0'],
+        ]);
+        $validated['assignment_due_date'] = $validated['assignment_due_date'] . ' ' . $validated['assignment_due_time'];
+        unset($validated['assignment_due_time']);
+        Assignment::create($validated);
+
+        return redirect()
+            ->route('assignment')
+            ->with('success', 'Assignment created successfully.');
+    }
 
     public function show(string $id)
     {
@@ -98,17 +112,22 @@ class AssignmentController extends Controller
 
     public function update(Request $request, string $id)
     {
+
+
         $assignment = Assignment::findOrFail($id);
 
-      $validated = $request->validate([
-    'class_timing_id' => ['required', 'exists:class_timing,id'],
-    'topic_id' => ['required', 'exists:topics,id'],
-    'assignment_title' => ['required', 'string', 'max:255'],
-    'assignment_instruction' => ['nullable', 'string'],
-    'assignment_status' => ['required', 'in:pending,active,completed,closed'],
-    'assignment_due_date' => ['required', 'date'],
-    'assignment_marks' => ['required', 'integer', 'min:0'],
-]);
+        $validated = $request->validate([
+            'class_timing_id' => ['required', 'exists:class_timing,id'],
+            'topic_id' => ['required', 'exists:topics,id'],
+            'assignment_title' => ['required', 'string', 'max:255'],
+            'assignment_instruction' => ['nullable', 'string'],
+            'assignment_status' => ['required', 'in:pending,active,completed,closed'],
+            'assignment_due_date' => ['required', 'date'],
+            'assignment_due_time' => ['required', 'date_format:H:i'],
+            'assignment_marks' => ['required', 'integer', 'min:0'],
+        ]);
+        $validated['assignment_due_date'] = $validated['assignment_due_date'] . ' ' . $validated['assignment_due_time'];
+        unset($validated['assignment_due_time']);
 
         $assignment->update($validated);
 
@@ -127,13 +146,13 @@ class AssignmentController extends Controller
             ->route('assignment')
             ->with('success', 'Assignment deleted successfully.');
     }
-public function topicsByClass(string $class_id)
-{
-    $topics = Topic::where('class_id', $class_id)
-        ->orderBy('order')
-        ->select('id', 'topic_name')
-        ->get();
+    public function topicsByClass(string $class_id)
+    {
+        $topics = Topic::where('class_id', $class_id)
+            ->orderBy('order')
+            ->select('id', 'topic_name')
+            ->get();
 
-    return response()->json($topics);
-}
+        return response()->json($topics);
+    }
 }
