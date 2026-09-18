@@ -8,7 +8,7 @@ use App\Models\ClassModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-
+use Illuminate\Support\Facades\Cookie;
 class StudentAuthController extends Controller
 {
 
@@ -21,22 +21,19 @@ class StudentAuthController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
-            'password' => 'required',
         ]);
 
-        $user = User::where('email', $request->email)
-            ->where('role', 'user')
-            ->first();
+        $student  = Student::where('email_address', $request->email)->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (!$student) {
             return back()
                 ->withErrors([
-                    'email' => 'Invalid student email or password.',
+                    'email' => 'Student email not found.',
                 ])
-                ->withInput($request->only('email'));
-        }
+                ->withInput();
+        };
 
-        Auth::login($user);
+        Auth::guard('student')->login($student);
 
         $request->session()->regenerate();
 
@@ -72,44 +69,49 @@ class StudentAuthController extends Controller
     }
 
 
-    public function join(Request $request)
-    {
-        $request->validate([
-            'class_code' => 'required',
-        ]);
+   public function join(Request $request)
+{
+    $request->validate([
+        'class_code' => 'required',
+    ]);
 
-        if (!Auth::check()) {
-            return redirect()->route('student.login');
-        }
-
-        $classCode = strtoupper(trim($request->class_code));
-
-        $class = ClassModel::with('teacher')
-            ->where('class_code', $classCode)
-            ->first();
-
-        if (!$class) {
-            return back()
-                ->withErrors([
-                    'class_code' => 'Invalid class code. Please check the code and try again.',
-                ])
-                ->withInput();
-        }
-
-        $user = Auth::user();
-
-        $student = Student::firstOrNew(['email_address' => $user->email]);
-        $student->full_name = $student->full_name ?: $user->name;
-        $student->class_id = $class->id;
-        $student->batch_code = $student->batch_code ?: $class->class_code;
-        $student->password = $student->password ?: $user->password;
-        $student->save();
-
-        $request->session()->put('joined_class_code', $class->class_code);
-        $request->session()->save();
-
-        return redirect()->route('index');
+    if (!Auth::guard('student')->check()) {
+        return redirect()->route('student.login');
     }
+
+    $student = Auth::guard('student')->user();
+
+    $classCode = strtoupper(trim($request->class_code));
+
+    $class = ClassModel::whereRaw(
+        'UPPER(TRIM(class_code)) = ?',
+        [$classCode]
+    )->first();
+
+    if (!$class) {
+        return back()
+            ->withErrors([
+                'class_code' => 'Invalid class code. Please check the code and try again.',
+            ])
+            ->withInput();
+    }
+
+    if ($student->class_id != $class->id) {
+        return back()
+            ->withErrors([
+                'class_code' => 'This class is not assigned to your account.',
+            ])
+            ->withInput();
+    }
+
+    Cookie::queue(
+        'joined_class_code',
+        $class->class_code,
+        60 * 24 * 30
+    );
+
+    return redirect()->route('steam');
+}
 
     public function logout(Request $request)
     {

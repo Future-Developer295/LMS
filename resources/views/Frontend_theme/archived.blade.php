@@ -6,7 +6,7 @@ active
 
 @section("body")
 
-@if(Auth::check() && Auth::user()->role === 'user')
+@if(Auth::guard('student')->check())
 
 <main class="flex-grow-1 p-3 p-md-4 detail-main">
 
@@ -64,35 +64,31 @@ active
 
 <main class="flex-grow-1 d-flex align-items-center justify-content-center p-4">
 
-    <div class="text-center">
+      <div class="text-center">
 
-        <div class="mb-3">
-            <i class="fa-solid fa-graduation-cap"
-               style="font-size: 55px; color: #0F9D58;">
-            </i>
+            <div class="mb-3">
+                <i class="fa-solid fa-graduation-cap"
+                   style="font-size: 55px; color: #0F9D58;">
+                </i>
+            </div>
+
+            <h4 class="fw-semibold mb-2">
+                Welcome to Classroom
+            </h4>
+
+            <p class="text-muted mb-4">
+                Please login or join a claass to more activity.
+            </p>
+
+            <a href="{{ route('student.login') }}"
+               class="btn btn-success me-2">
+
+                <i class="fa-solid fa-right-to-bracket me-1"></i>
+                Login
+
+            </a>
+
         </div>
-
-        <h4 class="fw-semibold mb-2">
-            Welcome to Classroom
-        </h4>
-
-        <p class="text-muted mb-4">
-            Please login or create an account to view your classes.
-        </p>
-
-        <a href="{{ route('student.login') }}"
-           class="btn btn-success me-2">
-            <i class="fa-solid fa-right-to-bracket me-1"></i>
-            Login
-        </a>
-
-        <a href="{{ route('student.register') }}"
-           class="btn btn-warning">
-            <i class="fa-solid fa-user-plus me-1"></i>
-            Sign Up
-        </a>
-
-    </div>
 
 </main>
 

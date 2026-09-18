@@ -2,7 +2,7 @@
 
 @section('body')
 
-@if(Auth::check() && Auth::user()->role === 'user')
+@if(Auth::guard('student')->check())
 
 <main class="flex-grow-1 p-3 p-md-4 index-main grades-main">
 
@@ -11,11 +11,11 @@
     <div class="grade-student">
 
       <div class="grade-avatar">
-    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+    {{ strtoupper(substr(Auth::guard('student')->user()->full_name, 0, 1)) }}
 </div>
 
       <div class="grade-student-name">
-        {{ Auth::user()->name }}
+        {{ Auth::guard('student')->user()->full_name }}
       </div>
 
     </div>
