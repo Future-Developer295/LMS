@@ -151,7 +151,7 @@
 
 <body>
 
-    <div class="student-login-wrapper "style="margin-top:30px">
+    <div class="student-login-wrapper "style="margin-top:100px">
 
         <div class="student-login-card">
 
@@ -201,24 +201,19 @@
                         placeholder="Enter your email" required autofocus>
                 </div>
 
-                <div class="mb-3">
+                {{-- <div class="mb-3">
                     <label for="password" class="form-label">
                         Password
                     </label>
 
                     <input id="password" type="password" name="password" class="form-control"
                         placeholder="Enter your password" required>
-                </div>
+                </div> --}}
 
                 <button type="submit" class="login-btn">
                     Login
                 </button>
             </form>
-
-            <div class="register-text">
-                Don't have an account?
-                <a href="{{ route('student.register') }}">Sign up</a>
-            </div>
 
         </div>
 

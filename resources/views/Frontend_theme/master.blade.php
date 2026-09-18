@@ -7,6 +7,7 @@ if (!isset($activeNav)) {
     $activeNav = 'index';
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -465,7 +466,7 @@ if (!isset($activeNav)) {
 
 <body>
 
-    @if (Auth::check())
+    @if (Auth::guard('student')->check())
         <header class="gc-header d-flex align-items-center px-3 gap-2">
             <button class="btn-icon" id="menuToggle">
                 <i class="fa-solid fa-bars"></i>
@@ -510,18 +511,18 @@ if (!isset($activeNav)) {
             <div class="profile-dropdown">
 
                 <button type="button" class="profile-avatar" id="profileToggle" aria-label="Profile menu">
-                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                    {{ strtoupper(substr(Auth::guard('student')->user()->full_name, 0, 1)) }}
                 </button>
 
                 <div class="profile-menu" id="profileMenu">
 
                     <div class="profile-big-avatar">
-                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                        {{ strtoupper(substr(Auth::guard('student')->user()->full_name, 0, 1)) }}
                     </div>
 
                     <div class="profile-user-info">
-                        <strong>{{ Auth::user()->name }}</strong>
-                        <span>{{ Auth::user()->email }}</span>
+                        <strong>{{ Auth::guard('student')->user()->full_name  }}</strong>
+                        <span>{{ Auth::guard('student')->user()->email_address  }}</span>
                     </div>
 
                     <div class="profile-divider"></div>
@@ -565,10 +566,6 @@ if (!isset($activeNav)) {
 
                 <a href="{{ route('student.login') }}" class="btn btn-outline-success">
                     Login
-                </a>
-
-                <a href="{{ route('student.register') }}" class="btn btn-warning">
-                    Sign Up
                 </a>
 
             </div>
@@ -643,11 +640,11 @@ if (!isset($activeNav)) {
                                 <div>
 
                                     <div class="join-class-name">
-                                        {{ optional(Auth::user())->name ?? 'Guest User' }}
+                                       {{ optional(Auth::guard('student')->user())->full_name ?? 'Guest User' }}
                                     </div>
 
                                     <div class="join-class-email">
-                                        {{ optional(Auth::user())->email ?? 'Please login to continue' }}
+                                       {{ optional(Auth::guard('student')->user())->email_address ?? 'Please login to continue' }}
                                     </div>
 
                                 </div>

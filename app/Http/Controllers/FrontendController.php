@@ -13,46 +13,65 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\AssignmentHasSubmit;
 use Illuminate\Support\Facades\File;
 use App\Models\Comment;
+use Illuminate\Support\Facades\Cookie;
 
 class FrontendController extends Controller
 {
+
+    private function getStudent()
+    {
+        return Auth::guard('student')->user();
+    }
+
+
+
+
     function index()
     {
-        $user = Auth::user();
-
-        $student = null;
-
-        if ($user) {
-            $student = Student::where(
-                'email_address',
-                $user->email ?? $user->email_address
-            )->first();
-        }
+        $student = $this->getStudent();
 
         return view('frontend_theme.index', compact('student'));
     }
 
+
+
+
     function class()
     {
-        $user = Auth::user();
-        $student = null;
+        $student = $this->getStudent();
+
         $classes = collect();
         $assignments = collect();
         $overallGrade = 0;
 
-        if ($user) {
-            $student = Student::where('email_address', $user->email ?? $user->email_address)->first();
+        if ($student) {
 
-            if ($student && $student->class_id) {
-                $class = ClassModel::with(['timing', 'day'])->find($student->class_id);
+
+            $joinedClassCode = Cookie::get('joined_class_code');
+
+            if ($joinedClassCode) {
+
+                $class = ClassModel::with([
+                    'timing',
+                    'day'
+                ])
+                    ->whereRaw(
+                        'UPPER(TRIM(class_code)) = ?',
+                        [strtoupper(trim($joinedClassCode))]
+                    )
+                    ->first();
 
                 if ($class) {
+
                     $classes = collect([$class]);
 
                     $assignments = $class->assignments()
                         ->with([
                             'submissions' => function ($query) use ($student) {
-                                $query->where('student_id', $student->id);
+                                $query->where(
+                                    'student_id',
+                                    $student->id
+                                );
                             }
                         ])
                         ->get();
@@ -61,27 +80,46 @@ class FrontendController extends Controller
         }
 
 
+
         $totalMarks = 0;
         $earnedMarks = 0;
 
         foreach ($assignments as $assignment) {
+
             $submission = $assignment->submissions->first();
 
-            if ($submission && $submission->grade !== null) {
+            if (
+                $submission &&
+                $submission->grade !== null
+            ) {
+
                 $totalMarks += $assignment->assignment_marks;
+
                 $earnedMarks += $submission->grade;
             }
         }
 
+
         if ($totalMarks > 0) {
-            $overallGrade = round(($earnedMarks / $totalMarks) * 100);
+
+            $overallGrade = round(
+                ($earnedMarks / $totalMarks) * 100
+            );
         }
+
 
         return view(
             'frontend_theme.class',
-            compact('classes', 'assignments', 'student', 'overallGrade')
+            compact(
+                'classes',
+                'assignments',
+                'student',
+                'overallGrade'
+            )
         );
     }
+
+
 
     function calendar()
     {
@@ -89,68 +127,99 @@ class FrontendController extends Controller
     }
 
 
+
     function classwork()
     {
-        $user = Auth::user();
+        $student = $this->getStudent();
 
-        $student = null;
         $topics = collect();
 
-        if ($user) {
-            $student = Student::where(
-                'email_address',
-                $user->email ?? $user->email_address
-            )->first();
+        if ($student) {
 
-            if ($student && $student->class_id) {
-                $topics = Topic::where('class_id', $student->class_id)
-                    ->orderBy('order')
-                    ->with([
-                        'assignments' => function ($query) use ($student) {
-                            $query->with([
-                                'submissions' => function ($q) use ($student) {
-                                    $q->where('student_id', $student->id);
-                                }
-                            ]);
-                        }
-                    ])
-                    ->get();
+            $joinedClassCode = Cookie::get('joined_class_code');
+
+            if ($joinedClassCode) {
+
+                $class = ClassModel::whereRaw(
+                    'UPPER(TRIM(class_code)) = ?',
+                    [strtoupper(trim($joinedClassCode))]
+                )->first();
+
+                if ($class) {
+
+                    $topics = Topic::where(
+                        'class_id',
+                        $class->id
+                    )
+                        ->orderBy('order')
+                        ->with([
+                            'assignments' => function ($query) use ($student) {
+
+                                $query->with([
+                                    'submissions' => function ($q) use ($student) {
+
+                                        $q->where(
+                                            'student_id',
+                                            $student->id
+                                        );
+                                    }
+                                ]);
+                            }
+                        ])
+                        ->get();
+                }
             }
         }
+
 
         return view(
             'frontend_theme.classwork',
-            compact('topics', 'student')
+            compact(
+                'topics',
+                'student'
+            )
         );
     }
 
-    public function detail(Request $request, int $assignment)
-    {
-        $assignment = Assignment::with('classTiming')
-            ->findOrFail($assignment);
 
-        $student = null;
+
+    public function detail(
+        Request $request,
+        int $assignment
+    ) {
+
+        $assignment = Assignment::with(
+            'classTiming'
+        )->findOrFail($assignment);
+
+
+        $student = $this->getStudent();
+
         $submission = null;
 
-        if (Auth::check()) {
 
-            $student = Student::where(
-                'email_address',
-                Auth::user()->email ?? Auth::user()->email_address
-            )->first();
+        if ($student) {
 
-            if ($student) {
-
-                $submission = AssignmentHasSubmit::where('assignment_id', $assignment->id)
-                    ->where('student_id', $student->id)
-                    ->first();
-            }
+            $submission = AssignmentHasSubmit::where(
+                'assignment_id',
+                $assignment->id
+            )
+                ->where(
+                    'student_id',
+                    $student->id
+                )
+                ->first();
         }
 
+
         $comments = Comment::with('user')
-            ->where('assignment_id', $assignment->id)
-            ->latest()
+            ->where(
+                'assignment_id',
+                $assignment->id
+            )
+            ->latest('created_at')
             ->get();
+
 
         return view(
             'frontend_theme.classwork-detail',
@@ -163,244 +232,457 @@ class FrontendController extends Controller
         );
     }
 
-    public function submitAssignment(Request $request, int $assignment)
-    {
-        $assignment = Assignment::findOrFail($assignment);
 
-        if (!Auth::check()) {
-            return redirect()->route('student.login');
+
+    public function submitAssignment(
+        Request $request,
+        int $assignment
+    ) {
+
+        $student = $this->getStudent();
+
+
+        if (!$student) {
+
+            return redirect()->route(
+                'student.login'
+            );
         }
 
-        $student = Student::where(
-            'email_address',
-            Auth::user()->email ?? Auth::user()->email_address
-        )->firstOrFail();
+
+        $assignment = Assignment::findOrFail(
+            $assignment
+        );
+
 
         if (
             $assignment->assignment_due_date &&
-            now()->greaterThanOrEqualTo($assignment->assignment_due_date)
+            now()->greaterThanOrEqualTo(
+                $assignment->assignment_due_date
+            )
         ) {
-            return back()->with('error', 'Assignment submission time has ended.');
+
+            return back()->with(
+                'error',
+                'Assignment submission time has ended.'
+            );
         }
 
+
+
+
         $request->validate([
-            'assignment_file' => 'required|file|mimes:zip|max:51200',
+            'assignment_file' =>
+            'required|file|mimes:zip|max:51200',
         ]);
+
 
         $submission = AssignmentHasSubmit::firstOrNew([
             'assignment_id' => $assignment->id,
             'student_id' => $student->id,
         ]);
 
+
+
         if ($submission->assignment_file) {
-            $oldFile = public_path($submission->assignment_file);
+
+            $oldFile = public_path(
+                $submission->assignment_file
+            );
 
             if (File::exists($oldFile)) {
+
                 File::delete($oldFile);
             }
         }
 
-        $folder = public_path('assignments');
+
+
+        $folder = public_path(
+            'assignments'
+        );
+
 
         if (!File::exists($folder)) {
-            File::makeDirectory($folder, 0755, true);
+
+            File::makeDirectory(
+                $folder,
+                0755,
+                true
+            );
         }
 
-        $file = $request->file('assignment_file');
+
+
+
+        $file = $request->file(
+            'assignment_file'
+        );
 
         $fileName = $file->getClientOriginalName();
 
-        $file->move($folder, $fileName);
+        $file->move(
+            $folder,
+            $fileName
+        );
+
 
         $submission->assignment_file =
             'assignments/' . $fileName;
 
+
         $submission->save();
+
 
         return response()->json([
             'success' => true,
-            'message' => 'Assignment submitted successfully.'
+            'message' =>
+            'Assignment submitted successfully.'
         ]);
     }
 
-    public function unsubmitAssignment(int $assignment)
-    {
-        $assignment = Assignment::findOrFail($assignment);
 
-        if (!Auth::check()) {
-            return redirect()->route('student.login');
+    public function unsubmitAssignment(
+        int $assignment
+    ) {
+
+        $student = $this->getStudent();
+
+
+        if (!$student) {
+
+            return redirect()->route(
+                'student.login'
+            );
         }
 
-        $student = Student::where(
-            'email_address',
-            Auth::user()->email ?? Auth::user()->email_address
-        )->firstOrFail();
+
+        $assignment = Assignment::findOrFail(
+            $assignment
+        );
+
 
         if (
             $assignment->assignment_due_date &&
-            now()->greaterThanOrEqualTo($assignment->assignment_due_date)
+            now()->greaterThanOrEqualTo(
+                $assignment->assignment_due_date
+            )
         ) {
+
             return back()->with(
                 'error',
                 'You cannot unsubmit the assignment after the due date.'
             );
         }
 
-        $submission = AssignmentHasSubmit::where('assignment_id', $assignment->id)
-            ->where('student_id', $student->id)
+
+        $submission = AssignmentHasSubmit::where(
+            'assignment_id',
+            $assignment->id
+        )
+            ->where(
+                'student_id',
+                $student->id
+            )
             ->first();
 
+
         if ($submission) {
+
             if ($submission->assignment_file) {
-                $file = public_path($submission->assignment_file);
+
+                $file = public_path(
+                    $submission->assignment_file
+                );
+
 
                 if (File::exists($file)) {
+
                     File::delete($file);
                 }
             }
 
+
             $submission->delete();
         }
 
+
         return response()->json([
             'success' => true,
-            'message' => 'Assignment unsubmitted successfully.'
+            'message' =>
+            'Assignment unsubmitted successfully.'
         ]);
     }
 
 
-    public function storeComment(Request $request, int $assignment)
-    {
+    public function storeComment(
+        Request $request,
+        int $assignment
+    ) {
+
+        $student = $this->getStudent();
+
+
+        if (!$student) {
+
+            return redirect()->route(
+                'student.login'
+            );
+        }
+
+
         $request->validate([
-            'content' => 'required|string|max:10000',
+            'content' =>
+            'required|string|max:10000',
         ]);
 
-        if (!Auth::check()) {
-            return redirect()->route('student.login');
-        }
 
         Comment::create([
             'assignment_id' => $assignment,
-            'user_id' => Auth::id(),
+            'user_id' => $student->id,
             'content' => $request->input('content'),
         ]);
+
 
         return response()->json([
             'success' => true,
             'message' => 'Comment added successfully.',
         ]);
     }
-    public function deleteComment(int $comment)
-    {
-        if (!Auth::check()) {
-            return redirect()->route('student.login');
+
+
+    public function deleteComment(
+        int $comment
+    ) {
+
+        $student = $this->getStudent();
+
+
+        if (!$student) {
+
+            return redirect()->route(
+                'student.login'
+            );
         }
 
-        $comment = Comment::findOrFail($comment);
 
-        if ($comment->user_id != Auth::id()) {
+        $comment = Comment::findOrFail(
+            $comment
+        );
+
+
+        if (
+            $comment->user_id != $student->id
+        ) {
+
             abort(403);
         }
 
+
         $comment->delete();
+
 
         return response()->json([
             'success' => true,
             'message' => 'Comment deleted successfully.',
         ]);
     }
+
+
+
     function archived()
     {
-        return view('frontend_theme.archived');
+        return view(
+            'frontend_theme.archived'
+        );
     }
+
+
+
 
     function steam()
     {
-        $user = Auth::user();
-        $student = null;
+        $student = $this->getStudent();
+
+        $user = $student;
+
         $joinedClass = null;
+
         $feed = collect();
+
         $upcoming = collect();
 
-        if ($user) {
-            $student = Student::where(
-                'email_address',
-                $user->email ?? $user->email_address
-            )->first();
 
-            $joinedClassCode = session('joined_class_code');
+        if ($student) {
+
+            $joinedClassCode = Cookie::get('joined_class_code');
+
 
             if ($joinedClassCode) {
-                $joinedClass = ClassModel::with('teacher')
-                    ->whereRaw('UPPER(TRIM(class_code)) = ?', [strtoupper(trim($joinedClassCode))])
+
+                $joinedClass = ClassModel::with(
+                    'teacher'
+                )
+                    ->whereRaw(
+                        'UPPER(TRIM(class_code)) = ?',
+                        [strtoupper(trim($joinedClassCode))]
+                    )
                     ->first();
             }
 
+
             if ($joinedClass) {
-                $assignments = $joinedClass->assignments()
+
+
+                $assignments = $joinedClass
+                    ->assignments()
                     ->with([
-                        'submissions' => function ($query) use ($student) {
-                            if ($student) {
-                                $query->where('student_id', $student->id);
-                            }
+                        'submissions' =>
+                        function ($query) use ($student) {
+
+                            $query->where(
+                                'student_id',
+                                $student->id
+                            );
                         }
                     ])
                     ->latest('assignment.id')
                     ->get();
 
-                $upcoming = $assignments->filter(function ($assignment) {
-                    $notSubmitted = $assignment->submissions->isEmpty();
-                    $notPastDue = !$assignment->assignment_due_date || $assignment->assignment_due_date->isFuture();
-                    return $notSubmitted && $notPastDue;
-                })->sortBy('assignment_due_date')->take(5)->values();
 
-                $announcements = Announcement::with('user')
-                    ->where('class_id', $joinedClass->id)
+                $upcoming = $assignments
+                    ->filter(function ($assignment) {
+
+                        $notSubmitted =
+                            $assignment
+                            ->submissions
+                            ->isEmpty();
+
+
+                        $notPastDue =
+                            !$assignment->assignment_due_date ||
+                            $assignment
+                            ->assignment_due_date
+                            ->isFuture();
+
+
+                        return
+                            $notSubmitted &&
+                            $notPastDue;
+                    })
+                    ->sortBy(
+                        'assignment_due_date'
+                    )
+                    ->take(5)
+                    ->values();
+
+
+                /*
+                | Announcements
+                */
+
+                $announcements =
+                    Announcement::with('user')
+                    ->where(
+                        'class_id',
+                        $joinedClass->id
+                    )
                     ->latest('created_at')
                     ->get();
 
-                foreach ($assignments as $assignment) {
+
+                /*
+                | Assignment feed
+                */
+
+                foreach (
+                    $assignments
+                    as $assignment
+                ) {
+
                     $feed->push([
                         'type' => 'assignment',
                         'data' => $assignment,
-                        'sort_time' => $assignment->created_at,
+                        'sort_time' =>
+                        $assignment->created_at,
                     ]);
                 }
 
-                foreach ($announcements as $announcement) {
+
+                /*
+                | Announcement feed
+                */
+
+                foreach (
+                    $announcements
+                    as $announcement
+                ) {
+
                     $feed->push([
                         'type' => 'announcement',
                         'data' => $announcement,
-                        'sort_time' => $announcement->created_at,
+                        'sort_time' =>
+                        $announcement->created_at,
                     ]);
                 }
 
-                $feed = $feed->sortByDesc(function ($item) {
-                    return $item['sort_time'] ?? \Illuminate\Support\Carbon::createFromTimestamp(0);
-                })->values();
+
+                /*
+                | Sort feed
+                */
+
+                $feed = $feed
+                    ->sortByDesc(function ($item) {
+
+                        return $item['sort_time']
+                            ?? \Illuminate\Support\Carbon
+                            ::createFromTimestamp(0);
+                    })
+                    ->values();
             }
         }
 
+
         return view(
             'frontend_theme.steam',
-            compact('joinedClass', 'feed', 'upcoming', 'user')
+            compact(
+                'joinedClass',
+                'feed',
+                'upcoming',
+                'user'
+            )
         );
     }
+
+
+
 
     function people()
     {
         $classmates = collect();
+
         $teacher = null;
 
-        $classCode = session('joined_class_code');
+
+        $classCode = Cookie::get('joined_class_code');
+
 
         if ($classCode) {
-            $class = ClassModel::with('teacher')
-                ->where('class_code', $classCode)
+
+            $class = ClassModel::with(
+                'teacher'
+            )
+                ->whereRaw(
+                    'UPPER(TRIM(class_code)) = ?',
+                    [strtoupper(trim($classCode))]
+                )
                 ->first();
 
+
             if ($class) {
+
                 $teacher = $class->teacher;
+
 
                 $classmates = Student::where(
                     'class_id',
@@ -409,9 +691,13 @@ class FrontendController extends Controller
             }
         }
 
+
         return view(
             'frontend_theme.people',
-            compact('classmates', 'teacher')
+            compact(
+                'classmates',
+                'teacher'
+            )
         );
     }
 }
