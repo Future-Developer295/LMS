@@ -27,7 +27,7 @@ class Assignment extends Model
     ];
 
     protected $casts = [
-        'assignment_due_date' => 'date',
+        'assignment_due_date' => 'datetime',
         'posted_at' => 'date',
         'assignment_marks' => 'integer',
     ];

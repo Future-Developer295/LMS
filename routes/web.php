@@ -151,9 +151,9 @@ Route::middleware('auth')->group(function () {
 
 
     // Assignment
-  Route::get('/dashboard/assignment/topics/{class_id}', [AssignmentController::class, 'topicsByClass'])
-    ->middleware('permission:create assignments')
-    ->name('assignment.topics');
+    Route::get('/dashboard/assignment/topics/{class_id}', [AssignmentController::class, 'topicsByClass'])
+        ->middleware('permission:create assignments')
+        ->name('assignment.topics');
 
     Route::get('/dashboard/assignment', [AssignmentController::class, 'index'])
         ->middleware('permission:view assignments')
@@ -301,9 +301,9 @@ Route::middleware('auth')->group(function () {
 });
 
 
-Route::get('/', [FrontendController::class, 'index'])->name('index'); 
+Route::get('/', [FrontendController::class, 'index'])->name('index');
 
-Route::get('/class', [FrontendController::class, 'class'])->name('frontend_class'); 
+Route::get('/class', [FrontendController::class, 'class'])->name('frontend_class');
 
 Route::get('/calendar', [FrontendController::class, 'calendar'])->name('calendar');
 
@@ -311,6 +311,14 @@ Route::get('/classwork', [FrontendController::class, 'classwork'])->name('classw
 
 
 Route::get('/classwork/detail/{assignment}', [FrontendController::class, 'detail'])->name('detail');
+Route::post('/classwork/{assignment}/submit', [FrontendController::class, 'submitAssignment'])
+    ->name('assignment.submit');
+
+Route::delete('/classwork/{assignment}/unsubmit', [FrontendController::class, 'unsubmitAssignment'])
+    ->name('assignment.unsubmit');
+
+Route::post('/classwork/{assignment}/comment', [FrontendController::class, 'storeComment'])->name('comment.store');
+Route::delete('/classwork/comment/{comment}', [FrontendController::class, 'deleteComment'])->name('comment.delete');
 
 Route::get('/archived', [FrontendController::class, 'archived'])->name('archived');
 

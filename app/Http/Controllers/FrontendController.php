@@ -10,6 +10,9 @@ use App\Models\Announcement;
 use App\Models\Topic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\AssignmentHasSubmit;
+use Illuminate\Support\Facades\File;
+use App\Models\Comment;
 
 class FrontendController extends Controller
 {
@@ -47,15 +50,17 @@ class FrontendController extends Controller
                     $classes = collect([$class]);
 
                     $assignments = $class->assignments()
-                        ->with(['submissions' => function ($query) use ($student) {
-                            $query->where('student_id', $student->id);
-                        }])
+                        ->with([
+                            'submissions' => function ($query) use ($student) {
+                                $query->where('student_id', $student->id);
+                            }
+                        ])
                         ->get();
                 }
             }
         }
 
-     
+
         $totalMarks = 0;
         $earnedMarks = 0;
 
@@ -83,7 +88,7 @@ class FrontendController extends Controller
         return view('frontend_theme.calendar');
     }
 
- 
+
     function classwork()
     {
         $user = Auth::user();
@@ -124,12 +129,186 @@ class FrontendController extends Controller
         $assignment = Assignment::with('classTiming')
             ->findOrFail($assignment);
 
+        $student = null;
+        $submission = null;
+
+        if (Auth::check()) {
+
+            $student = Student::where(
+                'email_address',
+                Auth::user()->email ?? Auth::user()->email_address
+            )->first();
+
+            if ($student) {
+
+                $submission = AssignmentHasSubmit::where('assignment_id', $assignment->id)
+                    ->where('student_id', $student->id)
+                    ->first();
+            }
+        }
+
+        $comments = Comment::with('user')
+            ->where('assignment_id', $assignment->id)
+            ->latest()
+            ->get();
+
         return view(
             'frontend_theme.classwork-detail',
-            compact('assignment')
+            compact(
+                'assignment',
+                'student',
+                'submission',
+                'comments'
+            )
         );
     }
 
+    public function submitAssignment(Request $request, int $assignment)
+    {
+        $assignment = Assignment::findOrFail($assignment);
+
+        if (!Auth::check()) {
+            return redirect()->route('student.login');
+        }
+
+        $student = Student::where(
+            'email_address',
+            Auth::user()->email ?? Auth::user()->email_address
+        )->firstOrFail();
+
+        if (
+            $assignment->assignment_due_date &&
+            now()->greaterThanOrEqualTo($assignment->assignment_due_date)
+        ) {
+            return back()->with('error', 'Assignment submission time has ended.');
+        }
+
+        $request->validate([
+            'assignment_file' => 'required|file|mimes:zip|max:51200',
+        ]);
+
+        $submission = AssignmentHasSubmit::firstOrNew([
+            'assignment_id' => $assignment->id,
+            'student_id' => $student->id,
+        ]);
+
+        if ($submission->assignment_file) {
+            $oldFile = public_path($submission->assignment_file);
+
+            if (File::exists($oldFile)) {
+                File::delete($oldFile);
+            }
+        }
+
+        $folder = public_path('assignments');
+
+        if (!File::exists($folder)) {
+            File::makeDirectory($folder, 0755, true);
+        }
+
+        $file = $request->file('assignment_file');
+
+        $fileName = $file->getClientOriginalName();
+
+        $file->move($folder, $fileName);
+
+        $submission->assignment_file =
+            'assignments/' . $fileName;
+
+        $submission->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Assignment submitted successfully.'
+        ]);
+    }
+
+    public function unsubmitAssignment(int $assignment)
+    {
+        $assignment = Assignment::findOrFail($assignment);
+
+        if (!Auth::check()) {
+            return redirect()->route('student.login');
+        }
+
+        $student = Student::where(
+            'email_address',
+            Auth::user()->email ?? Auth::user()->email_address
+        )->firstOrFail();
+
+        if (
+            $assignment->assignment_due_date &&
+            now()->greaterThanOrEqualTo($assignment->assignment_due_date)
+        ) {
+            return back()->with(
+                'error',
+                'You cannot unsubmit the assignment after the due date.'
+            );
+        }
+
+        $submission = AssignmentHasSubmit::where('assignment_id', $assignment->id)
+            ->where('student_id', $student->id)
+            ->first();
+
+        if ($submission) {
+            if ($submission->assignment_file) {
+                $file = public_path($submission->assignment_file);
+
+                if (File::exists($file)) {
+                    File::delete($file);
+                }
+            }
+
+            $submission->delete();
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Assignment unsubmitted successfully.'
+        ]);
+    }
+
+
+    public function storeComment(Request $request, int $assignment)
+    {
+        $request->validate([
+            'content' => 'required|string|max:10000',
+        ]);
+
+        if (!Auth::check()) {
+            return redirect()->route('student.login');
+        }
+
+        Comment::create([
+            'assignment_id' => $assignment,
+            'user_id' => Auth::id(),
+            'content' => $request->input('content'),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Comment added successfully.',
+        ]);
+    }
+    public function deleteComment(int $comment)
+    {
+        if (!Auth::check()) {
+            return redirect()->route('student.login');
+        }
+
+        $comment = Comment::findOrFail($comment);
+
+        if ($comment->user_id != Auth::id()) {
+            abort(403);
+        }
+
+        $comment->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Comment deleted successfully.',
+        ]);
+    }
     function archived()
     {
         return view('frontend_theme.archived');
@@ -159,11 +338,13 @@ class FrontendController extends Controller
 
             if ($joinedClass) {
                 $assignments = $joinedClass->assignments()
-                    ->with(['submissions' => function ($query) use ($student) {
-                        if ($student) {
-                            $query->where('student_id', $student->id);
+                    ->with([
+                        'submissions' => function ($query) use ($student) {
+                            if ($student) {
+                                $query->where('student_id', $student->id);
+                            }
                         }
-                    }])
+                    ])
                     ->latest('assignment.id')
                     ->get();
 

@@ -210,26 +210,58 @@
 
                         </div>
 
+<div class="field">
+    <label for="assignmentStatus">
+        <i class="fa-solid fa-circle-check" style="margin-right:4px;"></i>
+        Assignment Status
+    </label>
 
+    <select class="input" id="assignmentStatus" name="assignment_status" required>
+        <option value="">Select Status</option>
 
-                        <div class="field">
+        <option value="pending" {{ old('assignment_status') == 'pending' ? 'selected' : '' }}>
+            Pending
+        </option>
 
-                            <label for="dueDate">
+        <option value="active" {{ old('assignment_status') == 'active' ? 'selected' : '' }}>
+            Active
+        </option>
 
-                                <i class="fa-regular fa-calendar" style="margin-right:4px;"></i>
+        <option value="completed" {{ old('assignment_status') == 'completed' ? 'selected' : '' }}>
+            Completed
+        </option>
 
-                                Due Date
+        <option value="closed" {{ old('assignment_status') == 'closed' ? 'selected' : '' }}>
+            Closed
+        </option>
+    </select>
+</div>
 
-                            </label>
+<div class="field">
+    <label for="dueDate">
+        <i class="fa-regular fa-calendar" style="margin-right:4px;"></i>
+        Due Date
+    </label>
 
-                            <input type="date" class="input" id="dueDate" name="assignment_due_date"
-                                value="{{ old('assignment_due_date') }}" required>
+    <input type="date"
+           class="input"
+           id="dueDate"
+           name="assignment_due_date"
+           required>
+</div>
 
-                        </div>
+<div class="field">
+    <label for="dueTime">
+        <i class="fa-regular fa-clock" style="margin-right:4px;"></i>
+        Due Time
+    </label>
 
-
-
-                        <input type="hidden" name="assignment_status" value="active">
+  <input type="time"
+       class="input"
+       id="dueTime"
+       name="assignment_due_time"
+       required>
+</div>
 
                     </div>
 
@@ -248,19 +280,43 @@ document.addEventListener('DOMContentLoaded', function () {
     const classSelect = document.getElementById('assignClass');
     const timingHidden = document.getElementById('classTimingHidden');
     const topicSelect = document.getElementById('topicSelect');
+    const dueDate = document.getElementById('dueDate');
+    const dueTime = document.getElementById('dueTime');
+    const assignmentDueDate = document.getElementById('assignmentDueDate');
+
+    const form = document.querySelector('form');
 
     const oldTopicId = @json(old('topic_id'));
+    
+    function combineDueDateTime() {
+        if (dueDate.value && dueTime.value) {
+            assignmentDueDate.value =
+                dueDate.value + ' ' + dueTime.value + ':00';
+        }
+    }
+
+    dueDate.addEventListener('change', combineDueDateTime);
+    dueTime.addEventListener('change', combineDueDateTime);
+
+    // Form submit hone se pehle bhi combine kar dein
+    form.addEventListener('submit', function () {
+        combineDueDateTime();
+    });
+
 
     function loadTopics(classId, preselect = null) {
         if (!classId) {
-            topicSelect.innerHTML = '<option value="">Select class first</option>';
+            topicSelect.innerHTML =
+                '<option value="">Select class first</option>';
             return;
         }
 
         fetch(`/dashboard/assignment/topics/${classId}`)
             .then(res => res.json())
             .then(topics => {
-                topicSelect.innerHTML = '<option value="">Select a Topic</option>';
+                topicSelect.innerHTML =
+                    '<option value="">Select a Topic</option>';
+
                 topics.forEach(topic => {
                     const opt = document.createElement('option');
                     opt.value = topic.id;
@@ -274,17 +330,28 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     classSelect.addEventListener('change', function () {
-        const selectedOption = this.options[this.selectedIndex];
-        timingHidden.value = selectedOption.dataset.timing || '';
+
+        const selectedOption =
+            this.options[this.selectedIndex];
+
+        timingHidden.value =
+            selectedOption.dataset.timing || '';
+
         loadTopics(this.value);
     });
 
-   
+
+    // Old values
     const oldClassId = @json(old('assign_class_id'));
     if (oldClassId) {
         classSelect.value = oldClassId;
-        const selectedOption = classSelect.options[classSelect.selectedIndex];
-        timingHidden.value = selectedOption ? selectedOption.dataset.timing : '';
+
+        const selectedOption =
+            classSelect.options[classSelect.selectedIndex];
+
+        timingHidden.value =
+            selectedOption ? selectedOption.dataset.timing : '';
+
         loadTopics(oldClassId, oldTopicId);
     }
 });
