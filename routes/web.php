@@ -149,7 +149,14 @@ Route::middleware('auth')->group(function () {
         ->middleware('permission:delete attendance')
         ->name('attendance_destroy');
 
+Route::get('/dashboard/attendance/batch/{batch_code}', [AttendanceController::class, 'register'])
+    ->middleware('permission:view attendance')
+    ->name('attendance_register');
 
+Route::get('/dashboard/attendance/sheet', [AttendanceController::class, 'sheet'])
+    ->middleware('permission:view attendance')
+    ->name('attendance_sheet');
+    
     // Assignment
     Route::get('/dashboard/assignment/topics/{class_id}', [AssignmentController::class, 'topicsByClass'])
         ->middleware('permission:create assignments')
