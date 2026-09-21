@@ -1,340 +1,284 @@
-@extends("Backend_theme.master")
+@extends('Backend_theme.master')
 
 @section('submissions')
-open
+    open
 @endsection
 
 @section('submission')
-active
+    active
 @endsection
 
-@section("body")
-
-<main class="page">
-
-    
-    <div class="page-header">
-        <div>
-            <h1 style="font-size:26px;">Submissions</h1>
-        </div>
-    </div>
+@section('body')
+    <main class="page">
 
 
-    
-    @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
-
-
-    
-    <div class="card">
-
-        
-        <div class="filter-bar">
-
-            <form method="GET" action="{{ route('submission') }}" style="display:flex; align-items:center; gap:12px; flex:1;">
-
-                {{-- Search --}}
-                <div class="input-icon-wrap left search-input-w">
-
-                    <i class="fa-solid fa-magnifying-glass"></i>
-
-                    <input
-                        type="text"
-                        class="input"
-                        id="submissionSearch"
-                        name="search"
-                        value="{{ request('search') }}"
-                        placeholder="Search student..."
-                    >
-
-                </div>
-
-
-                
-                <div class="filter-select-w">
-
-                    <select
-                        class="select"
-                        id="statusFilter"
-                        name="status"
-                        onchange="this.form.submit()"
-                    >
-
-                        <option value="">All Statuses</option>
-
-                        <option value="submitted" {{ request('status') == 'submitted' ? 'selected' : '' }}>
-                            Submitted
-                        </option>
-
-                        <option value="not submitted" {{ request('status') == 'not submitted' ? 'selected' : '' }}>
-                            Not Submitted
-                        </option>
-
-                    </select>
-
-                </div>
-
-                <button type="submit" class="btn btn-secondary btn-sm"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
-                @if(request('search') || request('status'))
-                    <a href="{{ route('submission') }}" class="btn btn-secondary btn-sm">Clear</a>
-                @endif
-
-            </form>
-
-
-            <div class="filter-bar-spacer"></div>
-
-
-            
-            <a
-    href="{{ route('submission.export') }}"
-    class="btn btn-secondary"
->
-    <i class="fa-solid fa-download"></i>
-    Export CSV
-</a>
-
-
-            <form
-    action="{{ route('submission.publish') }}"
-    method="POST"
-    style="display:inline;"
->
-    @csrf
-
-    <button
-        class="btn btn-primary"
-        type="submit"
-    >
-        <i class="fa-solid fa-arrow-up-from-bracket"></i>
-        Publish Grades
-    </button>
-</form>
-
+        <div class="page-header">
+            <div>
+                <h1 style="font-size:26px;">Submissions</h1>
+            </div>
         </div>
 
 
-        
-        <div class="table-wrap">
 
-            <table class="data-table">
-
-                <thead>
-
-                    <tr>
-
-                        <th>Student Name</th>
-
-                        <th>Assignment</th>
-
-                        <th>Submission Date</th>
-
-                        <th>File</th>
-
-                        <th>Status</th>
-
-                        <th>Grade</th>
-
-                        <th>Remarks</th>
-
-                        <th style="text-align:right;">
-                            Actions
-                        </th>
-
-                    </tr>
-
-                </thead>
+        @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
 
 
-                <tbody id="submissionsBody">
 
-                    @forelse($submissions as $submission)
+        <div class="card">
+
+
+            <div class="filter-bar">
+
+                <form method="GET" action="{{ route('submission') }}"
+                    style="display:flex; align-items:center; gap:12px; flex:1;">
+
+                    {{-- Search --}}
+                    <div class="input-icon-wrap left search-input-w">
+
+                        <i class="fa-solid fa-magnifying-glass"></i>
+
+                        <input type="text" class="input" id="submissionSearch" name="search"
+                            value="{{ request('search') }}" placeholder="Search student...">
+
+                    </div>
+
+
+
+                    <div class="filter-select-w">
+
+                        <select class="select" id="statusFilter" name="status" onchange="this.form.submit()">
+
+                            <option value="">All Statuses</option>
+
+                            <option value="submitted" {{ request('status') == 'submitted' ? 'selected' : '' }}>
+                                Submitted
+                            </option>
+
+                            <option value="not submitted" {{ request('status') == 'not submitted' ? 'selected' : '' }}>
+                                Not Submitted
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <button type="submit" class="btn btn-secondary btn-sm"><i class="fa-solid fa-magnifying-glass"></i>
+                        Search</button>
+                    @if (request('search') || request('status'))
+                        <a href="{{ route('submission') }}" class="btn btn-secondary btn-sm">Clear</a>
+                    @endif
+
+                </form>
+
+
+                <div class="filter-bar-spacer"></div>
+
+
+
+                <a href="{{ route('submission.export') }}" class="btn btn-secondary">
+                    <i class="fa-solid fa-download"></i>
+                    Export CSV
+                </a>
+
+
+                <form action="{{ route('submission.publish') }}" method="POST" style="display:inline;">
+                    @csrf
+
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                        Publish Grades
+                    </button>
+                </form>
+
+            </div>
+
+
+
+            <div class="table-wrap">
+
+                <table class="data-table">
+
+                    <thead>
 
                         <tr>
 
-                            
-                            <td>
+                            <th>Student Name</th>
 
-                                {{ $submission->student->full_name ?? 'N/A' }}
+                            <th>Assignment</th>
 
-                                {{ $submission->student->last_name ?? '' }}
+                            <th>Submission Date</th>
 
-                            </td>
+                            <th>File</th>
 
+                            <th>Status</th>
 
-                            
-                            <td>
+                            <th>Grade</th>
 
-                                {{ $submission->assignment->assignment_title ?? 'N/A' }}
+                            <th>Remarks</th>
 
-                            </td>
+                            <th style="text-align:right;">
+                                Actions
+                            </th>
 
+                        </tr>
 
-                            
-                            <td>
-
-                                @if($submission->created_at)
-
-                                    {{ $submission->created_at->format('d M Y - h:i A') }}
-
-                                @else
-
-                                    <span class="text-secondary">
-                                        N/A
-                                    </span>
-
-                                @endif
-
-                            </td>
+                    </thead>
 
 
-                            
-                            <td>
+                    <tbody id="submissionsBody">
 
-                                @if($submission->assignment_file)
+                        @forelse($submissions as $submission)
+                            <tr>
 
-                                    <a
-                                        href="{{ asset('storage/' . $submission->assignment_file) }}"
-                                        target="_blank"
-                                        class="cell-link"
-                                    >
 
-                                        <i class="fa-solid fa-file"></i>
+                                <td>
 
-                                        View File
+                                    {{ $submission->student->full_name ?? 'N/A' }}
+
+                                    {{ $submission->student->last_name ?? '' }}
+
+                                </td>
+
+
+
+                                <td>
+
+                                    {{ $submission->assignment->assignment_title ?? 'N/A' }}
+
+                                </td>
+
+
+
+                                <td>
+
+                                    @if ($submission->created_at)
+                                        {{ $submission->created_at->format('d M Y - h:i A') }}
+                                    @else
+                                        <span class="text-secondary">
+                                            N/A
+                                        </span>
+                                    @endif
+
+                                </td>
+
+
+
+                                <td>
+
+                                    @if ($submission->assignment_file)
+                                        <a href="{{ asset('' . $submission->assignment_file) }}" target="_blank"
+                                            class="cell-link">
+
+                                            <i class="fa-solid fa-file"></i>
+
+                                            View File
+
+                                        </a>
+                                    @else
+                                        <span class="text-secondary">
+                                            No File
+                                        </span>
+                                    @endif
+
+                                </td>
+
+
+
+                                <td>
+
+                                    @if ($submission->assignment_file)
+                                        <span class="badge badge-success text-dark"
+                                            style="background:#d1fae5; color:#065f46 !important;">
+                                            Submitted
+                                        </span>
+                                    @else
+                                        <span class="badge badge-danger text-dark"
+                                            style="background:#fee2e2; color:#991b1b !important;">
+                                            Not Submitted
+                                        </span>
+                                    @endif
+
+                                </td>
+
+
+
+                                <td>
+
+                                    @if (!is_null($submission->grade))
+                                        {{ rtrim(rtrim(number_format($submission->grade, 2), '0'), '.') }}
+                                    @else
+                                        <span class="text-secondary">
+                                            --
+                                        </span>
+                                    @endif
+
+                                </td>
+
+
+
+                                <td>
+
+                                    @if ($submission->assignment_remark)
+                                        {{ $submission->assignment_remark }}
+                                    @else
+                                        <span class="text-secondary">
+                                            No Remarks
+                                        </span>
+                                    @endif
+
+                                </td>
+
+
+
+                                <td class="text-end">
+
+                                    <a href="{{ route('submission.grade', $submission->id) }}"
+                                        class="btn btn-sm btn-primary rounded-2" title="Grade Submission">
+
+                                        <i class="fa-solid fa-eye"></i>
 
                                     </a>
 
-                                @else
+                                </td>
 
-                                    <span class="text-secondary">
-                                        No File
-                                    </span>
+                            </tr>
 
-                                @endif
+                        @empty
 
-                            </td>
+                            <tr>
 
+                                <td colspan="8" style="text-align:center;">
 
-                            
-                            <td>
+                                    No submissions found.
 
-                                @if($submission->assignment_file)
+                                </td>
 
-                                    <span
-                                        class="badge badge-success text-dark"
-                                        style="background:#d1fae5; color:#065f46 !important;"
-                                    >
-                                        Submitted
-                                    </span>
+                            </tr>
+                        @endforelse
 
-                                @else
+                    </tbody>
 
-                                    <span
-                                        class="badge badge-danger text-dark"
-                                        style="background:#fee2e2; color:#991b1b !important;"
-                                    >
-                                        Not Submitted
-                                    </span>
+                </table>
 
-                                @endif
-
-                            </td>
+            </div>
 
 
-                            
-                            <td>
 
-                                @if(!is_null($submission->grade))
+            <div class="pagination-bar">
 
-                                    {{ rtrim(rtrim(number_format($submission->grade, 2), '0'), '.') }}
+                <span class="pagination-info">
 
-                                @else
+                    Showing {{ $submissions->count() }} submissions
 
-                                    <span class="text-secondary">
-                                        --
-                                    </span>
+                </span>
 
-                                @endif
-
-                            </td>
-
-
-                            
-                            <td>
-
-                                @if($submission->assignment_remark)
-
-                                    {{ $submission->assignment_remark }}
-
-                                @else
-
-                                    <span class="text-secondary">
-                                        No Remarks
-                                    </span>
-
-                                @endif
-
-                            </td>
-
-
-                            
-                            <td class="text-end">
-
-                                <a
-                                    href="{{ route('submission.grade', $submission->id) }}"
-                                    class="btn btn-sm btn-primary rounded-2"
-                                    title="Grade Submission"
-                                >
-
-                                    <i class="fa-solid fa-eye"></i>
-
-                                </a>
-
-                            </td>
-
-                        </tr>
-
-                    @empty
-
-                        <tr>
-
-                            <td
-                                colspan="8"
-                                style="text-align:center;"
-                            >
-
-                                No submissions found.
-
-                            </td>
-
-                        </tr>
-
-                    @endforelse
-
-                </tbody>
-
-            </table>
+            </div>
 
         </div>
 
-
-        
-        <div class="pagination-bar">
-
-            <span class="pagination-info">
-
-                Showing {{ $submissions->count() }} submissions
-
-            </span>
-
-        </div>
-
-    </div>
-
-</main>
-
+    </main>
 @endsection
