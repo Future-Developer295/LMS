@@ -43,7 +43,7 @@ active
             <div class="upload-title">Profile Photo</div>
             <div class="upload-hint">JPG or PNG. Max 2MB.</div>
             <button class="btn btn-secondary btn-block" type="button" id="uploadImageBtn">Upload Image</button>
-            <input type="file" id="photoInput" accept="image/png, image/jpeg" style="display:none;">
+            <input type="file" name="student_img" id="photoInput" accept="image/png, image/jpeg" style="display:none;">
           </div>
 
           <div class="card card-pad">
@@ -136,4 +136,31 @@ active
           </div>
       </form>
     </main>
+     <script>
+        (function() {
+            var photoInput = document.getElementById('photoInput');
+            var photoTrigger = document.getElementById('photoTrigger');
+            var uploadBtn = document.getElementById('uploadImageBtn');
+            var hint = document.getElementById('photoHint');
+
+            [photoTrigger, uploadBtn].forEach(function(el) {
+                el.addEventListener('click', function() {
+                    photoInput.click();
+                });
+            });
+
+            photoInput.addEventListener('change', function() {
+                if (photoInput.files && photoInput.files[0]) {
+                    var file = photoInput.files[0];
+                    hint.textContent = file.name;
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        photoTrigger.style.backgroundImage = 'url(' + e.target.result + ')';
+                        photoTrigger.querySelector('i').style.display = 'none';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        })();
+    </script>
  @endsection

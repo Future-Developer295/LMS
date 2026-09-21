@@ -42,6 +42,8 @@ return new class extends Migration
             $table->string('password');
 
             $table->string('emergency_contact')->nullable();
+            $table->string('student_img')->nullable();
+
 
             $table->timestamps();
         });

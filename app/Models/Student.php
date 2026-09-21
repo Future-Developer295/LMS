@@ -28,6 +28,7 @@ class Student extends Authenticatable
         'address',
         'password',
         'emergency_contact',
+        'student_img',
     ];
 
     protected $hidden = [

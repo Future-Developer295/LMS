@@ -252,7 +252,6 @@ class DashboardController extends Controller
         $classes = ClassModel::all();
         return view('backend_theme.student.student-add', compact('classes'));
     }
-
     function student_store(Request $request)
     {
         $data = $request->validate([
@@ -268,15 +267,21 @@ class DashboardController extends Controller
             'email_address' => 'nullable|email',
             'address' => 'nullable|string',
             'emergency_contact' => 'required|string|max:50',
+            'student_img' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
+
+        if ($request->hasFile('student_img')) {
+            $data['student_img'] = $request->file('student_img')
+                ->store('students', 'public');
+        }
 
         $data['password'] = Hash::make($request->cnic);
 
         Student::create($data);
 
-        return redirect()->route('student')->with('success', 'Student added successfully.');
+        return redirect()->route('student')
+            ->with('success', 'Student added successfully.');
     }
-
     function student_update(Request $request, $id)
     {
         $student = Student::findOrFail($id);
@@ -295,7 +300,10 @@ class DashboardController extends Controller
             'address' => 'nullable|string',
             'emergency_contact' => 'required|string|max:50',
         ]);
-
+        if ($request->hasFile('student_img')) {
+            $data['student_img'] = $request->file('student_img')
+                ->store('students', 'public');
+        }
         $student->update($data);
 
         return redirect()->route('student')->with('success', 'Student updated successfully.');
