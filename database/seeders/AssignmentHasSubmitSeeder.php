@@ -49,7 +49,7 @@ class AssignmentHasSubmitSeeder extends Seeder
         AssignmentHasSubmit::create([
             'assignment_id' => $webAssignment->id,
             'student_id' => $hamza->id,
-            'assignment_file' => 'assignments/hamza-landing-page.zip',
+            'assignment_file' => 'assignments/erp_management_system.zip',
             'assignment_remark' => 'Assignment submitted successfully.',
             'assignment_remarks_comments' => 'Good design and responsive layout.',
         ]);
@@ -57,7 +57,7 @@ class AssignmentHasSubmitSeeder extends Seeder
         AssignmentHasSubmit::create([
             'assignment_id' => $webAssignment->id,
             'student_id' => $sara->id,
-            'assignment_file' => 'assignments/sara-landing-page.zip',
+            'assignment_file' => 'assignments/erp_management_system.zip',
             'assignment_remark' => 'Assignment submitted successfully.',
             'assignment_remarks_comments' => 'Good work.',
         ]);
@@ -65,7 +65,7 @@ class AssignmentHasSubmitSeeder extends Seeder
         AssignmentHasSubmit::create([
             'assignment_id' => $graphicAssignment->id,
             'student_id' => $ahmed->id,
-            'assignment_file' => 'assignments/ahmed-poster.zip',
+            'assignment_file' => 'assignments/erp_management_system.zip',
             'assignment_remark' => 'Graphic design assignment submitted.',
             'assignment_remarks_comments' => 'Creative design and good composition.',
         ]);
@@ -73,7 +73,7 @@ class AssignmentHasSubmitSeeder extends Seeder
         AssignmentHasSubmit::create([
             'assignment_id' => $laravelAssignment->id,
             'student_id' => $bilal->id,
-            'assignment_file' => 'assignments/bilal-crud.zip',
+            'assignment_file' => 'assignments/erp_management_system.zip',
             'assignment_remark' => 'Laravel CRUD assignment submitted.',
             'assignment_remarks_comments' => 'CRUD functionality is working properly.',
         ]);
