@@ -64,27 +64,33 @@ class ClassController extends Controller
     ));
 }
 
-    public function class_store(Request $request)
-    {
-        $request->validate([
-            'class_name'   => 'required',
-            'teacher_id'   => 'required',
-            'class_timing' => 'required',
-            'class_days'   => 'required',
-        ]);
+public function class_store(Request $request)
+{
+    $request->validate([
+        'class_name'   => 'required',
+        'teacher_id'   => 'required',
+        'class_timing' => 'required',
+        'class_days'   => 'required',
+    ]);
 
-        ClassModel::create([
-             'class_code'   => 'CLS-' . strtoupper(uniqid()),
-            'class_name'   => $request->class_name,
-            'teacher_id'   => $request->teacher_id,
-            'class_timing' => $request->class_timing,
-            'class_days'   => $request->class_days,
-        ]);
+    $words = explode(' ', $request->class_name);
+    $prefix = '';
 
-        return redirect()
-            ->route('class')
-            ->with('success', 'Class added successfully.');
+    foreach ($words as $word) {
+        $prefix .= strtoupper($word[0]);
     }
+
+    ClassModel::create([
+        'class_code'   => $prefix . '-001',
+        'class_name'   => $request->class_name,
+        'teacher_id'   => $request->teacher_id,
+        'class_timing' => $request->class_timing,
+        'class_days'   => $request->class_days,
+    ]);
+
+    return redirect()->route('class')
+        ->with('success', 'Class added successfully.');
+}
 
 
    public function class_edit($id)
