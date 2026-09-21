@@ -101,7 +101,7 @@ active
                             </div>
 
                             <a
-                                href="{{ asset('storage/' . $submission->assignment_file) }}"
+                                href="{{ asset('' . $submission->assignment_file) }}"
                                 target="_blank"
                                 class="btn btn-secondary btn-sm"
                             >
