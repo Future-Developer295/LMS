@@ -32,43 +32,42 @@
             </div>
         @endif
 
-        {{-- Step 1: choose class and date (plain GET, the page reloads with the students) --}}
-        <form method="GET" action="{{ route('attendance_add') }}">
-            <div class="row g-3 mb-3">
-                <div class="col-md-5">
-                    <div class="card card-pad">
-                        <div class="field mb-0">
-                            <label for="classSelect">Select Class / Batch</label>
-                            <select class="select" id="classSelect" name="batch_code" required>
-                                <option value="">Choose a batch...</option>
-                                @foreach ($batches as $batch)
-                                    <option value="{{ $batch->batch_code }}"
-                                        {{ $selectedBatch == $batch->batch_code ? 'selected' : '' }}>
-                                        {{ $batch->class?->class_name ?? 'Unknown Class' }} ({{ $batch->batch_code }})
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-5">
-                    <div class="card card-pad">
-                        <div class="field mb-0">
-                            <label for="attendanceDate">Select Date</label>
-                            <input type="date" class="input" id="attendanceDate" name="mark_date"
-                                value="{{ $selectedDate }}" max="{{ date('Y-m-d') }}" required>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-2 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="fa-solid fa-magnifying-glass"></i> Load Students
-                    </button>
+     
+<form method="GET" action="{{ route('attendance_add') }}">
+    <div class="row g-3 mb-3">
+        <div class="col-md-8">
+            <div class="card card-pad">
+                <div class="field mb-0">
+                    <label for="classSelect">Select Class / Batch</label>
+                    <select class="select" id="classSelect" name="batch_code" required>
+                        <option value="">Choose a batch...</option>
+                        @foreach ($batches as $batch)
+                            <option value="{{ $batch->batch_code }}"
+                                {{ $selectedBatch == $batch->batch_code ? 'selected' : '' }}>
+                                {{ $batch->class?->class_name ?? 'Unknown Class' }} ({{ $batch->batch_code }})
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
-        </form>
+        </div>
+
+        <div class="col-md-2">
+            <div class="card card-pad">
+                <div class="field mb-0">
+                    <label>Date</label>
+                    <input type="text" class="input" value="{{ \Carbon\Carbon::parse($selectedDate)->format('d M Y') }}" readonly>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="fa-solid fa-magnifying-glass"></i> Load Students
+            </button>
+        </div>
+    </div>
+</form>
 
         @if ($selectedBatch)
             @if ($attendance)
@@ -80,7 +79,6 @@
                 </div>
             @endif
 
-            {{-- Step 2: mark and save --}}
             <form method="POST" action="{{ route('attendance_store') }}">
                 @csrf
                 <input type="hidden" name="batch_code" value="{{ $selectedBatch }}">

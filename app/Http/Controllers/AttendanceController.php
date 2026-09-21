@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Attendance;
+use App\Models\ClassModel;
 use App\Models\HasMarkAttendance;
 use App\Models\Student;
 use Carbon\Carbon;
@@ -14,84 +15,171 @@ class AttendanceController extends Controller
 {
     private const STATUSES = ['present', 'absent', 'late', 'leave'];
 
-    /**
-     * Attendance home: one row per class / batch with its all-time summary.
-     */
-    public function index(Request $request)
-    {
-        $studentsByBatch = Student::with('class.teacher')
-            ->whereNotNull('batch_code')
-            ->get()
-            ->groupBy('batch_code');
+   
+public function index(Request $request)
+{
+    $studentsByBatch = Student::with('class.teacher')
+        ->whereNotNull('batch_code')
+        ->get()
+        ->groupBy('batch_code');
+
+    $attendances = Attendance::withCount([
+        'studentAttendance as total_count',
+        'studentAttendance as present_count' => fn($q) => $q->markedAs('present'),
+    ])->get()->groupBy('batch_code');
+
+    $batches = $studentsByBatch
+        ->map(function ($group, $code) use ($attendances) {
+            $class = $group->first()->class;
+            $logs = $attendances->get($code, collect());
+
+            $total = $logs->sum('total_count');
+            $present = $logs->sum('present_count');
+
+            return (object) [
+                'batch_code'   => $code,
+                'class_name'   => $class->class_name ?? 'Unknown Class',
+                'teacher'      => trim(($class?->teacher?->full_name ?? '') . ' ' . ($class?->teacher?->last_name ?? '')),
+                'students'     => $group->count(),
+                'sessions'     => $logs->count(),
+                'last_marked'  => $logs->max('mark_date'),
+                'percentage'   => $total > 0 ? round(($present / $total) * 100, 1) : null,
+                'marked_today' => $logs->contains(fn($log) => $log->mark_date->isToday()),
+            ];
+        });
+
+   
+    $coveredClassIds = $studentsByBatch
+        ->map(fn($group) => $group->first()->class_id)
+        ->filter()
+        ->unique();
+
+    $emptyClasses = ClassModel::with('teacher')
+        ->whereNotIn('id', $coveredClassIds)
+        ->get()
+        ->map(function ($class) {
+            return (object) [
+                'batch_code'   => $class->class_code,
+                'class_name'   => $class->class_name,
+                'teacher'      => trim(($class->teacher?->full_name ?? '') . ' ' . ($class->teacher?->last_name ?? '')),
+                'students'     => 0,
+                'sessions'     => 0,
+                'last_marked'  => null,
+                'percentage'   => null,
+                'marked_today' => false,
+            ];
+        });
 
 
-        $attendances = Attendance::withCount([
-            'studentAttendance as total_count',
-            'studentAttendance as present_count' => fn($q) => $q->markedAs('present'),
-        ])->get()->groupBy('batch_code');
+    $batches = collect($batches->values()->all())
+        ->concat($emptyClasses->values()->all())
+        ->sortBy('batch_code')
+        ->values();
 
-        $batches = $studentsByBatch
-            ->map(function ($group, $code) use ($attendances) {
-                $class = $group->first()->class;
-                $logs = $attendances->get($code, collect());
+    $totalMarks = $attendances->sum(fn($logs) => $logs->sum('total_count'));
+    $presentMarks = $attendances->sum(fn($logs) => $logs->sum('present_count'));
 
-                $total = $logs->sum('total_count');
-                $present = $logs->sum('present_count');
+    $averageAttendance = $totalMarks > 0
+        ? round(($presentMarks / $totalMarks) * 100, 1)
+        : 0;
 
-                return (object) [
-                    'batch_code'   => $code,
-                    'class_name'   => $class->class_name ?? 'Unknown Class',
-                    'teacher'      => trim(($class?->teacher?->full_name ?? '') . ' ' . ($class?->teacher?->last_name ?? '')),
-                    'students'     => $group->count(),
-                    'sessions'     => $logs->count(),
-                    'last_marked'  => $logs->max('mark_date'),
-                    'percentage'   => $total > 0 ? round(($present / $total) * 100, 1) : null,
-                    'marked_today' => $logs->contains(fn($log) => $log->mark_date->isToday()),
-                ];
-            })
-            ->sortBy('batch_code')
+    $completedLogs = $batches->where('marked_today', true)->count();
+    $pendingLogs = $batches->count() - $completedLogs;
+
+    if ($request->filled('search')) {
+        $search = strtolower($request->search);
+
+        $batches = $batches
+            ->filter(fn($b) => str_contains(
+                strtolower($b->batch_code . ' ' . $b->class_name . ' ' . $b->teacher),
+                $search
+            ))
             ->values();
-
-        $totalMarks = $attendances->sum(fn($logs) => $logs->sum('total_count'));
-        $presentMarks = $attendances->sum(fn($logs) => $logs->sum('present_count'));
-
-        $averageAttendance = $totalMarks > 0
-            ? round(($presentMarks / $totalMarks) * 100, 1)
-            : 0;
-
-        $completedLogs = $batches->where('marked_today', true)->count();
-        $pendingLogs = $batches->count() - $completedLogs;
-
-        if ($request->filled('search')) {
-            $search = strtolower($request->search);
-
-            $batches = $batches
-                ->filter(fn($b) => str_contains(
-                    strtolower($b->batch_code . ' ' . $b->class_name . ' ' . $b->teacher),
-                    $search
-                ))
-                ->values();
-        }
-
-        return view('backend_theme.attendance.attendance', compact(
-            'batches',
-            'averageAttendance',
-            'pendingLogs',
-            'completedLogs'
-        ));
     }
 
-    /**
-     * Class register: every student x every date, plus all-time totals.
-     */
-    public function register(Request $request, string $batch_code)
+    return view('backend_theme.attendance.attendance', compact(
+        'batches',
+        'averageAttendance',
+        'pendingLogs',
+        'completedLogs'
+    ));
+}
+
+public function create(Request $request)
+{
+    $request->validate([
+        'batch_code' => ['nullable', 'string'],
+    ]);
+
+   
+    $studentBatches = Student::select('batch_code', 'class_id')
+        ->with('class:id,class_name')
+        ->whereNotNull('batch_code')
+        ->distinct()
+        ->get()
+        ->map(fn($row) => (object) [
+            'batch_code' => $row->batch_code,
+            'class_id'   => $row->class_id,
+            'class'      => $row->class,
+        ]);
+
+    $coveredClassIds = $studentBatches->pluck('class_id')->filter()->unique();
+
+    
+    $classBatches = ClassModel::select('id', 'class_name', 'class_code')
+        ->whereNotIn('id', $coveredClassIds)
+        ->orderBy('class_name')
+        ->get()
+        ->map(fn($class) => (object) [
+            'batch_code' => $class->class_code,
+            'class_id'   => $class->id,
+            'class'      => $class,
+        ]);
+
+  
+    $batches = collect($studentBatches->values()->all())
+        ->concat($classBatches->values()->all())
+        ->sortBy('batch_code')
+        ->values();
+
+    $selectedBatch = $request->query('batch_code');
+    $selectedDate = today()->toDateString(); 
+
+    $students = collect();
+    $attendance = null;
+    $saved = collect();
+
+    if ($selectedBatch) {
+        $students = Student::where('batch_code', $selectedBatch)
+            ->select('id', 'full_name', 'last_name')
+            ->orderBy('full_name')
+            ->get();
+
+        $attendance = Attendance::where('batch_code', $selectedBatch)
+            ->whereDate('mark_date', $selectedDate)
+            ->first();
+
+        if ($attendance) {
+            $saved = $attendance->studentAttendance()->pluck('mark_status', 'student_id');
+        }
+    }
+
+    return view('backend_theme.attendance.attendance-mark', compact(
+        'batches',
+        'selectedBatch',
+        'selectedDate',
+        'students',
+        'attendance',
+        'saved'
+    ));
+}
+  public function register(Request $request, string $batch_code)
     {
         $request->validate([
             'month' => ['nullable', 'date_format:Y-m'],
             'range' => ['nullable', 'in:month,all'],
         ]);
 
-      
         $counts = [
             'attendanceRecords as total_count' => fn($q) => $q->inBatch($batch_code),
         ];
@@ -106,7 +194,28 @@ class AttendanceController extends Controller
             ->orderBy('full_name')
             ->get();
 
-        abort_if($students->isEmpty(), 404);
+        // If nobody has this batch_code yet, fall back to resolving it as a
+        // class_code so a brand-new (still empty) class can be opened too.
+        if ($students->isEmpty()) {
+            $class = ClassModel::with('teacher')
+                ->where('class_code', $batch_code)
+                ->first();
+
+            abort_if(!$class, 404);
+
+            return view('backend_theme.attendance.attendance-register', [
+                'batch_code'        => $batch_code,
+                'class'             => $class,
+                'students'          => collect(),
+                'logs'              => collect(),
+                'matrix'            => [],
+                'range'             => $request->query('range', 'month'),
+                'month'             => Carbon::createFromFormat('!Y-m', $request->query('month', now()->format('Y-m'))),
+                'totalSessions'     => 0,
+                'overallPercentage' => 0,
+                'todayLog'          => null,
+            ]);
+        }
 
         $class = $students->first()->class;
 
@@ -159,63 +268,12 @@ class AttendanceController extends Controller
         ));
     }
 
-    /**
-     * Mark attendance page. Pick a batch + date via GET, the students are rendered by Blade.
-     */
-    public function create(Request $request)
-    {
-        $request->validate([
-            'batch_code' => ['nullable', 'string', 'exists:student,batch_code'],
-            'mark_date'  => ['nullable', 'date', 'before_or_equal:today'],
-        ]);
-
-        $batches = Student::select('batch_code', 'class_id')
-            ->with('class:id,class_name')
-            ->whereNotNull('batch_code')
-            ->distinct()
-            ->orderBy('batch_code')
-            ->get();
-
-        $selectedBatch = $request->query('batch_code');
-        $selectedDate = $request->query('mark_date', today()->toDateString());
-
-        $students = collect();
-        $attendance = null;
-        $saved = collect();
-
-        if ($selectedBatch) {
-            $students = Student::where('batch_code', $selectedBatch)
-                ->select('id', 'full_name', 'last_name')
-                ->orderBy('full_name')
-                ->get();
-
-            $attendance = Attendance::where('batch_code', $selectedBatch)
-                ->whereDate('mark_date', $selectedDate)
-                ->first();
-
-            if ($attendance) {
-                $saved = $attendance->studentAttendance()->pluck('mark_status', 'student_id');
-            }
-        }
-
-        return view('backend_theme.attendance.attendance-mark', compact(
-            'batches',
-            'selectedBatch',
-            'selectedDate',
-            'students',
-            'attendance',
-            'saved'
-        ));
-    }
-
-    /**
-     * Store attendance. One log per batch + date: saving again updates it.
-     */
+  
     public function store(Request $request)
     {
         $validated = $request->validate([
             'batch_code'             => ['required', 'string', 'exists:student,batch_code'],
-            'mark_date'              => ['required', 'date', 'before_or_equal:today'],
+            'mark_date'              => ['required', 'date', 'date_equals:today'],
             'statuses'               => ['required', 'array', 'min:1'],
             'statuses.*.student_id'  => [
                 'required',
@@ -226,7 +284,6 @@ class AttendanceController extends Controller
 
         $existed = false;
 
-        // Transaction wrapper only, so a half-saved register can't happen. Every query inside is Eloquent.
         DB::transaction(function () use ($validated, &$existed) {
             $attendance = Attendance::firstOrCreate([
                 'batch_code' => $validated['batch_code'],
@@ -253,21 +310,28 @@ class AttendanceController extends Controller
                 : 'Attendance recorded successfully.');
     }
 
-    /**
-     * Edit attendance
-     */
+  
     public function edit(Attendance $attendance)
     {
+        abort_unless(
+            $attendance->mark_date->isToday(),
+            403,
+            'Only today\'s attendance can be edited. Past logs are locked.'
+        );
+
         $attendance->load('studentAttendance.student');
 
         return view('backend_theme.attendance.attendance-edit', compact('attendance'));
     }
 
-    /**
-     * Update attendance statuses (the date is not editable)
-     */
     public function update(Request $request, Attendance $attendance)
     {
+        abort_unless(
+            $attendance->mark_date->isToday(),
+            403,
+            'Only today\'s attendance can be edited. Past logs are locked.'
+        );
+
         $validated = $request->validate([
             'statuses'               => ['required', 'array', 'min:1'],
             'statuses.*.id'          => ['required', 'exists:has_mark_attendance,id'],
