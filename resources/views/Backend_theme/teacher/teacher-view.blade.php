@@ -9,19 +9,23 @@
     .section-row {
         padding: 25px
     }
+
     .view-field {
         margin-bottom: 18px;
     }
+
     .view-field label {
         display: block;
         font-size: 13px;
         color: var(--text-secondary, #6c757d);
         margin-bottom: 4px;
     }
+
     .view-field .value {
         font-size: 15px;
         font-weight: 500;
     }
+
     .view-photo {
         width: 96px;
         height: 96px;
@@ -40,7 +44,8 @@
 @section('body')
     <main class="page">
         <div class="breadcrumb">
-            <a href="{{ route('teacher') }}">Teachers</a><i class="fa-solid fa-chevron-right"></i><span class="current">View Teacher</span>
+            <a href="{{ route('teacher') }}">Teachers</a><i class="fa-solid fa-chevron-right"></i><span class="current">View
+                Teacher</span>
         </div>
 
         <div class="page-header">
@@ -59,8 +64,9 @@
         <div class="card">
             <div class="section-row">
 
-                <div class="view-photo" style="{{ $teacher->profile_img ? 'background-image:url(' . asset('storage/' . $teacher->profile_img) . ')' : '' }}">
-                    @unless($teacher->profile_img)
+                <div class="view-photo"
+                    @if ($teacher->profile_img) style="background-image: url('{{ asset('storage/' . $teacher->profile_img) }}');" @endif>
+                    @unless ($teacher->profile_img)
                         <i class="fa-solid fa-user"></i>
                     @endunless
                 </div>

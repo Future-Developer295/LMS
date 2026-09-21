@@ -9,24 +9,43 @@
     .section-row {
         padding: 25px
     }
+
     .view-field {
         margin-bottom: 18px;
     }
+
     .view-field label {
         display: block;
         font-size: 13px;
         color: var(--text-secondary, #6c757d);
         margin-bottom: 4px;
     }
+
     .view-field .value {
         font-size: 15px;
         font-weight: 500;
+    }
+
+    .view-photo {
+        width: 96px;
+        height: 96px;
+        border-radius: 50%;
+        background-size: cover;
+        background-position: center;
+        background-color: var(--bg, #f1f1f1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        font-size: 32px;
+        color: var(--text-secondary, #6c757d);
     }
 </style>
 @section('body')
     <main class="page">
         <div class="breadcrumb">
-            <a href="{{ route('student') }}">Students</a><i class="fa-solid fa-chevron-right"></i><span class="current">View Student</span>
+            <a href="{{ route('student') }}">Students</a><i class="fa-solid fa-chevron-right"></i><span class="current">View
+                Student</span>
         </div>
 
         <div class="page-header">
@@ -45,6 +64,12 @@
         <div class="card">
             <div class="section-row">
 
+                <div class="view-photo"
+                    @if ($student->student_img) style="background-image: url('{{ asset('storage/' . $student->student_img) }}');" @endif>
+                    @unless ($student->student_img)
+                        <i class="fa-solid fa-user"></i>
+                    @endunless
+                </div>
                 <div class="view-field">
                     <label>Full Name</label>
                     <div class="value">{{ $student->full_name }} {{ $student->last_name }}</div>
