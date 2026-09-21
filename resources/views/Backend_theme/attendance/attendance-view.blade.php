@@ -20,27 +20,29 @@
             </div>
 
             <div class="page-header-actions">
-                @if ($previous)
-                    <a href="{{ route('attendance_view', $previous->id) }}" class="btn btn-secondary">
-                        <i class="fa-solid fa-chevron-left"></i> {{ $previous->mark_date->format('d M') }}
-                    </a>
-                @endif
-                @if ($next)
-                    <a href="{{ route('attendance_view', $next->id) }}" class="btn btn-secondary">
-                        {{ $next->mark_date->format('d M') }} <i class="fa-solid fa-chevron-right"></i>
-                    </a>
-                @endif
-                <a href="{{ route('attendance_register', ['batch_code' => $attendance->batch_code, 'month' => $attendance->mark_date->format('Y-m')]) }}"
-                    class="btn btn-secondary">
-                    <i class="fa-solid fa-table"></i> Full Register
-                </a>
-                <a href="{{ route('attendance_edit', $attendance->id) }}" class="btn btn-warning">
-                    <i class="fa-solid fa-pen-to-square"></i> Edit
-                </a>
-                <form action="{{ route('attendance_destroy', $attendance->id) }}" method="POST" class="d-inline"
-                    onsubmit="return confirm('Delete this attendance log?');">
-                    @csrf @method('DELETE')
-                    <button type="submit" class="btn btn-danger"><i class="fa-solid fa-trash"></i> Delete</button>
+           @if ($previous)
+    <a href="{{ route('attendance_view', $previous->id) }}" class="btn btn-secondary">
+        <i class="fa-solid fa-chevron-left"></i> {{ $previous->mark_date->format('d M') }}
+    </a>
+@endif
+@if ($next)
+    <a href="{{ route('attendance_view', $next->id) }}" class="btn btn-secondary">
+        {{ $next->mark_date->format('d M') }} <i class="fa-solid fa-chevron-right"></i>
+    </a>
+@endif
+<a href="{{ route('attendance_register', ['batch_code' => $attendance->batch_code, 'month' => $attendance->mark_date->format('Y-m')]) }}"
+    class="btn btn-secondary">
+    <i class="fa-solid fa-table"></i> Full Register
+</a>
+@if ($attendance->mark_date->isToday())
+    <a href="{{ route('attendance_edit', $attendance->id) }}" class="btn btn-warning">
+        <i class="fa-solid fa-pen-to-square"></i> Edit
+    </a>
+@else
+    <span class="btn btn-secondary disabled" title="Only today's attendance can be edited">
+        <i class="fa-solid fa-lock"></i> Locked
+    </span>
+@endif
                 </form>
             </div>
 
