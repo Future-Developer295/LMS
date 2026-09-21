@@ -34,4 +34,22 @@ class HasMarkAttendance extends Model
             'student_id'
         );
     }
+
+    /**
+     * Only marks that belong to a given batch's attendance logs.
+     */
+    public function scopeInBatch($query, string $batchCode)
+    {
+        return $query->whereHas('attendance', function ($q) use ($batchCode) {
+            $q->where('batch_code', $batchCode);
+        });
+    }
+
+    /**
+     * Only marks with the given status (present, absent, late, leave).
+     */
+    public function scopeMarkedAs($query, string $status)
+    {
+        return $query->where('mark_status', $status);
+    }
 }

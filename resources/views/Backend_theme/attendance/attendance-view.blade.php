@@ -20,12 +20,28 @@
             </div>
 
             <div class="page-header-actions">
-
-                <a href="{{ route('attendance') }}" class="btn btn-secondary">
-                    <i class="fa-solid fa-arrow-left"></i>
-                    Back to Attendance
+                @if ($previous)
+                    <a href="{{ route('attendance_view', $previous->id) }}" class="btn btn-secondary">
+                        <i class="fa-solid fa-chevron-left"></i> {{ $previous->mark_date->format('d M') }}
+                    </a>
+                @endif
+                @if ($next)
+                    <a href="{{ route('attendance_view', $next->id) }}" class="btn btn-secondary">
+                        {{ $next->mark_date->format('d M') }} <i class="fa-solid fa-chevron-right"></i>
+                    </a>
+                @endif
+                <a href="{{ route('attendance_register', ['batch_code' => $attendance->batch_code, 'month' => $attendance->mark_date->format('Y-m')]) }}"
+                    class="btn btn-secondary">
+                    <i class="fa-solid fa-table"></i> Full Register
                 </a>
-
+                <a href="{{ route('attendance_edit', $attendance->id) }}" class="btn btn-warning">
+                    <i class="fa-solid fa-pen-to-square"></i> Edit
+                </a>
+                <form action="{{ route('attendance_destroy', $attendance->id) }}" method="POST" class="d-inline"
+                    onsubmit="return confirm('Delete this attendance log?');">
+                    @csrf @method('DELETE')
+                    <button type="submit" class="btn btn-danger"><i class="fa-solid fa-trash"></i> Delete</button>
+                </form>
             </div>
 
         </div>
@@ -33,7 +49,7 @@
 
         <div class="row g-3 mb-3">
 
-         
+
             <div class="col-md-4">
 
                 <div class="card card-pad">
@@ -119,7 +135,7 @@
 
         <div class="row g-3 mb-3">
 
-    
+
 
             <div class="col-md-3">
 
@@ -147,7 +163,7 @@
             </div>
 
 
-  
+
 
             <div class="col-md-3">
 
@@ -175,7 +191,7 @@
             </div>
 
 
-        
+
 
             <div class="col-md-3">
 
@@ -203,7 +219,7 @@
             </div>
 
 
-   
+
 
             <div class="col-md-3">
 
@@ -317,7 +333,7 @@
                                 </td>
 
 
-                
+
 
                                 <td>
 
@@ -397,7 +413,7 @@
             </div>
 
 
-  
+
 
             <div class="pagination-bar">
 
