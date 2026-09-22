@@ -17,16 +17,12 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth')->group(function () {
 
     // Dashboard
-    Route::get('/dashboard', [DashboardController::class, 'index'])
-        ->middleware('permission:view dashboard')
-        ->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('permission:view dashboard')->name('dashboard');
 
 
     //  Teacher 
 
-    Route::get('/dashboard/teacher', [DashboardController::class, 'teacher'])
-        ->middleware('permission:view teachers')
-        ->name('teacher');
+    Route::get('/dashboard/teacher', [DashboardController::class, 'teacher'])->middleware('permission:view teachers')->name('teacher');
 
     Route::get('/dashboard/teacher/view/{id}', [DashboardController::class, 'teacher_view'])
         ->middleware('permission:view teachers')
@@ -149,14 +145,14 @@ Route::middleware('auth')->group(function () {
         ->middleware('permission:delete attendance')
         ->name('attendance_destroy');
 
-Route::get('/dashboard/attendance/batch/{batch_code}', [AttendanceController::class, 'register'])
-    ->middleware('permission:view attendance')
-    ->name('attendance_register');
+    Route::get('/dashboard/attendance/batch/{batch_code}', [AttendanceController::class, 'register'])
+        ->middleware('permission:view attendance')
+        ->name('attendance_register');
 
-Route::get('/dashboard/attendance/sheet', [AttendanceController::class, 'sheet'])
-    ->middleware('permission:view attendance')
-    ->name('attendance_sheet');
-    
+    Route::get('/dashboard/attendance/sheet', [AttendanceController::class, 'sheet'])
+        ->middleware('permission:view attendance')
+        ->name('attendance_sheet');
+
     // Assignment
     Route::get('/dashboard/assignment/topics/{class_id}', [AssignmentController::class, 'topicsByClass'])
         ->middleware('permission:create assignments')
