@@ -84,7 +84,7 @@
       padding: 3px 9px;
     }
   </style>
-@if(Auth::guard('student')->check())
+  @if(Auth::guard('student')->check())
 
     <main class="flex-grow-1 p-3 p-md-4 detail-main">
 
@@ -203,14 +203,16 @@
 
 
                   <div class="comment-avatar">
-                    {{ strtoupper(substr($comment->user->name, 0, 1)) }}
+                    {{ strtoupper(substr($comment->user->full_name, 0, 1)) }}
                   </div>
+
+
 
 
                   <div class="comment-content">
 
                     <strong class="comment-name">
-                      {{ $comment->user->name }}
+                      {{ explode(' ', $comment->user->full_name)[0] }}
                     </strong>
 
                     <div class="comment-text">
@@ -221,7 +223,9 @@
                       {{ $comment->created_at->diffForHumans() }}
                     </small>
 
-                    @if($comment->user_id == Auth::id())
+                    @if($comment->user_id == Auth::guard('student')->id())
+
+                    
 
                       <form action="{{ route('comment.delete', $comment->id) }}" method="POST" class="comment-delete-form">
 
@@ -393,31 +397,29 @@
 
     <div class="flex-grow-1 d-flex align-items-center justify-content-center p-4">
 
-        <div class="text-center">
+      <div class="text-center">
 
-            <div class="mb-3">
-                <i class="fa-solid fa-graduation-cap"
-                   style="font-size: 55px; color: #0F9D58;">
-                </i>
-            </div>
-
-            <h4 class="fw-semibold mb-2">
-                Welcome to Classroom
-            </h4>
-
-            <p class="text-muted mb-4">
-                Please login or join a claass to more activity.
-            </p>
-
-            <a href="{{ route('student.login') }}"
-               class="btn btn-success me-2">
-
-                <i class="fa-solid fa-right-to-bracket me-1"></i>
-                Login
-
-            </a>
-
+        <div class="mb-3">
+          <i class="fa-solid fa-graduation-cap" style="font-size: 55px; color: #0F9D58;">
+          </i>
         </div>
+
+        <h4 class="fw-semibold mb-2">
+          Welcome to Classroom
+        </h4>
+
+        <p class="text-muted mb-4">
+          Please login or join a claass to more activity.
+        </p>
+
+        <a href="{{ route('student.login') }}" class="btn btn-success me-2">
+
+          <i class="fa-solid fa-right-to-bracket me-1"></i>
+          Login
+
+        </a>
+
+      </div>
 
     </div>
 
@@ -578,31 +580,31 @@
 
     document.querySelectorAll('form[action*="/submit"], form[action*="/unsubmit"]').forEach(function (form) {
 
-    form.addEventListener('submit', function (e) {
+      form.addEventListener('submit', function (e) {
         e.preventDefault();
 
         const formData = new FormData(form);
 
         fetch(form.action, {
-            method: form.querySelector('input[name="_method"]')?.value || 'POST',
-            body: formData,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': 'application/json'
-            }
+          method: form.querySelector('input[name="_method"]')?.value || 'POST',
+          body: formData,
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+          }
         })
-        .then(response => response.json())
-        .then(data => {
+          .then(response => response.json())
+          .then(data => {
             if (data.success) {
-                location.reload();
+              location.reload();
             }
-        })
-        .catch(error => {
+          })
+          .catch(error => {
             console.error('Assignment error:', error);
-        });
-    });
+          });
+      });
 
-});
+    });
   </script>
 
 @endsection
