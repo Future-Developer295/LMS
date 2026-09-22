@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Cookie;
+
 class StudentAuthController extends Controller
 {
 
@@ -32,6 +33,11 @@ class StudentAuthController extends Controller
                 ])
                 ->withInput();
         };
+        $joinedStudent = Cookie::get('joined_student_id');
+
+        if ($joinedStudent != $student->id) {
+            Cookie::queue(Cookie::forget('joined_class_code'));
+        }
 
         Auth::guard('student')->login($student);
 
@@ -69,49 +75,48 @@ class StudentAuthController extends Controller
     }
 
 
-   public function join(Request $request)
-{
-    $request->validate([
-        'class_code' => 'required',
-    ]);
+    public function join(Request $request)
+    {
+        $request->validate([
+            'class_code' => 'required',
+        ]);
 
-    if (!Auth::guard('student')->check()) {
-        return redirect()->route('student.login');
+        if (!Auth::guard('student')->check()) {
+            return redirect()->route('student.login');
+        }
+
+        $student = Auth::guard('student')->user();
+
+        $classCode = strtoupper(trim($request->class_code));
+
+        $class = ClassModel::whereRaw('UPPER(TRIM(class_code)) = ?', [$classCode])->first();
+
+        if (!$class) {
+            return back()
+                ->withErrors([
+                    'class_code' => 'Invalid class code. Please check the code and try again.',
+                ])
+                ->withInput();
+        }
+
+        if ($student->class_id != $class->id) {
+            return back()
+                ->withErrors([
+                    'class_code' => 'This class is not assigned to your account.',
+                ])
+                ->withInput();
+        }
+
+        Cookie::queue('joined_student_id', $student->id, 60 * 24 * 30);
+
+        Cookie::queue(
+            'joined_class_code',
+            $class->class_code,
+            60 * 24 * 30
+        );
+
+        return redirect()->route('index');
     }
-
-    $student = Auth::guard('student')->user();
-
-    $classCode = strtoupper(trim($request->class_code));
-
-    $class = ClassModel::whereRaw(
-        'UPPER(TRIM(class_code)) = ?',
-        [$classCode]
-    )->first();
-
-    if (!$class) {
-        return back()
-            ->withErrors([
-                'class_code' => 'Invalid class code. Please check the code and try again.',
-            ])
-            ->withInput();
-    }
-
-    if ($student->class_id != $class->id) {
-        return back()
-            ->withErrors([
-                'class_code' => 'This class is not assigned to your account.',
-            ])
-            ->withInput();
-    }
-
-    Cookie::queue(
-        'joined_class_code',
-        $class->class_code,
-        60 * 24 * 30
-    );
-
-    return redirect()->route('steam');
-}
 
     public function logout(Request $request)
     {

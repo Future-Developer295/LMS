@@ -44,7 +44,7 @@ class PermissionController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:permissions,name',
         ]);
-        // dd(Permission::all());
+
         Permission::create([
             'name' => $validated['name'],
             'guard_name' => 'web',
